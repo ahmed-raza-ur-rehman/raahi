@@ -1,0 +1,40 @@
+import type { Language } from "@/lib/types";
+
+export const translations: Record<Language, Record<string, string>> = {
+  en: {
+    appName: "RAAHI",
+    homePrompt: "Tell us what you need",
+    source: "Source",
+    verified: "Last reviewed",
+    actionPlan: "Your action plan",
+    possible: "Possible — confirm with source",
+    likely: "Likely — confirm with source",
+    unlikely: "Unlikely based on what you shared",
+    unknown: "More information needed",
+    myCases: "My Cases",
+  },
+  ur: {
+    appName: "راہی",
+    homePrompt: "بتائیں آپ کو کیا چاہیے",
+    source: "ذریعہ",
+    verified: "آخری جائزہ",
+    actionPlan: "آپ کا ایکشن پلان",
+    possible: "ممکن — ذریعے سے تصدیق کریں",
+    likely: "ممکنہ طور پر اہل — ذریعے سے تصدیق کریں",
+    unlikely: "آپ کی فراہم کردہ معلومات کے مطابق امکان کم ہے",
+    unknown: "مزید معلومات درکار ہیں",
+    myCases: "میرے کیسز",
+  },
+  ps: {
+    appName: "راهي",
+    homePrompt: "ووایاست تاسو ته څه پکار دي",
+    source: "سرچینه",
+    verified: "وروستی کتنه",
+    actionPlan: "ستاسو د عمل پلان",
+    possible: "ممکن — له سرچینې یې تایید کړئ",
+    likely: "احتمالي وړتیا — له سرچینې یې تایید کړئ",
+    unlikely: "ستاسو د معلوماتو له مخې احتمال کم دی",
+    unknown: "نورو معلوماتو ته اړتیا ده",
+    myCases: "زما دوسیې",
+  },
+};
