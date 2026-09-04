@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { VoiceRecorder } from "@/components/chat/VoiceRecorder";
 import { EmergencyBanner } from "@/components/common/EmergencyBanner";
+import FewClickNavigator from "@/components/navigator/FewClickNavigator";
 
 type Language = "en" | "ur" | "ps";
 
@@ -103,6 +104,7 @@ export default function ChatPage() {
   const [isBisp, setIsBisp] = useState<boolean>(false);
   const [savedCaseIds, setSavedCaseIds] = useState<string[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
+  const [entryMode, setEntryMode] = useState<"navigator" | "suggestions">("navigator");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const t = UI_TEXT[language];
@@ -511,24 +513,56 @@ export default function ChatPage() {
                 : "بے نظیر انکم سپورٹ، احساس راشن، صحت کارڈ، نادرا کے مسائل یا فلاحی وظائف کے بارے میں پوچھیں۔ تمام رہنمائی تصدیق شدہ قواعد و ضوابط پر مبنی ہے۔"}
             </p>
 
-            {/* Suggested Needs */}
-            <div className="mt-8 w-full max-w-lg space-y-2 text-start">
-              <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] ps-1">
-                {language === "en" ? "Common citizen requests:" : "شہریوں کی عام ضروریات:"}
-              </p>
-              <div className="flex flex-col gap-2">
-                {t.suggestions.map((suggestion, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => submitQuery(suggestion)}
-                    className="quick-card flex items-center justify-between rounded-xl border border-[var(--line)] bg-white p-3 text-xs font-semibold text-[var(--ink-soft)] transition hover:border-[var(--forest)] hover:bg-[var(--forest-light)]"
-                  >
-                    <span>{suggestion}</span>
-                    <span className="text-[var(--forest)] font-bold">→</span>
-                  </button>
-                ))}
-              </div>
+            {/* Mode Switcher: Few-Click Fast Path vs Suggestions */}
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => setEntryMode("navigator")}
+                className={`rounded-2xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
+                  entryMode === "navigator"
+                    ? "bg-[var(--forest)] text-white shadow-xs"
+                    : "border border-[var(--line)] bg-white text-[var(--muted)] hover:text-[var(--ink)]"
+                }`}
+              >
+                ⚡ {language === "en" ? "Few-Click Guided Navigator" : "چند کلکس میں رہنمائی (بغیر ٹائپنگ)"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setEntryMode("suggestions")}
+                className={`rounded-2xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
+                  entryMode === "suggestions"
+                    ? "bg-[var(--forest)] text-white shadow-xs"
+                    : "border border-[var(--line)] bg-white text-[var(--muted)] hover:text-[var(--ink)]"
+                }`}
+              >
+                💡 {language === "en" ? "Common Suggestions" : "عام تجاویز و سوالات"}
+              </button>
+            </div>
+
+            {/* Mode Content */}
+            <div className="mt-6 w-full max-w-2xl text-start">
+              {entryMode === "navigator" ? (
+                <FewClickNavigator initialLanguage={language} />
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] ps-1">
+                    {language === "en" ? "Common citizen requests:" : "شہریوں کی عام ضروریات:"}
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {t.suggestions.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => submitQuery(suggestion)}
+                        className="quick-card flex items-center justify-between rounded-xl border border-[var(--line)] bg-white p-3 text-xs font-semibold text-[var(--ink-soft)] transition hover:border-[var(--forest)] hover:bg-[var(--forest-light)] cursor-pointer"
+                      >
+                        <span>{suggestion}</span>
+                        <span className="text-[var(--forest)] font-bold">→</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (

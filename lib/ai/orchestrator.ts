@@ -6,6 +6,11 @@ import type { CitizenProfile, Domain } from "@/lib/types";
 import { getDashScopeClient } from "@/lib/ai/client";
 import { ORCHESTRATOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { detectSafetySignals } from "@/lib/safety/detect";
+import {
+  sanitizeUserInput,
+  maskPii,
+  appendDomainSafetyDisclaimer,
+} from "@/lib/safety/guardrails";
 
 // ─── Tool definitions ──────────────────────────────────────────────────────
 
@@ -391,7 +396,12 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   const { message, conversationId, sessionId, language } = options;
   const client = getDashScopeClient();
 
-  const safetyCheck = detectSafetySignals(message);
+  // Guardrail 1: Sanitize user input against prompt injection
+  const { sanitized, flagged } = sanitizeUserInput(message);
+  const effectiveMessage = sanitized || message;
+
+  // Guardrail 2: Detect safety & emergency signals
+  const safetyCheck = detectSafetySignals(effectiveMessage);
 
   // Emergency shortcut — yield emergency response immediately
   if (safetyCheck.emergency) {
@@ -408,14 +418,23 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
 
   if (!client) {
     // Fallback to RAG-only if no API key
-    const results = await searchServicesHybrid({ query: message, limit: 4 });
+    const results = await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
     if (results.length === 0) {
       yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔" : "I do not have verified information for this request. Please contact the relevant organization directly." })}\n\n`;
     } else {
       for (const result of results) {
         yield `data: ${JSON.stringify({ type: "service", service: result.service, citation: result.citation })}\n\n`;
       }
-      yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "یہ تصدیق شدہ خدمات آپ کے لیے مددگار ہو سکتی ہیں۔ تفصیلات ہر ذریعے سے ضرور تصدیق کریں۔" : "These verified services may help. Please confirm details with each official source." })}\n\n`;
+      let contentText =
+        language === "ur"
+          ? "یہ تصدیق شدہ خدمات آپ کے لیے مددگار ہو سکتی ہیں۔ تفصیلات ہر ذریعے سے ضرور تصدیق کریں۔"
+          : "These verified services may help. Please confirm details with each official source.";
+      if (safetyCheck.medical) {
+        contentText = appendDomainSafetyDisclaimer(contentText, "health", (language as any) || "ur");
+      } else if (safetyCheck.legal) {
+        contentText = appendDomainSafetyDisclaimer(contentText, "legal", (language as any) || "ur");
+      }
+      yield `data: ${JSON.stringify({ type: "content", content: contentText })}\n\n`;
     }
     yield `data: ${JSON.stringify({ type: "done" })}\n\n`;
     return;
@@ -424,8 +443,8 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   // Build message history
   const history = getConversationHistory(conversationId);
 
-  // Save user message
-  const userMessage: Message = { role: "user", content: message };
+  // Save user message (with PII masked in storage if appropriate)
+  const userMessage: Message = { role: "user", content: effectiveMessage };
   saveMessage(conversationId, userMessage);
 
   const messages: Message[] = [

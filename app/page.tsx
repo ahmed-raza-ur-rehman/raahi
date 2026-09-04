@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import FewClickNavigator from "@/components/navigator/FewClickNavigator";
 
 type Language = "en" | "ur" | "ps";
 
@@ -221,6 +222,11 @@ export default function Home() {
               </p>
             </div>
           </div>
+        </section>
+
+        {/* ─── Fast Guided Navigator (Few-Click Path) ─────────────── */}
+        <section className="py-6 border-t border-[var(--line)]">
+          <FewClickNavigator initialLanguage={language} />
         </section>
 
         {/* ─── 5 Real Citizen Demo Scenarios ─────────────────────── */}
