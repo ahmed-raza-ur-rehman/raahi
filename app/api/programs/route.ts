@@ -1,0 +1,4 @@
+import { NextResponse } from "next/server";
+import { ensureDatabaseSeeded } from "@/lib/db/seed";
+import { listActiveServices } from "@/lib/db/repositories/services";
+export async function GET(request: Request) { ensureDatabaseSeeded(); const url = new URL(request.url); const domain = url.searchParams.get("domain"); const province = url.searchParams.get("province"); const services = listActiveServices().filter((service) => (!domain || service.domain === domain) && (!province || service.coverage.includes("Pakistan") || service.coverage.includes(province))); return NextResponse.json({ results: services }); }

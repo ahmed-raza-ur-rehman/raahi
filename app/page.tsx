@@ -1,5 +1,13 @@
 import Link from "next/link";
 
+const quickNeeds = [
+  ["میرے بیٹے کی فیس نہیں ہے", "Education"],
+  ["I need a domicile certificate", "Documentation"],
+  ["زما پلار ته ډایلسز پکار دی", "Healthcare"],
+  ["BISP کے لیے کیسے رجسٹر ہوں", "Welfare"],
+  ["سیلاب میں گھر تباہ ہو گیا", "Emergency relief"],
+];
+
 export default function Home() {
   return (
     <main className="app-shell flex min-h-screen flex-col px-5 py-6" dir="rtl">
@@ -18,6 +26,8 @@ export default function Home() {
         <Link className="mt-8 rounded-2xl bg-[var(--forest)] px-5 py-4 text-center text-base font-bold text-white shadow-lg shadow-emerald-900/10 transition hover:bg-[var(--forest-dark)]" href="/chat">
           اپنی ضرورت بتائیں
         </Link>
+        <div className="mt-10"><p className="mb-3 text-sm font-bold text-[var(--ink)]">لوگ یہ پوچھتے ہیں</p><div className="grid grid-cols-2 gap-2">{quickNeeds.map(([need, label]) => <Link key={need} href={`/chat?need=${encodeURIComponent(need)}`} className="rounded-xl border border-[var(--line)] p-3 text-right text-sm transition hover:border-[var(--forest)] hover:bg-[#f3faf5]"><span className="block text-xs text-[var(--muted)]">{label}</span><span className="mt-1 block font-semibold leading-6">{need}</span></Link>)}</div></div>
+        <Link className="mt-4 text-center text-sm font-bold text-[var(--forest)] underline" href="/cases">میرے کیسز</Link>
         <p className="mt-4 text-center text-xs text-[var(--muted)]">English, اردو, پښتو · Sources included · No eligibility guarantees</p>
       </section>
 

@@ -192,3 +192,9 @@ export function seedDatabase(): SeedSummary {
     knowledgeChunks: services.length,
   };
 }
+
+export function ensureDatabaseSeeded(): SeedSummary | undefined {
+  const database = getSqlite();
+  const row = database.prepare("SELECT COUNT(*) AS count FROM services").get() as { count: number };
+  return row.count > 0 ? undefined : seedDatabase();
+}

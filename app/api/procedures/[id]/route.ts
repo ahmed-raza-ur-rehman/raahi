@@ -1,0 +1,4 @@
+import { NextResponse } from "next/server";
+import { ensureDatabaseSeeded } from "@/lib/db/seed";
+import { findServiceById } from "@/lib/db/repositories/services";
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) { ensureDatabaseSeeded(); const service = findServiceById((await params).id); if (!service) return NextResponse.json({ error: "Procedure not found." }, { status: 404 }); return NextResponse.json({ serviceId: service.id, title: service.name, titleUr: service.nameUr, steps: service.procedure, requiredDocuments: service.requiredDocuments, source: { url: service.sourceUrl, title: service.sourceTitle, lastVerified: service.lastVerified } }); }
