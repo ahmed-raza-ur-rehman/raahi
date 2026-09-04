@@ -1,0 +1,84 @@
+RAAHI PROTECTIVE SOURCE-AVAILABLE LICENSE
+Version 1.0 (March 2026)
+
+Copyright (c) 2026 Ahmed Raza Ur Rehman.
+All Rights Reserved.
+
+Repository: https://github.com/ahmed-raza-ur-rehman/raahi
+Author: Ahmed Raza Ur Rehman
+
+================================================================================
+PREAMBLE
+================================================================================
+
+This software, "RAAHI" (Alkhidmat Community Assistant / Citizen Navigation Platform), 
+including all accompanying source code, architecture, schemas, documentation, and 
+user interface designs, is authored and owned exclusively by Ahmed Raza Ur Rehman.
+
+The project is published as a PUBLIC repository on GitHub to provide transparency, 
+enable peer review, support open civic research, and allow citizens to verify the 
+integrity of public service guidance. However, this software is NOT public domain 
+and is NOT licensed under permissive open-source terms (such as MIT, BSD, or Apache). 
+Unauthorized copying, duplication, rebranding, commercialization, or proprietary 
+appropriation is strictly prohibited.
+
+================================================================================
+TERMS AND CONDITIONS
+================================================================================
+
+1. PERMITTED USES (NON-COMMERCIAL & EVALUATION)
+Subject to the terms and conditions of this License, the Author hereby grants you a 
+non-exclusive, worldwide, royalty-free license to:
+   a. Inspect, read, study, and audit the source code in public repositories.
+   b. Clone and build the project locally for non-commercial personal evaluation, 
+      academic research, educational study, or security audits.
+   c. Submit pull requests, bug fixes, and feature enhancements to the official 
+      repository maintained by the Author.
+
+2. STRICT PROHIBITIONS & RESTRICTIONS
+You are strictly prohibited from the following without prior explicit, formal written 
+consent signed by Ahmed Raza Ur Rehman:
+   a. NO COMMERCIAL USE: You may NOT sell, resell, lease, sublicense, commercialize, 
+      or monetize this software, any part of its source code, or any derivative works, 
+      either directly or as part of a commercial product, service, SaaS, or consulting offering.
+   b. NO REBRANDING OR WHITE-LABELING: You may NOT remove, alter, obscure, or displace 
+      any copyright notices, author attributions, logos, or identifying watermarks of 
+      Ahmed Raza Ur Rehman or RAAHI. You may NOT present, package, or distribute this 
+      codebase under another project name or claim authorship.
+   c. NO UNLICENSED ENTERPRISE OR GOVERNMENT DEPLOYMENT: No corporate entity, enterprise, 
+      non-governmental organization (NGO), or governmental agency may deploy, host, 
+      or utilize this software in a production capacity serving external users without 
+      a written commercial/organizational licensing agreement executed with the Author.
+   d. NO PROPRIETARY CLONES OR CLOSED-SOURCE FORKS: You may NOT fork or copy this 
+      codebase into a private or closed repository, nor may you incorporate substantial 
+      portions of this codebase into any proprietary software or closed-source system.
+
+3. ATTRIBUTION REQUIREMENT
+Any legitimate fork, copy of files, or substantial reference permitted under Section 1 
+must prominently preserve:
+   a. The full text of this License agreement.
+   b. The copyright notice: "Copyright (c) 2026 Ahmed Raza Ur Rehman. All Rights Reserved."
+   c. Direct clickable hyperlinks back to the original source repository:
+      https://github.com/ahmed-raza-ur-rehman/raahi
+
+4. TERMINATION
+Any breach of these terms immediately and automatically terminates all rights granted 
+to you under this License. Upon termination, you must immediately cease all use, 
+destroy all copies of the software and its derivatives in your possession, and retract 
+any unauthorized distributions or deployments. The Author reserves all legal remedies 
+and damages available under domestic copyright laws (including the Copyright Ordinance, 1962) 
+and international intellectual property treaties (including the Berne Convention and TRIPS).
+
+5. DISCLAIMER OF WARRANTY
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER "AS IS", WITHOUT WARRANTY OF ANY 
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR 
+OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN 
+AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION 
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+================================================================================
+FOR LICENSING INQUIRIES OR PARTNERSHIPS:
+Contact Author: Ahmed Raza Ur Rehman
+GitHub: https://github.com/ahmed-raza-ur-rehman
+================================================================================

@@ -8,10 +8,15 @@ import * as schema from "@/lib/db/schema";
 let sqlite: Database.Database | undefined;
 
 function databasePath() {
-  const configuredPath = process.env.RAAHI_DB_PATH ?? "./data/raahi.db";
-  return isAbsolute(configuredPath)
-    ? configuredPath
-    : resolve(process.cwd(), configuredPath);
+  if (process.env.RAAHI_DB_PATH) {
+    return isAbsolute(process.env.RAAHI_DB_PATH)
+      ? process.env.RAAHI_DB_PATH
+      : resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.RAAHI_DB_PATH);
+  }
+  if (process.env.VERCEL) {
+    return "/tmp/raahi.db";
+  }
+  return resolve(/*turbopackIgnore: true*/ process.cwd(), "data", "raahi.db");
 }
 
 export function initializeDatabase(database: Database.Database) {
