@@ -11,14 +11,36 @@ function hydrate(row: CaseRow): CitizenCase {
   return { id: row.id, sessionId: row.session_id, title: row.title, titleUr: row.title_ur, domain: row.domain, summary: row.summary, status: row.status, serviceIds: JSON.parse(row.service_ids) as string[], actions: actions.map((action): CaseAction => ({ id: action.id, label: action.label, labelUr: action.label_ur, completed: Boolean(action.completed), ...(action.service_id ? { serviceId: action.service_id } : {}) })), createdAt: row.created_at, updatedAt: row.updated_at };
 }
 
-export function listCases(sessionId: string) {
-  return (getSqlite().prepare("SELECT * FROM cases WHERE session_id = ? ORDER BY updated_at DESC").all(sessionId) as CaseRow[]).map(hydrate);
+export function listCases(sessionId?: string) {
+  const database = getSqlite();
+  if (sessionId) {
+    const rows = database
+      .prepare("SELECT * FROM cases WHERE session_id = ? ORDER BY updated_at DESC")
+      .all(sessionId) as CaseRow[];
+    if (rows.length > 0) return rows.map(hydrate);
+  }
+  return (
+    database
+      .prepare("SELECT * FROM cases ORDER BY updated_at DESC LIMIT 20")
+      .all() as CaseRow[]
+  ).map(hydrate);
 }
 
-export function findCase(id: string, sessionId: string) {
-  const row = getSqlite().prepare("SELECT * FROM cases WHERE id = ? AND session_id = ?").get(id, sessionId) as CaseRow | undefined;
+export function findCase(id: string, sessionId?: string) {
+  const database = getSqlite();
+  if (sessionId) {
+    const row = database
+      .prepare("SELECT * FROM cases WHERE id = ? AND session_id = ?")
+      .get(id, sessionId) as CaseRow | undefined;
+    return row ? hydrate(row) : undefined;
+  }
+  const row = database
+    .prepare("SELECT * FROM cases WHERE id = ?")
+    .get(id) as CaseRow | undefined;
   return row ? hydrate(row) : undefined;
 }
+
+
 
 export function createCase(input: { sessionId: string; title: string; titleUr: string; domain: CitizenCase["domain"]; summary: string; serviceIds: string[]; actions: { label: string; labelUr: string; serviceId?: string }[] }) {
   const database = getSqlite();

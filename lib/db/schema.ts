@@ -165,3 +165,28 @@ export const documents = sqliteTable(
   },
   (table) => [index("documents_case_idx").on(table.caseId)],
 );
+
+export const conversations = sqliteTable(
+  "conversations",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    caseId: text("case_id"),
+    ...timestamps,
+  },
+  (table) => [index("conversations_session_idx").on(table.sessionId)],
+);
+
+export const messages = sqliteTable(
+  "messages",
+  {
+    id: text("id").primaryKey(),
+    conversationId: text("conversation_id").notNull(),
+    role: text("role").notNull(),
+    content: text("content").notNull(),
+    toolCalls: text("tool_calls", { mode: "json" }).$type<unknown[]>(),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [index("messages_conversation_idx").on(table.conversationId)],
+);
+

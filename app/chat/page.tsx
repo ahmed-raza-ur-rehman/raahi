@@ -1,113 +1,666 @@
 "use client";
 
+import React, { useState, useEffect, useRef, FormEvent } from "react";
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { MessageBubble } from "@/components/chat/MessageBubble";
+import { VoiceRecorder } from "@/components/chat/VoiceRecorder";
+import { EmergencyBanner } from "@/components/common/EmergencyBanner";
 
 type Language = "en" | "ur" | "ps";
-type Profile = { province?: string; hasCnic?: boolean; isEnrolled?: boolean };
-type Result = {
-  service: { id: string; name: string; nameUr: string; namePs: string; description: string; descriptionUr: string; domain: string; applicationMethod: string; procedure: { order: number; title: string; titleUr: string; description: string; descriptionUr: string; channel: string; url?: string }[]; requiredDocuments: { type: string; label: string; labelUr: string; mandatory: boolean }[] };
-  citation: { sourceUrl: string; sourceTitle: string; lastVerified: string };
-  reasons: string[];
-  eligibility: { status: "likely" | "possible" | "unlikely" | "unknown"; missingInfo: string[]; missingDocuments: string[]; confidenceReason: string };
-};
 
-const copy = {
-  en: { title: "Where do you need a path?", intro: "Describe the situation in your own words. RAAHI will find relevant services, explain the next step, and show the source.", placeholder: "For example: I need help with my son's school fee", send: "Find my path", results: "Routes found", source: "Official source", documents: "Bring or prepare", steps: "Next steps", possible: "Possible", likely: "Likely", unlikely: "Unlikely", unknown: "Needs more information", reviewed: "Reviewed" },
-  ur: { title: "آپ کو کس راستے کی ضرورت ہے؟", intro: "اپنی صورتحال اپنے الفاظ میں بتائیں۔ راہی متعلقہ خدمات، اگلا قدم اور اصل ذریعہ دکھائے گا۔", placeholder: "مثال: میرے بیٹے کی اسکول فیس کے لیے مدد چاہیے", send: "میرا راستہ تلاش کریں", results: "ملنے والے راستے", source: "سرکاری ذریعہ", documents: "ساتھ رکھیں", steps: "اگلے قدم", possible: "ممکن", likely: "ممکنہ طور پر اہل", unlikely: "امکان کم", unknown: "مزید معلومات درکار", reviewed: "جائزہ" },
-  ps: { title: "تاسو کومې لارې ته اړتیا لرئ؟", intro: "خپل حالت په خپلو خبرو کې ولیکئ. راہی به اړوندې خدمتونه، بل ګام او سرچینه در وښيي.", placeholder: "بېلګه: زما د زوی د ښوونځي فیس لپاره مرسته غواړم", send: "زما لاره ومومئ", results: "موندل شوې لارې", source: "رسمي سرچینه", documents: "له ځان سره یې ولرئ", steps: "راتلونکي ګامونه", possible: "ممکن", likely: "احتمالي وړتیا", unlikely: "امکان کم", unknown: "نور معلومات پکار دي", reviewed: "کتل شوی" },
-};
-
-function statusLabel(status: Result["eligibility"]["status"], language: Language) {
-  return copy[language][status];
+interface MessageState {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  services?: any[];
+  actionItems?: any[];
+  activeTool?: string | null;
+  streaming?: boolean;
+  citations?: any[];
 }
+
+const UI_TEXT = {
+  en: {
+    appName: "RAAHI",
+    tagline: "AI Citizen Navigation Assistant for Pakistan",
+    home: "Home",
+    cases: "My Cases",
+    emergency: "Emergency",
+    placeholder: "Ask about government welfare, scholarships, healthcare, NADRA CNIC, legal aid...",
+    send: "Send",
+    thinking: "RAAHI is consulting verified knowledge...",
+    emergencyAlert: "Emergency Helpline Activated",
+    suggestions: [
+      "BISP Kafalat registration & eligibility",
+      "Ehsaas Rashan Riayat subsidy",
+      "HEC Need-Based Undergraduate Scholarship",
+      "Lost or expired CNIC renewal procedure",
+      "Free dialysis & medical assistance",
+    ],
+    province: "Province",
+    allProvinces: "All Provinces",
+    hasCnic: "Has CNIC",
+    bispBeneficiary: "BISP Beneficiary",
+    clearChat: "New Conversation",
+  },
+  ur: {
+    appName: "راہی",
+    tagline: "پاکستانی شہریوں کے لیے سرکاری و فلاحی رہنمائی کا نظام",
+    home: "ہوم",
+    cases: "میرے کیسز",
+    emergency: "ہنگامی مدد",
+    placeholder: "احساس راشن، بے نظیر کفالت، صحت کارڈ، نادرا شناختی کارڈ، یا تعلیمی وظائف کے بارے میں پوچھیں...",
+    send: "رہنمائی حاصل کریں",
+    thinking: "راہی تصدیق شدہ قواعد اور ذرائع کی جانچ کر رہا ہے...",
+    emergencyAlert: "ہنگامی صورتحال کے لیے فوری نمبرز",
+    suggestions: [
+      "بے نظیر کفالت پروگرام میں رجسٹریشن کیسے کروائیں؟",
+      "احساس راشن پروگرام کے لیے اہلیت",
+      "نادرا گمشدہ شناختی کارڈ کی تجدید کا طریقہ",
+      "مفت علاج اور ڈائیلاسز فنڈ کی معلومات",
+      "طلبہ کے لیے سرکاری اسکالرشپ",
+    ],
+    province: "صوبہ",
+    allProvinces: "تمام صوبے",
+    hasCnic: "شناختی کارڈ موجود ہے",
+    bispBeneficiary: "بے نظیر کفالت میں رجسٹرڈ",
+    clearChat: "نئی گفتگو",
+  },
+  ps: {
+    appName: "راہی",
+    tagline: "د پاکستان د خلکو لپاره د حکومت او خيريه لارښود سیسټم",
+    home: "کور",
+    cases: "زما قضیې",
+    emergency: "بیړنۍ مرسته",
+    placeholder: "د راشن، بی آی ایس پی، صحت کارډ، نادرا پیژندپاڼه یا تعلیمي مرستو په اړه وپوښتئ...",
+    send: "لارښوونه ترلاسه کړئ",
+    thinking: "راہی تایید شوې معلومات پلټي...",
+    emergencyAlert: "د بیړني حالت شمیرې",
+    suggestions: [
+      "د بې نظیر کفالت پروګرام کې د نوم لیکنې طریقه",
+      "د احسان راشن مرستې ترلاسه کولو شرایط",
+      "د نادرا ورک شوي پيژندپاڼې نوي کول",
+      "د زده کونکو لپاره د سکالرشپ معلومات",
+    ],
+    province: "ولایت",
+    allProvinces: "ټول ولایتونه",
+    hasCnic: "پيژندپاڼه لرم",
+    bispBeneficiary: "بی آی ایس پی ګټه اخیستونکی",
+    clearChat: "نوې خبرې",
+  },
+};
 
 export default function ChatPage() {
   const [language, setLanguage] = useState<Language>("ur");
-  const [query, setQuery] = useState("");
-  const [profile, setProfile] = useState<Profile>({});
-  const [results, setResults] = useState<Result[]>([]);
+  const [inputQuery, setInputQuery] = useState("");
+  const [messages, setMessages] = useState<MessageState[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [messages, setMessages] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
-  const [saved, setSaved] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const text = copy[language];
+  const [emergencyActive, setEmergencyActive] = useState(false);
+  const [sessionId, setSessionId] = useState<string>("");
+  const [conversationId, setConversationId] = useState<string>("");
+  const [province, setProvince] = useState<string>("");
+  const [hasCnic, setHasCnic] = useState<boolean>(true);
+  const [isBisp, setIsBisp] = useState<boolean>(false);
+  const [savedCaseIds, setSavedCaseIds] = useState<string[]>([]);
+  const [notification, setNotification] = useState<string | null>(null);
 
-  useEffect(() => { const initial = new URLSearchParams(window.location.search).get("need"); if (initial) setQuery(initial); }, []);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const t = UI_TEXT[language];
 
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    if (query.trim().length < 2) return;
-    setLoading(true);
-    setError("");
+  // Initialize session & load initial need from URL query
+  useEffect(() => {
+    let sid = localStorage.getItem("raahi_session_id");
+    if (!sid) {
+      sid = `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      localStorage.setItem("raahi_session_id", sid);
+    }
+    setSessionId(sid);
+
+    const savedConv = localStorage.getItem("raahi_conv_id");
+    if (savedConv) {
+      setConversationId(savedConv);
+    }
+
+    const initialNeed = new URLSearchParams(window.location.search).get("need");
+    if (initialNeed) {
+      setInputQuery(initialNeed);
+    }
+  }, []);
+
+  // Auto scroll to bottom of chat
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  const showToast = (msg: string) => {
+    setNotification(msg);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleNewChat = () => {
+    const newConvId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    setConversationId(newConvId);
+    localStorage.setItem("raahi_conv_id", newConvId);
+    setMessages([]);
+    setEmergencyActive(false);
+    showToast(language === "en" ? "New conversation started" : "نئی گفتگو شروع کی گئی");
+  };
+
+  const handleSaveToCase = async (serviceId: string) => {
     try {
-      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: query, language, profile }) });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error ?? "Something went wrong.");
-      setResults(data.results ?? []);
-      setMessages((current) => [...current, { role: "user", text: query }, { role: "assistant", text: data.message }]);
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Something went wrong.");
+      // Find service in existing messages
+      let targetService: any = null;
+      for (const m of messages) {
+        if (m.services) {
+          const found = m.services.find((s) => s.id === serviceId);
+          if (found) {
+            targetService = found;
+            break;
+          }
+        }
+      }
+
+      const res = await fetch("/api/cases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          title: targetService?.name || "Navigation Case",
+          titleUr: targetService?.nameUr || targetService?.name || "شہری رہنمائی کیس",
+          domain: targetService?.domain || "welfare",
+          summary: inputQuery || targetService?.description || "User navigation query",
+          serviceIds: [serviceId],
+          actions: targetService?.procedure?.map((p: any) => ({
+            label: p.title,
+            labelUr: p.titleUr,
+            serviceId,
+          })) || [],
+        }),
+      });
+
+      const data = await res.json();
+      if (data.id) {
+        setSavedCaseIds((prev) => [...prev, serviceId]);
+        showToast(
+          language === "en"
+            ? "Case saved to 'My Cases'!"
+            : "کیس کامیابی سے 'میرے کیسز' میں شامل کر دیا گیا"
+        );
+      }
+    } catch {
+      showToast("Could not save case.");
+    }
+  };
+
+  const handleOcrUpload = async (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = String(reader.result).split(",")[1] || String(reader.result);
+
+      // Add user message indicating document upload
+      const docUserMsgId = `usr-doc-${Date.now()}`;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: docUserMsgId,
+          role: "user",
+          content: `📄 [Uploaded Document: ${file.name}]`,
+        },
+      ]);
+
+      setLoading(true);
+      try {
+        const res = await fetch("/api/ocr", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: base64 }),
+        });
+
+        const data = await res.json();
+        const extracted = data.result;
+
+        const responseMsg = extracted
+          ? `📋 **دستاویز کی جانچ مکمل / Document Analyzed:**\n- نوعیت: **${extracted.documentType}**\n${
+              extracted.fields?.cnicNumber ? `- CNIC: ${extracted.fields.cnicNumber}\n` : ""
+            }${extracted.fields?.name ? `- نام: ${extracted.fields.name}\n` : ""}${
+              extracted.fields?.familyHead ? `- سربراہ خاندان: ${extracted.fields.familyHead}\n` : ""
+            }\n${extracted.notes || ""}`
+          : "دستاویز کی جانچ میں دشواری ہوئی۔ براہ کرم صاف تصویر اپ لوڈ کریں۔";
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `ast-doc-${Date.now()}`,
+            role: "assistant",
+            content: responseMsg,
+          },
+        ]);
+      } catch {
+        showToast("Document analysis failed.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const submitQuery = async (queryText: string) => {
+    const query = queryText.trim();
+    if (!query || loading) return;
+
+    const userMsgId = `usr-${Date.now()}`;
+    const assistantMsgId = `ast-${Date.now()}`;
+
+    // Add user message
+    setMessages((prev) => [
+      ...prev,
+      { id: userMsgId, role: "user", content: query },
+      {
+        id: assistantMsgId,
+        role: "assistant",
+        content: "",
+        streaming: true,
+        services: [],
+        actionItems: [],
+      },
+    ]);
+
+    setInputQuery("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          message: query,
+          conversationId: conversationId || undefined,
+          sessionId,
+          language,
+          profile: {
+            province: province || undefined,
+            hasCnic,
+            isBispBeneficiary: isBisp,
+          },
+          stream: true,
+        }),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error("Connection failed");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      let assistantText = "";
+      let foundServices: any[] = [];
+      let foundActions: any[] = [];
+      let currentActiveTool: string | null = null;
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data: ")) continue;
+
+          try {
+            const parsed = JSON.parse(trimmed.slice(6));
+
+            if (parsed.type === "meta") {
+              if (parsed.conversationId) {
+                setConversationId(parsed.conversationId);
+                localStorage.setItem("raahi_conv_id", parsed.conversationId);
+              }
+            } else if (parsed.type === "content") {
+              assistantText += parsed.content;
+              if (parsed.emergency) {
+                setEmergencyActive(true);
+              }
+
+              // Update current streaming message
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, content: assistantText, streaming: true }
+                    : msg
+                )
+              );
+            } else if (parsed.type === "tool_call") {
+              currentActiveTool = parsed.tool;
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, activeTool: currentActiveTool }
+                    : msg
+                )
+              );
+            } else if (parsed.type === "search_results") {
+              if (Array.isArray(parsed.results)) {
+                foundServices = [...foundServices, ...parsed.results];
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === assistantMsgId
+                      ? { ...msg, services: foundServices, activeTool: null }
+                      : msg
+                  )
+                );
+              }
+            } else if (parsed.type === "done") {
+              currentActiveTool = null;
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, streaming: false, activeTool: null }
+                    : msg
+                )
+              );
+            } else if (parsed.type === "error") {
+              assistantText += `\n[Notice: ${parsed.error}]`;
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, content: assistantText, streaming: false }
+                    : msg
+                )
+              );
+            }
+          } catch {
+            // ignore JSON parse error in stream line
+          }
+        }
+      }
+
+      // Finish streaming
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMsgId
+            ? { ...msg, streaming: false, activeTool: null }
+            : msg
+        )
+      );
+    } catch (err) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMsgId
+            ? {
+                ...msg,
+                content:
+                  language === "en"
+                    ? "Connection error. Please retry your inquiry."
+                    : "رابطے میں رکاوٹ آئی۔ براہ کرم دوبارہ کوشش فرمائیں۔",
+                streaming: false,
+              }
+            : msg
+        )
+      );
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  async function saveCase() {
-    const first = results[0];
-    if (!first) return;
-    await fetch("/api/cases", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: first.service.name, titleUr: first.service.nameUr, domain: first.service.domain, summary: query, serviceIds: results.map((result) => result.service.id), actions: first.service.procedure.map((step) => ({ label: step.title, labelUr: step.titleUr, serviceId: first.service.id })) }) });
-    setSaved(true);
-  }
-
-  function startVoice() {
-    const SpeechRecognition = (window as unknown as { SpeechRecognition?: new () => { lang: string; interimResults: boolean; start: () => void; onresult: (event: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void; onend: () => void } }).SpeechRecognition;
-    if (!SpeechRecognition) { setError("اس براؤزر میں آواز کی سہولت دستیاب نہیں۔ براہ کرم لکھ کر بتائیں۔"); return; }
-    const recognition = new SpeechRecognition();
-    recognition.lang = language === "en" ? "en-PK" : language === "ps" ? "ps" : "ur-PK";
-    recognition.interimResults = false;
-    setRecording(true);
-    recognition.onresult = (event) => setQuery(event.results[0][0].transcript);
-    recognition.onend = () => setRecording(false);
-    recognition.start();
-  }
-
-  async function uploadDocument(file: File) {
-    const reader = new FileReader();
-    reader.onload = async () => { const value = String(reader.result); const response = await fetch("/api/ocr", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageBase64: value.split(",")[1] ?? value }) }); const data = await response.json(); setMessages((current) => [...current, { role: "assistant", text: data.result ? `دستاویز: ${data.result.documentType} · ${data.result.simulated ? "ڈیمو استخراج، تصدیق ضروری ہے" : "تصدیق شدہ پڑھائی"}` : data.error }]); };
-    reader.readAsDataURL(file);
-  }
+  const handleFormSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    submitQuery(inputQuery);
+  };
 
   return (
-    <main className="app-shell min-h-screen px-5 py-6" dir={language === "en" ? "ltr" : "rtl"}>
-      <header className="flex items-center justify-between border-b border-[var(--line)] pb-5">
-        <div><a href="/" className="text-xl font-black text-[var(--forest)]">راہی</a><p className="text-xs text-[var(--muted)]">RAAHI navigator</p></div>
-        <div className="flex gap-1 rounded-full border border-[var(--line)] p-1 text-xs">
-          {(["ur", "ps", "en"] as Language[]).map((item) => <button key={item} className={`rounded-full px-3 py-1 ${language === item ? "bg-[var(--forest)] text-white" : "text-[var(--muted)]"}`} onClick={() => setLanguage(item)}>{item === "ur" ? "اردو" : item === "ps" ? "پښتو" : "EN"}</button>)}
+    <main
+      className="app-shell min-h-screen flex flex-col justify-between px-4 sm:px-6 py-4"
+      dir={language === "en" ? "ltr" : "rtl"}
+    >
+      {/* ─── Header ────────────────────────────────────────────── */}
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] pb-4 pt-1">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2 group">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--forest)] to-[var(--forest-dark)] text-xl font-black text-white shadow-md transition group-hover:scale-105">
+              ر
+            </span>
+            <div>
+              <span className="text-xl font-black text-[var(--forest)] tracking-tight">
+                {t.appName}
+              </span>
+              <p className="text-[11px] text-[var(--muted)] font-medium">
+                {language === "en" ? "Verified Citizen Navigator" : "تصدیق شدہ عوامی رہنمائی"}
+              </p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Navigation & Language Select */}
+        <div className="flex items-center gap-2">
+          <Link
+            href="/cases"
+            className="rounded-xl border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--forest)] hover:bg-[var(--forest-light)] transition"
+          >
+            📋 {t.cases}
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleNewChat}
+            className="rounded-xl border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--muted)] hover:text-[var(--ink)] hover:bg-slate-50 transition"
+            title={t.clearChat}
+          >
+            🔄 {t.clearChat}
+          </button>
+
+          {/* Language Switcher */}
+          <div className="flex gap-0.5 rounded-xl border border-[var(--line)] bg-[var(--surface-2)] p-0.5 text-xs">
+            {(["ur", "ps", "en"] as Language[]).map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                className={`rounded-lg px-2.5 py-1 font-bold transition ${
+                  language === lang
+                    ? "bg-[var(--forest)] text-white shadow-xs"
+                    : "text-[var(--muted)] hover:text-[var(--ink)]"
+                }`}
+                onClick={() => setLanguage(lang)}
+              >
+                {lang === "ur" ? "اردو" : lang === "ps" ? "پښتو" : "EN"}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
-      <section className="py-10">
-        <p className="mb-3 text-sm font-bold text-[var(--forest)]">01 / RAAHI</p>
-        <h1 className="max-w-xl text-3xl font-black leading-[1.45] text-[var(--ink)]">{text.title}</h1>
-        <p className="mt-3 max-w-xl leading-7 text-[var(--muted)]">{text.intro}</p>
-        <form className="mt-7" onSubmit={submit}>
-          <textarea className="min-h-32 w-full resize-y rounded-2xl border border-[var(--line)] bg-[#fbfcfa] p-4 text-base leading-7 outline-none transition focus:border-[var(--forest)] focus:ring-4 focus:ring-emerald-100" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={text.placeholder} aria-label={text.title} />
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <button className="rounded-xl bg-[var(--forest)] px-5 py-3 font-bold text-white shadow-lg shadow-emerald-900/10 transition hover:bg-[var(--forest-dark)] disabled:cursor-not-allowed disabled:opacity-50" disabled={loading || query.trim().length < 2}>{loading ? "..." : text.send}</button>
-            <button type="button" onClick={startVoice} className={`rounded-xl border border-[var(--line)] px-4 py-3 text-sm font-bold ${recording ? "bg-red-50 text-red-700" : "text-[var(--forest)]"}`}>{recording ? "سن رہا ہوں..." : "🎙 آواز"}</button>
-            <label className="rounded-xl border border-[var(--line)] px-4 py-3 text-sm font-bold text-[var(--forest)]">📄 OCR<input className="hidden" type="file" accept="image/*" onChange={(event) => event.target.files?.[0] && uploadDocument(event.target.files[0])} /></label>
-            <label className="flex items-center gap-2 text-sm text-[var(--muted)]"><span>صوبہ</span><select className="rounded-lg border border-[var(--line)] bg-white px-2 py-2" value={profile.province ?? ""} onChange={(event) => setProfile({ ...profile, province: event.target.value || undefined })}><option value="">سب</option><option>Punjab</option><option>Khyber Pakhtunkhwa</option><option>Sindh</option><option>Balochistan</option></select></label>
-            <label className="flex items-center gap-2 text-sm text-[var(--muted)]"><input type="checkbox" checked={profile.hasCnic ?? false} onChange={(event) => setProfile({ ...profile, hasCnic: event.target.checked })} /> CNIC موجود ہے</label>
+      {/* ─── Emergency Overlay Banner (When Triggered) ──────────── */}
+      {emergencyActive && (
+        <EmergencyBanner
+          language={language}
+          province={province}
+          onDismiss={() => setEmergencyActive(false)}
+        />
+      )}
+
+      {/* ─── Toast Notification ─────────────────────────────────── */}
+      {notification && (
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 rounded-2xl bg-[var(--forest-dark)] px-4 py-2 text-xs font-bold text-white shadow-xl animate-fade-in">
+          {notification}
+        </div>
+      )}
+
+      {/* ─── Chat Message Area ──────────────────────────────────── */}
+      <section className="flex-1 overflow-y-auto py-4 space-y-4">
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center animate-fade-up">
+            <span className="flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-50 text-3xl shadow-inner border border-emerald-100">
+              🧭
+            </span>
+            <h1 className="mt-4 text-2xl font-black text-[var(--ink)]">
+              {language === "en"
+                ? "How can RAAHI assist you today?"
+                : language === "ps"
+                ? "راہی نن څنګه ستاسو سره مرسته کولی شي؟"
+                : "راہی آپ کی کس سرکاری یا فلاحی ضرورت میں مدد کرے؟"}
+            </h1>
+            <p className="mt-2 max-w-md text-sm text-[var(--muted)] leading-relaxed">
+              {language === "en"
+                ? "Ask about federal & provincial programs, medical assistance, education grants, or document procedures. All information is grounded in official government sources."
+                : "بے نظیر انکم سپورٹ، احساس راشن، صحت کارڈ، نادرا کے مسائل یا فلاحی وظائف کے بارے میں پوچھیں۔ تمام رہنمائی تصدیق شدہ قواعد و ضوابط پر مبنی ہے۔"}
+            </p>
+
+            {/* Suggested Needs */}
+            <div className="mt-8 w-full max-w-lg space-y-2 text-start">
+              <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] ps-1">
+                {language === "en" ? "Common citizen requests:" : "شہریوں کی عام ضروریات:"}
+              </p>
+              <div className="flex flex-col gap-2">
+                {t.suggestions.map((suggestion, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => submitQuery(suggestion)}
+                    className="quick-card flex items-center justify-between rounded-xl border border-[var(--line)] bg-white p-3 text-xs font-semibold text-[var(--ink-soft)] transition hover:border-[var(--forest)] hover:bg-[var(--forest-light)]"
+                  >
+                    <span>{suggestion}</span>
+                    <span className="text-[var(--forest)] font-bold">→</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        </form>
-        {messages.length > 0 && <div className="mt-7 space-y-3">{messages.map((message, index) => <div key={`${message.role}-${index}`} className={`max-w-[90%] rounded-2xl px-4 py-3 leading-7 ${message.role === "user" ? "ms-auto bg-[var(--forest)] text-white" : "bg-[#eef6ef] text-[var(--ink)]"}`}>{message.text}</div>)}</div>}
-        {error && <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-[var(--danger)]">{error}</p>}
+        ) : (
+          <div>
+            {messages.map((msg) => (
+              <MessageBubble
+                key={msg.id}
+                role={msg.role}
+                content={msg.content}
+                streaming={msg.streaming}
+                activeTool={msg.activeTool}
+                services={msg.services}
+                actionItems={msg.actionItems}
+                language={language}
+                onAddToCase={handleSaveToCase}
+                addedServiceIds={savedCaseIds}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </section>
 
-      {results.length > 0 && <section className="border-t border-[var(--line)] py-8"><div className="mb-5 flex items-baseline justify-between"><h2 className="text-xl font-black">{text.results}</h2><div className="flex gap-3"><button type="button" onClick={saveCase} className="text-sm font-bold text-[var(--forest)] underline">{saved ? "محفوظ" : "کیس محفوظ کریں"}</button><span className="text-sm text-[var(--muted)]">{results.length}</span></div></div><div className="space-y-5">{results.map((result) => <article className="rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm" key={result.service.id}><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-widest text-[var(--forest)]">{result.service.domain}</p><h3 className="mt-1 text-lg font-black">{language === "en" ? result.service.name : language === "ps" ? result.service.namePs : result.service.nameUr}</h3></div><span className={`rounded-full px-3 py-1 text-xs font-bold status-${result.eligibility.status}`}>{statusLabel(result.eligibility.status, language)}</span></div><p className="mt-3 leading-7 text-[var(--muted)]">{language === "en" ? result.service.description : result.service.descriptionUr}</p><p className="mt-3 text-sm font-semibold text-[var(--ink)]">{result.eligibility.confidenceReason}</p>{result.eligibility.missingInfo?.length > 0 && <p className="mt-2 text-sm text-[var(--amber)]">{result.eligibility.missingInfo.join(" ")}</p>}{result.eligibility.missingDocuments?.length > 0 && <div className="mt-4"><p className="text-sm font-bold">{text.documents}</p><p className="mt-1 text-sm text-[var(--muted)]">{result.eligibility.missingDocuments.join(" · ")}</p></div>}<div className="mt-5 border-t border-[var(--line)] pt-4"><p className="text-sm font-bold">{text.steps}</p><ol className="mt-3 space-y-3">{result.service.procedure.map((step) => <li className="flex gap-3 text-sm leading-6" key={step.order}><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#e7f4eb] text-xs font-bold text-[var(--forest)]">{step.order}</span><span>{language === "en" ? step.description : step.descriptionUr}{step.url && <a className="ms-2 font-bold text-[var(--forest)] underline" href={step.url} target="_blank" rel="noreferrer">{text.source}</a>}</span></li>)}</ol></div><div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--line)] pt-4 text-xs text-[var(--muted)]"><Link className="font-bold text-[var(--forest)] underline" href={`/procedure/${result.service.id}`}>تفصیلی طریقہ</Link><a className="font-bold text-[var(--forest)] underline" href={result.citation.sourceUrl} target="_blank" rel="noreferrer">{text.source}: {result.citation.sourceTitle}</a><span>{text.reviewed}: {result.citation.lastVerified}</span></div></article>)}</div></section>}
-      <div className="pb-8 text-center"><Link href="/cases" className="text-sm font-bold text-[var(--forest)] underline">میرے کیسز دیکھیں</Link></div>
+      {/* ─── Profile / Eligibility Quick Filters ─────────────────── */}
+      <section className="border-t border-[var(--line-soft)] pt-2 pb-1">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
+          <span className="font-semibold text-[var(--ink-soft)]">⚙️ {t.province}:</span>
+          <select
+            value={province}
+            onChange={(e) => setProvince(e.target.value)}
+            className="rounded-lg border border-[var(--line)] bg-white px-2 py-1 text-xs font-medium text-[var(--ink)] outline-none focus:border-[var(--forest)]"
+          >
+            <option value="">{t.allProvinces}</option>
+            <option value="Punjab">Punjab (پنجاب)</option>
+            <option value="Sindh">Sindh (سندھ)</option>
+            <option value="Khyber Pakhtunkhwa">Khyber Pakhtunkhwa (خیبر پختونخوا)</option>
+            <option value="Balochistan">Balochistan (بلوچستان)</option>
+            <option value="Islamabad">Islamabad (اسلام آباد)</option>
+          </select>
+
+          <label className="flex items-center gap-1.5 cursor-pointer rounded-lg border border-[var(--line)] bg-white px-2 py-1 hover:bg-slate-50">
+            <input
+              type="checkbox"
+              checked={hasCnic}
+              onChange={(e) => setHasCnic(e.target.checked)}
+              className="rounded text-[var(--forest)] focus:ring-[var(--forest)]"
+            />
+            <span>{t.hasCnic}</span>
+          </label>
+
+          <label className="flex items-center gap-1.5 cursor-pointer rounded-lg border border-[var(--line)] bg-white px-2 py-1 hover:bg-slate-50">
+            <input
+              type="checkbox"
+              checked={isBisp}
+              onChange={(e) => setIsBisp(e.target.checked)}
+              className="rounded text-[var(--forest)] focus:ring-[var(--forest)]"
+            />
+            <span>{t.bispBeneficiary}</span>
+          </label>
+        </div>
+      </section>
+
+      {/* ─── Input & Actions Form ───────────────────────────────── */}
+      <footer className="pt-2">
+        <form onSubmit={handleFormSubmit} className="relative">
+          <div className="flex items-end gap-2 rounded-2xl border-2 border-[var(--line)] bg-white p-2 shadow-sm focus-within:border-[var(--forest)] focus-within:ring-4 focus-within:ring-emerald-100/60 transition">
+            <textarea
+              rows={2}
+              value={inputQuery}
+              onChange={(e) => setInputQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  submitQuery(inputQuery);
+                }
+              }}
+              placeholder={t.placeholder}
+              disabled={loading}
+              className="flex-1 resize-none bg-transparent p-2 text-sm leading-relaxed text-[var(--ink)] outline-none placeholder:text-[var(--muted-light)]"
+            />
+
+            {/* Utility action buttons inside bar */}
+            <div className="flex items-center gap-1.5 pb-1">
+              {/* Voice button */}
+              <VoiceRecorder
+                language={language}
+                onTranscript={(transcript) => {
+                  setInputQuery((prev) => (prev ? `${prev} ${transcript}` : transcript));
+                }}
+                disabled={loading}
+              />
+
+              {/* OCR document attachment */}
+              <label
+                title={language === "en" ? "Scan CNIC or Document" : "دستاویز یا شناختی کارڈ اسکین کریں"}
+                className="flex cursor-pointer items-center justify-center rounded-xl border border-[var(--line)] bg-white p-3 text-sm font-bold text-[var(--forest)] hover:border-[var(--forest)] hover:bg-[var(--forest-light)] transition"
+              >
+                <span>📄</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleOcrUpload(file);
+                  }}
+                  disabled={loading}
+                />
+              </label>
+
+              {/* Send Button */}
+              <button
+                type="submit"
+                disabled={loading || !inputQuery.trim()}
+                className="flex items-center justify-center rounded-xl bg-[var(--forest)] px-4 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[var(--forest-dark)] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {loading ? (
+                  <span className="animate-spin text-base">⏳</span>
+                ) : (
+                  <span>{t.send}</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <p className="mt-2 text-center text-[10px] text-[var(--muted)] font-medium">
+          🛡️ {language === "en"
+            ? "RAAHI is grounded in official government sources. Final eligibility is determined by the issuing authority."
+            : "راہی کی تمام معلومات سرکاری اور مستند ذرائع پر مبنی ہیں۔ حتمی اہلیت کا فیصلہ متعلقہ ادارہ کرتا ہے۔"}
+        </p>
+      </footer>
     </main>
   );
 }

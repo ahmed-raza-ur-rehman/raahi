@@ -129,6 +129,21 @@ export function initializeDatabase(database: Database.Database) {
       verified INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS conversations (
+      id TEXT PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      case_id TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS messages (
+      id TEXT PRIMARY KEY,
+      conversation_id TEXT NOT NULL,
+      role TEXT NOT NULL,
+      content TEXT NOT NULL,
+      tool_calls TEXT,
+      created_at TEXT NOT NULL
+    );
     CREATE INDEX IF NOT EXISTS services_domain_idx ON services(domain);
     CREATE INDEX IF NOT EXISTS services_organization_idx ON services(organization_id);
     CREATE INDEX IF NOT EXISTS services_active_idx ON services(active);
@@ -139,6 +154,8 @@ export function initializeDatabase(database: Database.Database) {
     CREATE INDEX IF NOT EXISTS cases_session_idx ON cases(session_id);
     CREATE INDEX IF NOT EXISTS case_actions_case_idx ON case_actions(case_id);
     CREATE INDEX IF NOT EXISTS documents_case_idx ON documents(case_id);
+    CREATE INDEX IF NOT EXISTS conversations_session_idx ON conversations(session_id);
+    CREATE INDEX IF NOT EXISTS messages_conversation_idx ON messages(conversation_id);
     CREATE VIRTUAL TABLE IF NOT EXISTS service_search USING fts5(
       service_id UNINDEXED,
       content,
