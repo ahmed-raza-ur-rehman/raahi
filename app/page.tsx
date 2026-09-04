@@ -100,12 +100,26 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <Link
+              href="/programs"
+              className="rounded-xl border border-[var(--line)] bg-white px-2.5 py-1.5 text-xs font-bold text-[var(--forest)] hover:bg-[var(--forest-light)] transition hidden sm:inline-block"
+            >
+              📋 {language === "en" ? "Catalog (85)" : "سروس کیٹلاگ"}
+            </Link>
+
             <Link
               href="/cases"
-              className="rounded-xl border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--forest)] hover:bg-[var(--forest-light)] transition"
+              className="rounded-xl border border-[var(--line)] bg-white px-2.5 py-1.5 text-xs font-bold text-[var(--forest)] hover:bg-[var(--forest-light)] transition"
             >
-              📋 {language === "en" ? "My Cases" : "میرے کیسز"}
+              📂 {language === "en" ? "Cases" : "کیسز"}
+            </Link>
+
+            <Link
+              href="/emergency"
+              className="rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-bold text-rose-800 hover:bg-rose-100 transition"
+            >
+              🚨 1122
             </Link>
 
             <div className="flex gap-0.5 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] p-0.5 text-xs">
@@ -152,7 +166,7 @@ export default function Home() {
               : "احساس راشن، بے نظیر کفالت، صحت کارڈ، مفت علاج، تعلیمی وظائف، شناختی دستاویزات اور قانونی امداد کے لیے اپنی ضرورت بتائیں۔ راہی آپ کو قدم بہ قدم مکمل طریقہ دکھائے گا۔"}
           </p>
 
-          {/* Primary CTA Button */}
+          {/* Primary CTA Buttons */}
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
               href="/chat"
@@ -166,10 +180,17 @@ export default function Home() {
             </Link>
 
             <Link
-              href="/cases"
+              href="/programs"
               className="rounded-2xl border-2 border-[var(--line)] bg-white px-5 py-3.5 text-sm font-bold text-[var(--ink-soft)] hover:border-[var(--forest)] hover:bg-[var(--forest-light)] transition"
             >
-              📂 {language === "en" ? "View Saved Cases" : "محفوظ شدہ کیسز دیکھیں"}
+              📋 {language === "en" ? "Browse All 85 Services" : "تمام 85 خدمات دیکھیں"}
+            </Link>
+
+            <Link
+              href="/portal"
+              className="rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] px-4 py-3.5 text-xs font-bold text-[var(--muted)] hover:text-[var(--ink)] hover:bg-white transition"
+            >
+              🏛️ {language === "en" ? "Partner Portal" : "تنظیمی پورٹل"}
             </Link>
           </div>
 
@@ -268,10 +289,15 @@ export default function Home() {
             {DOMAINS.map((d) => (
               <Link
                 key={d.id}
-                href={`/chat?need=${encodeURIComponent(d.nameUr)}`}
-                className="rounded-2xl border border-[var(--line)] bg-white p-3 text-start transition hover:border-[var(--forest)] hover:bg-[var(--forest-light)]"
+                href={`/programs?domain=${d.id}`}
+                className="rounded-2xl border border-[var(--line)] bg-white p-3.5 text-start transition hover:border-[var(--forest)] hover:bg-[var(--forest-light)] group"
               >
-                <span className="text-2xl">{d.icon}</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">{d.icon}</span>
+                  <span className="text-xs text-[var(--forest)] font-bold opacity-0 group-hover:opacity-100 transition">
+                    {language === "en" ? "Browse →" : "← فہرست"}
+                  </span>
+                </div>
                 <p className="mt-2 text-xs font-bold text-[var(--ink)]">
                   {language === "en" ? d.nameEn : d.nameUr}
                 </p>
@@ -285,16 +311,43 @@ export default function Home() {
       </div>
 
       {/* ─── Footer ─────────────────────────────────────────────── */}
-      <footer className="mt-8 border-t border-[var(--line)] pt-5 pb-3 text-center text-xs text-[var(--muted)] space-y-1">
+      <footer className="mt-10 border-t border-[var(--line)] pt-6 pb-4 text-center text-xs text-[var(--muted)] space-y-3">
+        {/* Navigation Links */}
+        <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-[var(--forest)]">
+          <Link href="/" className="hover:underline">
+            {language === "en" ? "Home" : "ہوم"}
+          </Link>
+          <span>·</span>
+          <Link href="/chat" className="hover:underline">
+            {language === "en" ? "AI Chat" : "اے آئی چیٹ"}
+          </Link>
+          <span>·</span>
+          <Link href="/programs" className="hover:underline">
+            {language === "en" ? "All Services (85)" : "تمام خدمات (85)"}
+          </Link>
+          <span>·</span>
+          <Link href="/cases" className="hover:underline">
+            {language === "en" ? "My Cases" : "میرے کیسز"}
+          </Link>
+          <span>·</span>
+          <Link href="/portal" className="hover:underline">
+            {language === "en" ? "Partner Portal" : "تنظیمی پورٹل"}
+          </Link>
+          <span>·</span>
+          <Link href="/emergency" className="text-rose-700 hover:underline">
+            🚨 {language === "en" ? "Emergency 1122" : "ہنگامی 1122"}
+          </Link>
+        </div>
+
         <p className="font-medium text-[var(--ink-soft)]">
           {language === "en"
-            ? "RAAHI — Citizen Navigation Assistant for Pakistan"
-            : "راہی — تصدیق شدہ سرکاری و سماجی رہنمائی"}
+            ? "RAAHI — Universal Citizen Navigation Assistant for Pakistan"
+            : "راہی — تصدیق شدہ سرکاری و عوامی رہنمائی کا خودمختار نظام"}
         </p>
-        <p className="text-[11px]">
+        <p className="text-[11px] text-[var(--muted)] max-w-xl mx-auto">
           {language === "en"
-            ? "Grounding all claims in official government sources. Final eligibility is determined by the respective institution."
-            : "تمام معلومات سرکاری قواعد پر مبنی ہیں۔ حتمی اہلیت کا فیصلہ متعلقہ ادارہ کرتا ہے۔"}
+            ? "Grounding all claims in verified government & NGO sources. Zero hallucinations on fees, procedures, or eligibility."
+            : "تمام رہنمائی سرکاری دستاویزات سے تصدیق شدہ ہے۔ فیس اور طریقہ کار میں کسی قسم کے فرضی دعوے سے پاک۔"}
         </p>
       </footer>
     </main>

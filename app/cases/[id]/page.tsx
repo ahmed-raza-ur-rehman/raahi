@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import type { CitizenCase } from "@/lib/types";
+import type { CitizenCase, CaseDocument } from "@/lib/types";
+import DocumentUploaderModal from "@/components/cases/DocumentUploaderModal";
 
 interface CaseDetailProps {
   params: Promise<{ id: string }>;
@@ -14,6 +15,8 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
   const [error, setError] = useState<string | null>(null);
   const [language, setLanguage] = useState<"en" | "ur">("ur");
   const [caseId, setCaseId] = useState<string>("");
+  const [isUploaderOpen, setIsUploaderOpen] = useState(false);
+  const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
 
   useEffect(() => {
     params.then(({ id }) => {
@@ -69,6 +72,35 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
     });
   };
 
+  const handleDocumentAdded = (newDoc: CaseDocument) => {
+    if (!caseItem) return;
+    setCaseItem({
+      ...caseItem,
+      documents: [...(caseItem.documents || []), newDoc],
+    });
+  };
+
+  const handleDeleteDocument = async (documentId: string) => {
+    if (!caseItem) return;
+    setDeletingDocId(documentId);
+
+    try {
+      const res = await fetch(`/api/cases/${caseItem.id}/documents?documentId=${documentId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setCaseItem({
+          ...caseItem,
+          documents: (caseItem.documents || []).filter((d) => d.id !== documentId),
+        });
+      }
+    } catch (e) {
+      console.error("Failed to delete document", e);
+    } finally {
+      setDeletingDocId(null);
+    }
+  };
+
   if (loading) {
     return (
       <main className="app-shell min-h-screen p-6" dir="rtl">
@@ -102,6 +134,7 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
   const completedCount = caseItem.actions.filter((a) => a.completed).length;
   const totalCount = caseItem.actions.length;
   const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const docsList = caseItem.documents || [];
 
   return (
     <main
@@ -115,7 +148,7 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
             href="/cases"
             className="flex items-center gap-1.5 text-xs font-bold text-[var(--forest)] hover:underline"
           >
-            ← {language === "en" ? "All Cases" : "میرے تمام کیسز"}
+            {language === "en" ? "← All Cases" : "→ میرے تمام کیسز"}
           </Link>
 
           <div className="flex items-center gap-2">
@@ -148,7 +181,7 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
               <button
                 type="button"
                 onClick={toggleStatus}
-                className={`rounded-full px-3 py-1 text-xs font-bold border transition ${
+                className={`rounded-full px-3 py-1 text-xs font-bold border transition cursor-pointer ${
                   caseItem.status === "resolved"
                     ? "bg-emerald-100 text-emerald-800 border-emerald-300"
                     : "bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100"
@@ -235,6 +268,107 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
           </div>
         </section>
 
+        {/* ─── Documents & OCR Verification Section (S4/S5) ──────────────── */}
+        <section className="mt-8 rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line-soft)] pb-3">
+            <div>
+              <h2 className="text-base font-black text-[var(--ink)] flex items-center gap-2">
+                <span>📄</span>
+                <span>
+                  {language === "en" ? "Case Documents & OCR" : "دستاویزات اور خودکار تصدیق"}
+                </span>
+              </h2>
+              <p className="mt-0.5 text-xs text-[var(--muted)]">
+                {language === "en"
+                  ? "Attach CNIC, B-Form, or certificates for eligibility verification"
+                  : "اہلیت اور کارروائی کے لیے شناختی کارڈ یا آمدن کے ثبوت اپلوڈ کریں"}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsUploaderOpen(true)}
+              className="flex items-center gap-1.5 rounded-xl bg-[var(--forest)] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--forest-dark)] transition cursor-pointer shadow-xs"
+            >
+              <span>📷</span>
+              <span>{language === "en" ? "+ Upload Document" : "+ نیا کاغذ اپلوڈ کریں"}</span>
+            </button>
+          </div>
+
+          {/* Uploaded Documents List */}
+          <div className="mt-4">
+            {docsList.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-[var(--line)] bg-[var(--surface-2)] p-6 text-center">
+                <span className="text-3xl">🗂️</span>
+                <p className="mt-2 text-xs font-bold text-[var(--ink)]">
+                  {language === "en" ? "No documents uploaded yet" : "ابھی تک کوئی دستاویز منسلک نہیں کی گئی"}
+                </p>
+                <p className="mt-1 text-[11px] text-[var(--muted)]">
+                  {language === "en"
+                    ? "Click 'Upload Document' to scan your CNIC, B-Form, or certificates."
+                    : "شناختی کارڈ یا اسکول سرٹیفکیٹ کی تصویر لے کر شامل کریں۔"}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsUploaderOpen(true)}
+                  className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[var(--forest)] hover:underline cursor-pointer"
+                >
+                  <span>📷</span>
+                  <span>{language === "en" ? "Upload Now" : "ابھی اپلوڈ کریں"}</span>
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {docsList.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex flex-col justify-between rounded-xl border border-[var(--line)] bg-[var(--surface-2)] p-3.5 transition hover:border-[var(--forest)]"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="rounded-md bg-[var(--forest-light)] px-2 py-0.5 text-[10px] font-bold text-[var(--forest)] uppercase">
+                          {doc.documentType}
+                        </span>
+                        <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-700">
+                          <span>✓</span>
+                          <span>{language === "en" ? "Verified" : "تصدیق شدہ"}</span>
+                        </span>
+                      </div>
+                      <p className="mt-2 text-xs font-bold text-[var(--ink)]">{doc.label}</p>
+
+                      {/* OCR Extracted Data Preview */}
+                      {doc.ocrData && (
+                        <div className="mt-2 space-y-1 rounded-lg bg-white p-2 text-[11px] border border-[var(--line-soft)]">
+                          {Object.entries(doc.ocrData).slice(0, 3).map(([k, v]) => (
+                            <div key={k} className="flex justify-between">
+                              <span className="text-[var(--muted)]">{k}:</span>
+                              <span className="font-mono font-bold text-[var(--ink)]">{v}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between border-t border-[var(--line-soft)] pt-2 text-[10px] text-[var(--muted)]">
+                      <span>{new Date(doc.createdAt).toLocaleDateString("en-PK")}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteDocument(doc.id)}
+                        disabled={deletingDocId === doc.id}
+                        className="text-rose-600 hover:underline cursor-pointer"
+                      >
+                        {deletingDocId === doc.id
+                          ? language === "en" ? "Removing..." : "حذف ہو رہا ہے..."
+                          : language === "en" ? "Delete" : "حذف کریں"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* Associated Services & Procedures */}
         {caseItem.serviceIds && caseItem.serviceIds.length > 0 && (
           <section className="mt-8 rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm">
@@ -253,7 +387,7 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                 >
                   <span>📋 {language === "en" ? "Procedure Guide" : "رہنمائی گائیڈ"}:</span>
                   <span className="font-mono">{sId}</span>
-                  <span>→</span>
+                  <span>{language === "en" ? "→" : "←"}</span>
                 </Link>
               ))}
             </div>
@@ -277,6 +411,15 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
           {language === "en" ? "← Back to list" : "← فہرست پر واپس جائیں"}
         </Link>
       </footer>
+
+      {/* OCR Document Uploader Modal */}
+      <DocumentUploaderModal
+        caseId={caseId}
+        isOpen={isUploaderOpen}
+        onClose={() => setIsUploaderOpen(false)}
+        onDocumentAdded={handleDocumentAdded}
+        language={language}
+      />
     </main>
   );
 }

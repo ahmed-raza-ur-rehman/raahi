@@ -126,3 +126,108 @@ export function findServiceById(id: string): ServiceRecord | undefined {
 
   return row ? hydrateService(row) : undefined;
 }
+
+export function listOrganizations() {
+  const rows = getSqlite()
+    .prepare("SELECT id, name, name_ur, type, source_url, authority_tier FROM organizations ORDER BY name")
+    .all() as { id: string; name: string; name_ur: string; type: string; source_url: string; authority_tier: number }[];
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    nameUr: r.name_ur,
+    type: r.type as "government" | "ngo" | "hospital",
+    sourceUrl: r.source_url,
+    authorityTier: r.authority_tier,
+  }));
+}
+
+export function createOrganization(org: {
+  id: string;
+  name: string;
+  nameUr: string;
+  type: "government" | "ngo" | "hospital";
+  sourceUrl: string;
+  authorityTier: number;
+}) {
+  const db = getSqlite();
+  const now = new Date().toISOString();
+  db.prepare(`
+    INSERT OR REPLACE INTO organizations (id, name, name_ur, type, source_url, authority_tier, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(org.id, org.name, org.nameUr, org.type, org.sourceUrl, org.authorityTier, now, now);
+  return org;
+}
+
+export function createService(service: ServiceRecord) {
+  const db = getSqlite();
+  const now = new Date().toISOString();
+  db.transaction(() => {
+    db.prepare(`
+      INSERT OR REPLACE INTO services (id, organization_id, domain, name, name_ur, name_ps, description, description_ur, aliases, coverage, application_method, source_url, source_title, source_authority_tier, last_verified, active, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      service.id,
+      service.organizationId,
+      service.domain,
+      service.name,
+      service.nameUr,
+      service.namePs || service.nameUr,
+      service.description,
+      service.descriptionUr,
+      JSON.stringify(service.aliases || []),
+      JSON.stringify(service.coverage || ["Pakistan"]),
+      service.applicationMethod,
+      service.sourceUrl,
+      service.sourceTitle,
+      service.sourceAuthorityTier,
+      service.lastVerified,
+      service.active ? 1 : 0,
+      now,
+      now
+    );
+
+    try {
+      db.prepare(`
+        INSERT OR REPLACE INTO knowledge_chunks (id, service_id, content, language, created_at, updated_at)
+        VALUES (?, ?, ?, 'en', ?, ?)
+      `).run(`chunk-${service.id}`, service.id, `${service.name} ${service.nameUr} ${service.description} ${service.descriptionUr}`, now, now);
+    } catch {
+      // Ignore
+    }
+
+    if (service.eligibilityRules?.length) {
+      const insertRule = db.prepare(`
+        INSERT OR REPLACE INTO eligibility_rules (id, service_id, field, operator, value, description, mandatory)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `);
+      for (let i = 0; i < service.eligibilityRules.length; i++) {
+        const r = service.eligibilityRules[i];
+        insertRule.run(`rule-${service.id}-${i}`, service.id, r.field, r.operator, JSON.stringify(r.value), r.description, r.mandatory ? 1 : 0);
+      }
+    }
+
+    if (service.requiredDocuments?.length) {
+      const insertReq = db.prepare(`
+        INSERT OR REPLACE INTO requirements (id, service_id, type, label, label_ur, mandatory)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `);
+      for (let i = 0; i < service.requiredDocuments.length; i++) {
+        const req = service.requiredDocuments[i];
+        insertReq.run(`req-${service.id}-${i}`, service.id, req.type, req.label, req.labelUr, req.mandatory ? 1 : 0);
+      }
+    }
+
+    if (service.procedure?.length) {
+      const insertStep = db.prepare(`
+        INSERT OR REPLACE INTO procedure_steps (id, service_id, step_order, title, title_ur, description, description_ur, channel, url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      for (const step of service.procedure) {
+        insertStep.run(`step-${service.id}-${step.order}`, service.id, step.order, step.title, step.titleUr, step.description, step.descriptionUr, step.channel, step.url || null);
+      }
+    }
+  })();
+
+  return findServiceById(service.id)!;
+}
+

@@ -1,14 +1,45 @@
 import { randomUUID } from "node:crypto";
 
-import type { CaseAction, CitizenCase } from "@/lib/types";
+import type { CaseAction, CaseDocument, CitizenCase } from "@/lib/types";
 import { getSqlite } from "../client";
 
 type CaseRow = { id: string; session_id: string; title: string; title_ur: string; domain: CitizenCase["domain"]; summary: string; status: CitizenCase["status"]; service_ids: string; created_at: string; updated_at: string };
 type ActionRow = { id: string; label: string; label_ur: string; completed: number; service_id: string | null };
+type DocumentRow = { id: string; case_id: string; document_type: string; label: string; ocr_data: string | null; verified: number; created_at: string };
 
 function hydrate(row: CaseRow): CitizenCase {
-  const actions = getSqlite().prepare("SELECT id, label, label_ur, completed, service_id FROM case_actions WHERE case_id = ? ORDER BY rowid").all(row.id) as ActionRow[];
-  return { id: row.id, sessionId: row.session_id, title: row.title, titleUr: row.title_ur, domain: row.domain, summary: row.summary, status: row.status, serviceIds: JSON.parse(row.service_ids) as string[], actions: actions.map((action): CaseAction => ({ id: action.id, label: action.label, labelUr: action.label_ur, completed: Boolean(action.completed), ...(action.service_id ? { serviceId: action.service_id } : {}) })), createdAt: row.created_at, updatedAt: row.updated_at };
+  const db = getSqlite();
+  const actions = db.prepare("SELECT id, label, label_ur, completed, service_id FROM case_actions WHERE case_id = ? ORDER BY rowid").all(row.id) as ActionRow[];
+  const docs = db.prepare("SELECT id, case_id, document_type, label, ocr_data, verified, created_at FROM documents WHERE case_id = ? ORDER BY created_at ASC").all(row.id) as DocumentRow[];
+  
+  return {
+    id: row.id,
+    sessionId: row.session_id,
+    title: row.title,
+    titleUr: row.title_ur,
+    domain: row.domain,
+    summary: row.summary,
+    status: row.status,
+    serviceIds: JSON.parse(row.service_ids) as string[],
+    actions: actions.map((action): CaseAction => ({
+      id: action.id,
+      label: action.label,
+      labelUr: action.label_ur,
+      completed: Boolean(action.completed),
+      ...(action.service_id ? { serviceId: action.service_id } : {}),
+    })),
+    documents: docs.map((doc): CaseDocument => ({
+      id: doc.id,
+      caseId: doc.case_id,
+      documentType: doc.document_type,
+      label: doc.label,
+      ocrData: doc.ocr_data ? JSON.parse(doc.ocr_data) : undefined,
+      verified: Boolean(doc.verified),
+      createdAt: doc.created_at,
+    })),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
 export function listCases(sessionId?: string) {
@@ -40,8 +71,6 @@ export function findCase(id: string, sessionId?: string) {
   return row ? hydrate(row) : undefined;
 }
 
-
-
 export function createCase(input: { sessionId: string; title: string; titleUr: string; domain: CitizenCase["domain"]; summary: string; serviceIds: string[]; actions: { label: string; labelUr: string; serviceId?: string }[] }) {
   const database = getSqlite();
   const id = randomUUID();
@@ -67,9 +96,18 @@ export function updateCase(id: string, sessionId: string, input: { status?: Citi
   return findCase(id, sessionId);
 }
 
-export function addDocument(input: { caseId: string; sessionId: string; documentType: string; label: string; ocrData?: Record<string, string> }) {
-  if (!findCase(input.caseId, input.sessionId)) return undefined;
+export function addDocument(input: { caseId: string; sessionId?: string; documentType: string; label: string; ocrData?: Record<string, string>; verified?: boolean }) {
+  const existing = findCase(input.caseId, input.sessionId);
+  if (!existing) return undefined;
   const id = randomUUID();
-  getSqlite().prepare("INSERT INTO documents (id, case_id, document_type, label, ocr_data, verified, created_at) VALUES (?, ?, ?, ?, ?, 0, ?)").run(id, input.caseId, input.documentType, input.label, input.ocrData ? JSON.stringify(input.ocrData) : null, new Date().toISOString());
-  return { id, caseId: input.caseId, documentType: input.documentType, label: input.label, verified: false };
+  const createdAt = new Date().toISOString();
+  const verified = input.verified ?? true;
+  getSqlite()
+    .prepare("INSERT INTO documents (id, case_id, document_type, label, ocr_data, verified, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    .run(id, input.caseId, input.documentType, input.label, input.ocrData ? JSON.stringify(input.ocrData) : null, verified ? 1 : 0, createdAt);
+  return { id, caseId: input.caseId, documentType: input.documentType, label: input.label, ocrData: input.ocrData, verified, createdAt };
 }
+
+export function deleteDocument(id: string, caseId: string) {
+  return getSqlite().prepare("DELETE FROM documents WHERE id = ? AND case_id = ?").run(id, caseId);
+}

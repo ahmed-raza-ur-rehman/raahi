@@ -83,6 +83,48 @@ export function MessageBubble({
   addedServiceIds = [],
 }: MessageBubbleProps) {
   const isUser = role === "user";
+  const [isSpeaking, setIsSpeaking] = React.useState(false);
+
+  const toggleSpeech = () => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const cleanText = content
+      .replace(/[*_#`[\]()]/g, "")
+      .replace(/https?:\/\/\S+/g, "")
+      .trim();
+
+    if (!cleanText) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    const voices = window.speechSynthesis.getVoices();
+    const urduVoice = voices.find(
+      (v) =>
+        v.lang.startsWith("ur") ||
+        v.lang.startsWith("hi") ||
+        v.name.toLowerCase().includes("urdu")
+    );
+
+    if (urduVoice) {
+      utterance.voice = urduVoice;
+      utterance.lang = urduVoice.lang;
+    } else {
+      utterance.lang = language === "en" ? "en-US" : "ur-PK";
+    }
+
+    utterance.rate = 0.95;
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const toolLabels: Record<string, { en: string; ur: string }> = {
     search_knowledge: {
@@ -175,6 +217,36 @@ export function MessageBubble({
                 compact
               />
             ))}
+          </div>
+        )}
+
+        {/* Audio Listen Button for Accessibility (Phase 9 Voice TTS) */}
+        {!isUser && !streaming && content && (
+          <div className="mt-3 flex items-center justify-between border-t border-[var(--line-soft)] pt-2 text-xs">
+            <button
+              type="button"
+              onClick={toggleSpeech}
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${
+                isSpeaking
+                  ? "border-emerald-400 bg-emerald-100 text-emerald-900 animate-pulse"
+                  : "border-[var(--line)] bg-white text-[var(--forest)] hover:bg-[var(--forest-light)]"
+              }`}
+            >
+              <span>{isSpeaking ? "⏹️" : "🔊"}</span>
+              <span>
+                {isSpeaking
+                  ? language === "en"
+                    ? "Stop Audio"
+                    : "آواز روکیں"
+                  : language === "en"
+                  ? "Listen"
+                  : "آواز سنیں"}
+              </span>
+            </button>
+
+            <span className="text-[10px] text-[var(--muted)] font-mono">
+              RAAHI Verified
+            </span>
           </div>
         )}
       </div>

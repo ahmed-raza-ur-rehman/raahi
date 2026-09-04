@@ -120,6 +120,16 @@ export interface CaseAction {
   serviceId?: string;
 }
 
+export interface CaseDocument {
+  id: string;
+  caseId: string;
+  documentType: string;
+  label: string;
+  ocrData?: Record<string, string>;
+  verified: boolean;
+  createdAt: string;
+}
+
 export interface CitizenCase {
   id: string;
   sessionId: string;
@@ -130,6 +140,8 @@ export interface CitizenCase {
   status: "active" | "resolved" | "escalated";
   serviceIds: string[];
   actions: CaseAction[];
+  documents?: CaseDocument[];
   createdAt: string;
   updatedAt: string;
 }
+
