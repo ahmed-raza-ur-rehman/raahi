@@ -237,6 +237,86 @@ npm run seed   # now also seeds the unified knowledge index
 
 ---
 
+## ⚙️ Configuration
+
+Every environment variable is **optional**. RAAHI runs completely with none of
+them set — the agents, search, OCR, translation, voice and web research all
+degrade to offline behaviour, and each key simply upgrades one capability.
+
+```bash
+cp .env.example .env.local   # then fill in only what you have
+```
+
+| Variable | What it unlocks |
+| --- | --- |
+| `DASHSCOPE_API_KEY` | Polished agent answers (qwen-plus), real OCR (qwen-vl-max), STT and TTS |
+| `BRAVE_SEARCH_API_KEY` / `SERPER_API_KEY` / `GOOGLE_CSE_API_KEY` + `GOOGLE_CSE_CX` | Live web search, used in that order |
+| `RAAHI_LIVE_SEARCH_BUDGET` | Live searches per minute (default `12`) — protects the quota |
+| `RAAHI_DB_PATH` | Where the SQLite file lives (default `data/raahi.db`) |
+| `NEXT_PUBLIC_SITE_URL` | Canonical, sitemap and social-preview origin |
+
+Without any search key, web research answers from the curated official-source
+index instead of live results. It never fails and never blocks — it just has
+less fresh data.
+
+## 📱 Installable and offline
+
+RAAHI is a **PWA**: visitors can add it to the home screen and open it like an
+app, which matters when data is expensive or intermittent.
+
+- `manifest.webmanifest` — Urdu name, RTL, standalone display, shortcuts to
+  Emergency, Ask and My applications.
+- A service worker caches the app shell and pages already visited, so they open
+  with no connection. `/api` is deliberately **never** cached: a stale deadline
+  or blood bank is worse than no answer. It is registered in production only,
+  so it cannot interfere with hot reloading in development.
+- `/offline` renders when nothing is cached, and leads with **1122**.
+- Icons are generated from `public/icons/raahi.svg`, which carries **no
+  lettering** on purpose — no font is guaranteed on these devices, and a route
+  motif reads the same in every language RAAHI serves.
+
+## 🔎 Findable
+
+`sitemap.xml` and `robots.ts` are generated. Public guidance is indexable;
+`/api`, `/track`, `/cases`, `/chat` and `/portal` are disallowed. Every major
+page sets its own title, description and canonical URL in a small
+server-component layout beside the page (the pages themselves are client
+components, which cannot export metadata).
+
+## ✅ Quality gates
+
+```bash
+npm run typecheck   # TypeScript, no emit
+npm run test        # 77 tests
+npm run lint        # 0 errors, 0 warnings
+npm run verify      # typecheck + test + build
+```
+
+The tests are not decoration. They enforce the promises the product makes:
+
+- every knowledge entry cites an absolute source URL **and** a verification date;
+- no record is silently dropped from the knowledge index;
+- applications are private to the session that created them;
+- a donor's phone number is masked for everyone except the donor;
+- the scraper refuses to hammer a host, and says how long to wait;
+- localized values never render blank — including Hindko, which has no
+  translations yet and correctly falls back to Urdu;
+- emergencies are detected across English, Urdu, Pashto **and Roman Urdu**,
+  while "how to prepare for a flood" is correctly *not* an emergency.
+
+## ♿ Accessibility & safety
+
+- Re-enabled pinch-to-zoom (`maximum-scale=1` was blocking it), which low-vision
+  and elderly users depend on.
+- `:focus-visible` outlines globally, so keyboard users always see where they are.
+- `prefers-reduced-motion` is honoured: animation makes some people ill, and
+  every frame is battery a visitor may not have to spare.
+- Form fields are wrapped in `<label>` so screen readers announce them.
+- Errors render in a bilingual boundary that offers a retry and confirms saved
+  applications are safe. Nothing shows a blank screen.
+
+---
+
 ## 📜 Intellectual Property & Protective License
 
 **Copyright &copy; 2026 Ahmed Raza Ur Rehman. All Rights Reserved.**
