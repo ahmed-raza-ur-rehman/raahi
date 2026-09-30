@@ -13,6 +13,50 @@ about to recommend to a citizen.
 
 ---
 
+## [1.0.1] — 2026-09-30
+
+Two changes, both about what a visitor actually experiences: how much data
+their phone has to download, and what a browser will let run on the page.
+
+### Fixed
+
+- **The model SDK was being shipped to the browser.** The voice button
+  imported four language tags and the photo screen imported six sentences of
+  checklist, both from modules that import the OpenAI SDK — so 67 KB gzipped of
+  SDK reached every visitor. Both constants now live in leaf modules with no
+  server imports.
+- **The knowledge corpus was pinned into client bundles.** Five data modules
+  built a lookup `Map` at module scope, which stops a bundler from dropping the
+  array it reads. None of the maps was ever used by anything. They are gone,
+  and the constants the screens need moved into leaves.
+  - First-load JS, gzipped: home page **269 KB → 195 KB**, blood 197 → 196 KB,
+    disaster 199 → 194 KB. Every page now sits at the framework baseline and no
+    client chunk contains the SDK.
+
+### Changed
+
+- **The Content-Security-Policy now uses a per-request nonce instead of
+  `'unsafe-inline'`.** Injected inline scripts no longer have anything to
+  match, while Next stamps the nonce onto every script it emits. Pages render
+  per request to allow this; measured cost is 15–18 ms TTFB and no change in
+  bundle size.
+
+### Added
+
+- `tests/bundle.test.ts` — four guards so neither mistake can come back: no
+  client component may import an SDK-bearing module, the browser-safe leaves
+  must stay dependency-free, no data module may build a `Map` at module scope,
+  and no client component may import the knowledge corpus.
+- Four CSP tests in `tests/security-and-errors.test.ts`.
+
+### Verification
+
+133 tests, `tsc --noEmit` clean, `eslint` 0 errors / 0 warnings, production
+build green. All 22 routes checked in both production and development: every
+script carries the nonce.
+
+---
+
 ## [1.0.0] — 2026-09-30
 
 First release. Everything from here on is a change against this baseline.

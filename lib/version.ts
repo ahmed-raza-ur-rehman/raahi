@@ -8,7 +8,7 @@
  * `tests/release.test.ts` keeps this in step with `package.json`, so bumping
  * one without the other fails the build rather than shipping a lie.
  */
-export const APP_VERSION = "1.0.0";
+export const APP_VERSION = "1.0.1";
 
 /** Human-readable name for the release, shown in the footer. */
 export const APP_NAME = "RAAHI";
