@@ -8,6 +8,8 @@ import { useLanguage } from "@/components/shell/LanguageProvider";
 import { SpeakButton, VoiceButton } from "@/components/shell/VoiceButton";
 import { Badge, Button, CallButton, Card, Empty, Loader, SourceChip, StepList, inputClass } from "@/components/shell/Ui";
 import { apiPost } from "@/lib/client/useApi";
+import { nextId } from "@/lib/client/useStoredJson";
+import { apiErrorText } from "@/lib/i18n/api-errors";
 import type { AgentResponse, ApplicationRecord, Localized } from "@/lib/types";
 
 interface Message {
@@ -42,7 +44,7 @@ function AskPageInner() {
     if (!result.ok) {
       setMessages((previous) => [
         ...previous,
-        { id: `e-${Date.now()}`, role: "raahi", text: result.error },
+        { id: nextId("err"), role: "raahi", text: apiErrorText(result.error, language) },
       ]);
       return;
     }

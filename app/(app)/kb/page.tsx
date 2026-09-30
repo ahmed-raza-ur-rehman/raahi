@@ -7,6 +7,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useLanguage } from "@/components/shell/LanguageProvider";
 import { Badge, Button, Card, Empty, Field, FilterPills, Loader, Section, inputClass } from "@/components/shell/Ui";
 import { apiPost } from "@/lib/client/useApi";
+import { apiErrorText } from "@/lib/i18n/api-errors";
 import type { KnowledgeHit, WebSearchResult } from "@/lib/types";
 
 type Tab = "knowledge" | "web" | "correct";
@@ -219,7 +220,7 @@ function CorrectionForm({ defaultEntityId, defaultType }: { defaultEntityId: str
                 ? `Thank you — your correction is in the review queue (${result.data.correction.id}).`
                 : `شکریہ — آپ کی درستی جائزے کی فہرست میں ہے (${result.data.correction.id})۔`,
           }
-        : { tone: "error", message: result.error },
+        : { tone: "error", message: apiErrorText(result.error, language) },
     );
   };
 
