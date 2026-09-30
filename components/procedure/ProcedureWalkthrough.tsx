@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { CitationChip } from "@/components/chat/CitationChip";
+import { useStoredJson } from "@/lib/client/useStoredJson";
+
+const EMPTY_STEPS: number[] = [];
 
 export interface ProcedureStepItem {
   order: number;
@@ -52,35 +55,24 @@ export function ProcedureWalkthrough({
   requiredDocuments = [],
   language = "ur",
 }: ProcedureWalkthroughProps) {
-  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const storageKey = `raahi_proc_${serviceId}`;
+  const [storedSteps, setStoredSteps] = useStoredJson<number[]>(storageKey, EMPTY_STEPS);
+  // Guard against corrupted or hand-edited storage.
+  const completedSteps = Array.isArray(storedSteps) ? storedSteps : EMPTY_STEPS;
   const [activeStep, setActiveStep] = useState<number>(1);
 
-  const storageKey = `raahi_proc_${serviceId}`;
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        setCompletedSteps(JSON.parse(saved));
-      }
-    } catch {
-      // ignore
-    }
-  }, [storageKey]);
-
   const toggleStep = (stepNumber: number) => {
-    let next: number[];
-    if (completedSteps.includes(stepNumber)) {
-      next = completedSteps.filter((s) => s !== stepNumber);
-    } else {
-      next = [...completedSteps, stepNumber];
-    }
-    setCompletedSteps(next);
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(next));
-    } catch {
-      // ignore
-    }
+    const next = completedSteps.includes(stepNumber)
+      ? completedSteps.filter((s) => s !== stepNumber)
+      : [...completedSteps, stepNumber];
+    setStoredSteps(next);
+
+    // Move the highlight to the next step still outstanding, so the visitor
+    // always knows where to go next.
+    const remaining = steps
+      .map((step) => step.order)
+      .filter((order) => !next.includes(order));
+    if (remaining.length > 0) setActiveStep(remaining[0]);
   };
 
   const progressPercent =

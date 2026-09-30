@@ -236,6 +236,9 @@ export default function DocumentUploaderModal({
 
             {imagePreview ? (
               <div className="space-y-3">
+                {/* Local object-URL preview of the file the visitor just picked:
+                    next/image optimisation has nothing to add, so <img> is right. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imagePreview}
                   alt="Document Preview"

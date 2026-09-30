@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       request: created,
-      routedTo: routeRelief(created.hazard, created.district),
+      routedTo: routeRelief(created.hazard),
       guides: listDisasterGuides(created.hazard),
       emergency: [
         { label: "Rescue 1122", number: "1122" },

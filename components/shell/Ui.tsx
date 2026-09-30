@@ -162,7 +162,7 @@ export function Button({
 }
 
 export function SourceChip({ source }: { source: SourceRef | Citation }) {
-  const { L, t } = useLanguage();
+  const { t } = useLanguage();
   const url = "url" in source ? source.url : source.sourceUrl;
   const title = "title" in source ? source.title : source.sourceTitle;
   const tier = "tier" in source ? source.tier : source.authorityTier;

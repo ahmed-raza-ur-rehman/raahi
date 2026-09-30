@@ -2,14 +2,42 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { ProcedureWalkthrough } from "@/components/procedure/ProcedureWalkthrough";
+import {
+  ProcedureWalkthrough,
+  type ProcedureStepItem,
+} from "@/components/procedure/ProcedureWalkthrough";
+
+/** Shape returned by GET /api/procedures/[id]. */
+interface ProcedurePayload {
+  serviceId: string;
+  name: string;
+  nameUr: string;
+  namePs?: string;
+  domain: string;
+  organizationId: string;
+  description: string;
+  descriptionUr: string;
+  steps: ProcedureStepItem[];
+  requiredDocuments: {
+    type: string;
+    label: string;
+    labelUr?: string;
+    mandatory: boolean;
+  }[];
+  source: {
+    url: string;
+    title: string;
+    authorityTier?: number;
+    lastVerified?: string;
+  };
+}
 
 interface ProcedurePageProps {
   params: Promise<{ id: string }>;
 }
 
 export default function ProcedurePage({ params }: ProcedurePageProps) {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ProcedurePayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [language, setLanguage] = useState<"en" | "ur" | "ps">("ur");
@@ -21,7 +49,7 @@ export default function ProcedurePage({ params }: ProcedurePageProps) {
           if (!res.ok) throw new Error("Procedure not found");
           return res.json();
         })
-        .then((result) => {
+        .then((result: ProcedurePayload) => {
           setData(result);
           setLoading(false);
         })

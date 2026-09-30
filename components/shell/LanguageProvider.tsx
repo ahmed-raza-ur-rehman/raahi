@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore } from "react";
 
-import { pick, t as translate } from "@/lib/i18n";
+import { pick, t as translate, isRtl } from "@/lib/i18n";
 import type { Language, Localized } from "@/lib/types";
 
 interface LanguageContextValue {
@@ -18,30 +18,66 @@ interface LanguageContextValue {
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
 const STORAGE_KEY = "raahi.language";
+const LANGUAGES: readonly Language[] = ["ur", "ps", "hkp", "en"];
+const DEFAULT_LANGUAGE: Language = "ur";
+
+function isLanguage(value: string | null): value is Language {
+  return value !== null && (LANGUAGES as readonly string[]).includes(value);
+}
+
+/**
+ * `localStorage` is an external store, so `useSyncExternalStore` is the
+ * supported way to read it: the server renders the default language and the
+ * client adopts the saved one during hydration, with no mismatch and no
+ * setState-in-effect.
+ */
+function subscribe(onStoreChange: () => void) {
+  if (typeof window === "undefined") return () => undefined;
+  window.addEventListener("storage", onStoreChange);
+  // Fires when another tab changes the language.
+  return () => window.removeEventListener("storage", onStoreChange);
+}
+
+function getSnapshot(): Language {
+  if (typeof window === "undefined") return DEFAULT_LANGUAGE;
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    return isLanguage(stored) ? stored : DEFAULT_LANGUAGE;
+  } catch {
+    // Private browsing / storage disabled.
+    return DEFAULT_LANGUAGE;
+  }
+}
+
+function getServerSnapshot(): Language {
+  return DEFAULT_LANGUAGE;
+}
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("ur");
+  const language = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
+  // Keep <html lang|dir> in step with the active language. Writing to the DOM
+  // (an external system) is exactly what effects are for.
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    if (stored === "ur" || stored === "ps" || stored === "hkp" || stored === "en") {
-      setLanguageState(stored);
-    }
-  }, []);
+    document.documentElement.lang = language;
+    document.documentElement.dir = isRtl(language) ? "rtl" : "ltr";
+  }, [language]);
 
   const setLanguage = useCallback((next: Language) => {
-    setLanguageState(next);
-    if (typeof window !== "undefined") {
+    try {
       window.localStorage.setItem(STORAGE_KEY, next);
-      document.documentElement.lang = next;
+    } catch {
+      // Storage unavailable — the in-memory store still switches for this tab.
     }
+    // Tell other tabs, and this one, that the store changed.
+    window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY, newValue: next }));
   }, []);
 
   const value = useMemo<LanguageContextValue>(
     () => ({
       language,
       setLanguage,
-      dir: language === "en" ? "ltr" : "rtl",
+      dir: isRtl(language) ? "rtl" : "ltr",
       t: (key: string) => translate(key, language),
       L: (localized: Localized | string | undefined) => pick(localized, language),
     }),
@@ -56,11 +92,11 @@ export function useLanguage(): LanguageContextValue {
   if (!context) {
     // Fallback keeps any component usable outside the provider.
     return {
-      language: "ur",
+      language: DEFAULT_LANGUAGE,
       setLanguage: () => undefined,
       dir: "rtl",
-      t: (key: string) => translate(key, "ur"),
-      L: (localized) => pick(localized, "ur"),
+      t: (key: string) => translate(key, DEFAULT_LANGUAGE),
+      L: (localized) => pick(localized, DEFAULT_LANGUAGE),
     };
   }
   return context;

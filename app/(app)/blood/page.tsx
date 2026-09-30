@@ -181,7 +181,7 @@ function NeedBloodForm({
   setCity: (value: string) => void;
   state: ReturnType<typeof useApi<BloodPayload>>;
 }) {
-  const { t, L, language } = useLanguage();
+  const { language } = useLanguage();
   const [form, setForm] = useState({ patientName: "", units: 1, hospital: "", neededBy: "", contactNumber: "", notes: "" });
   const [result, setResult] = useState<{ donors: number } | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);

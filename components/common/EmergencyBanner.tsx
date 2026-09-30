@@ -65,6 +65,20 @@ export function EmergencyBanner({
   province,
   onDismiss,
 }: EmergencyBannerProps) {
+  // Show the numbers that actually cover this visitor first — in an emergency
+  // nobody reads to the bottom of a list.
+  const contacts = React.useMemo(() => {
+    if (!province) return EMERGENCY_CONTACTS;
+    const needle = province.trim().toLowerCase();
+    const rank = (contact: EmergencyContact) => {
+      const coverage = contact.coverage.toLowerCase();
+      if (coverage.includes(needle)) return 0;
+      if (coverage.includes("nationwide")) return 1;
+      return 2;
+    };
+    return [...EMERGENCY_CONTACTS].sort((a, b) => rank(a) - rank(b));
+  }, [province]);
+
   return (
     <div className="emergency-banner rounded-2xl border-2 border-red-500 bg-gradient-to-br from-red-600 via-rose-700 to-red-800 p-5 text-white shadow-xl animate-fade-in my-4">
       <div className="flex items-start justify-between gap-4">
@@ -107,7 +121,7 @@ export function EmergencyBanner({
 
       {/* Touch-to-call buttons */}
       <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-        {EMERGENCY_CONTACTS.map((contact, idx) => (
+        {contacts.map((contact, idx) => (
           <a
             key={idx}
             href={`tel:${contact.number.replace(/[^0-9]/g, "")}`}

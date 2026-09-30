@@ -12,16 +12,25 @@ import type { KnowledgeHit, WebSearchResult } from "@/lib/types";
 type Tab = "knowledge" | "web" | "correct";
 
 function KnowledgeBasePageInner() {
-  const { t, L, language } = useLanguage();
+  const { t, language } = useLanguage();
   const params = useSearchParams();
-  const [tab, setTab] = useState<Tab>("knowledge");
+  // The tab can be deep-linked (?tab=correct&correct=<id>), so it is derived
+  // from the URL until the visitor picks one themselves.
+  const requestedTab = params.get("tab");
+  const [tabOverride, setTabOverride] = useState<Tab | null>(null);
+  const tab: Tab =
+    tabOverride ??
+    (requestedTab === "web" || requestedTab === "correct" || requestedTab === "knowledge"
+      ? requestedTab
+      : "knowledge");
   const [query, setQuery] = useState(params.get("q") ?? "");
   const [hits, setHits] = useState<KnowledgeHit[]>([]);
   const [web, setWeb] = useState<WebSearchResult[]>([]);
   const [operators, setOperators] = useState<{ notification: string; dates: string } | undefined>(undefined);
   const [note, setNote] = useState<string | undefined>(undefined);
-  const [busy, setBusy] = useState(false);
-  const [correctFor, setCorrectFor] = useState(params.get("correct") ?? "");
+  // Start busy only when a deep-linked ?q= search is about to run.
+  const [busy, setBusy] = useState(Boolean(params.get("q")));
+  const correctFor = params.get("correct") ?? "";
 
   const search = async (value: string, target: Tab) => {
     if (!value.trim()) return;
@@ -44,8 +53,25 @@ function KnowledgeBasePageInner() {
     setBusy(false);
   };
 
+  // Deep link (?q=...) runs the first search. Every setState here happens inside
+  // the async continuation, never synchronously in the effect body.
   useEffect(() => {
-    if (params.get("q")) void search(params.get("q") as string, "knowledge");
+    const initial = params.get("q");
+    if (!initial) return;
+    let cancelled = false;
+    void (async () => {
+      const result = await apiPost<{ results: KnowledgeHit[] }>("/api/knowledge/search", {
+        query: initial,
+        limit: 12,
+        language,
+      });
+      if (cancelled) return;
+      if (result.ok) setHits(result.data.results);
+      setBusy(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -79,7 +105,7 @@ function KnowledgeBasePageInner() {
               { id: "correct", label: language === "en" ? "Report" : "درستی" },
             ]}
             value={tab}
-            onChange={setTab}
+            onChange={setTabOverride}
           />
         </div>
       </Section>
@@ -176,6 +202,7 @@ function CorrectionForm({ defaultEntityId, defaultType }: { defaultEntityId: str
     evidenceUrl: "",
   });
   const [status, setStatus] = useState<{ tone: "ok" | "error"; message: string } | undefined>(undefined);
+
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {

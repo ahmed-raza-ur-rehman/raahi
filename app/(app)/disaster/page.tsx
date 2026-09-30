@@ -20,11 +20,10 @@ export default function DisasterPage() {
   const [hazard, setHazard] = useState("flood");
   const state = useApi<DisasterPayload>(`/api/disaster?hazard=${hazard}`);
 
-  const guides = state.data?.guides ?? [];
   const ordered = useMemo(() => {
     const rank = { before: 0, during: 1, after: 2 };
-    return [...guides].sort((a, b) => rank[a.phase] - rank[b.phase]);
-  }, [guides]);
+    return [...(state.data?.guides ?? [])].sort((a, b) => rank[a.phase] - rank[b.phase]);
+  }, [state.data]);
 
   return (
     <div>

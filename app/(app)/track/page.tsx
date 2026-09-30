@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense, useState } from "react";
 
 import { useLanguage } from "@/components/shell/LanguageProvider";
 import { Badge, Button, Card, Empty, Field, Loader, ProgressBar, Section, inputClass } from "@/components/shell/Ui";
@@ -21,16 +21,14 @@ function TrackPageInner() {
   const params = useSearchParams();
   const focus = params.get("focus");
   const state = useApi<ApplicationsPayload>("/api/applications");
-  const [selected, setSelected] = useState<string | undefined>(focus ?? undefined);
+  // `null` = follow the deep-linked ?focus id; a string/undefined = the user has
+  // explicitly opened or collapsed one. Derived rather than synced in an effect.
+  const [override, setOverride] = useState<string | undefined | null>(null);
   const [creating, setCreating] = useState(false);
-
-  useEffect(() => {
-    if (focus) setSelected(focus);
-  }, [focus]);
+  const selected = override === null ? (focus ?? undefined) : override;
 
   const applications = state.data?.applications ?? [];
   const progressFor = (id: string) => state.data?.progress.find((entry) => entry.id === id);
-  const current = applications.find((application) => application.id === selected);
 
   return (
     <div>
@@ -47,7 +45,7 @@ function TrackPageInner() {
           <CreateForm
             onCreated={(id) => {
               setCreating(false);
-              setSelected(id);
+              setOverride(id);
               state.reload();
             }}
           />
@@ -71,7 +69,7 @@ function TrackPageInner() {
             const progress = progressFor(application.id);;
             return (
               <Card key={application.id} className={selected === application.id ? "border-[var(--forest)]" : ""}>
-                <button type="button" className="w-full text-start" onClick={() => setSelected(selected === application.id ? undefined : application.id)}>
+                <button type="button" className="w-full text-start" onClick={() => setOverride(selected === application.id ? undefined : application.id)}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-[13.5px] font-extrabold leading-tight">{L(application.title)}</p>

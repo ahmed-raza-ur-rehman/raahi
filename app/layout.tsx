@@ -1,7 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 import { LanguageProvider } from "@/components/shell/LanguageProvider";
+
+/**
+ * Zoom stays enabled: many of the people Raahi is built for need to enlarge
+ * text, and `maximum-scale=1` would silently take that away from them.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0f6b4f",
+};
 
 export const metadata: Metadata = {
   title: "RAAHI — Pakistan's Service Navigator",
@@ -24,9 +34,14 @@ export default function RootLayout({
   return (
     <html lang="ur" dir="rtl">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/*
+          Loaded with display=swap so text renders immediately in a system font
+          and upgrades when the webfont lands. Deliberately a <link> rather than
+          next/font: next/font makes the *build* depend on reaching Google, and
+          we would rather degrade to system fonts than fail a deploy.
+          TODO: self-host these two families so we drop the third-party request.
+        */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
           rel="stylesheet"

@@ -18,7 +18,7 @@ interface Message {
 }
 
 function AskPageInner() {
-  const { t, L, language } = useLanguage();
+  const { t, language } = useLanguage();
   const params = useSearchParams();
   const initial = params.get("q") ?? "";
 

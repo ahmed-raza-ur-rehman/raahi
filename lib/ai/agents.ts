@@ -201,7 +201,7 @@ function localizedAnswer(value: string, language: Language): Localized {
   return localized;
 }
 
-function emergencyContacts(language: Language): ContactRef[] {
+function emergencyContacts(): ContactRef[] {
   return [
     { label: text("Rescue / Ambulance", "ریسکیو / ایمبولینس", "ژغورنه"), phone: "1122" },
     { label: text("Edhi Ambulance", "ایدھی ایمبولینس", "ایدهي امبولانس"), phone: "115" },
@@ -323,7 +323,7 @@ export async function runAgentWorkflow(input: RunAgentInput): Promise<AgentRespo
         text("Tell a trusted family member or neighbour.", "کسی قابلِ اعتماد فرد کو بتائیں۔"),
       ],
       hits: [],
-      contacts: emergencyContacts(language),
+      contacts: emergencyContacts(),
       trace: [...traceLog, trace("safety", "emergency detected", safety.reason ?? "immediate danger")],
       followUps: [text("Are you safe now?", "کیا اب آپ محفوظ ہیں؟")],
       emergency: true,
@@ -494,7 +494,7 @@ export async function runAgentWorkflow(input: RunAgentInput): Promise<AgentRespo
   }
 
   if (primary.id === "disaster") {
-    contacts = [...emergencyContacts(language), ...contactsForCategory("disaster", language, 3)];
+    contacts = [...emergencyContacts(), ...contactsForCategory("disaster", language, 3)];
     const record = top.record as { howToRequest?: { order: number; title: string; titleUr: string }[]; steps?: { order: number; title: string; titleUr: string }[] };
     const path = record.howToRequest ?? record.steps ?? [];
     steps.unshift(text("If anyone is trapped or injured, call 1122 first.", "اگر کوئی پھنسا یا زخمی ہے تو پہلے 1122 کال کریں۔"));

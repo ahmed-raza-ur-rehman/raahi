@@ -5,44 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import { SPEECH_TAGS } from "@/lib/ai/voice";
 import type { Language } from "@/lib/types";
-
-interface SpeechRecognitionAlternativeLike {
-  transcript: string;
-}
-
-interface SpeechRecognitionResultLike {
-  isFinal: boolean;
-  [index: number]: SpeechRecognitionAlternativeLike;
-}
-
-interface SpeechRecognitionEventLike {
-  resultIndex: number;
-  results: { length: number; [index: number]: SpeechRecognitionResultLike };
-}
-
-interface SpeechRecognitionLike {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  maxAlternatives: number;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
-  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
-  onerror: ((event: { error?: string }) => void) | null;
-  onend: (() => void) | null;
-}
-
-type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
-
-function recognitionConstructor(): SpeechRecognitionConstructor | undefined {
-  if (typeof window === "undefined") return undefined;
-  const scope = window as unknown as {
-    SpeechRecognition?: SpeechRecognitionConstructor;
-    webkitSpeechRecognition?: SpeechRecognitionConstructor;
-  };
-  return scope.SpeechRecognition ?? scope.webkitSpeechRecognition;
-}
+import { recognitionConstructor, type SpeechRecognitionLike } from "@/lib/client/speech";
 
 /** Big microphone button: speaks → text, and reads answers aloud. */
 export function VoiceButton({

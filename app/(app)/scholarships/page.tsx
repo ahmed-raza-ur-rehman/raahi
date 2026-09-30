@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useMemo, useState } from "react";
 
 import { useLanguage } from "@/components/shell/LanguageProvider";
-import { Badge, Button, Card, Empty, FilterPills, Loader, Section, inputClass } from "@/components/shell/Ui";
+import { Badge, Card, Empty, FilterPills, Loader, Section, inputClass } from "@/components/shell/Ui";
 import { useApi } from "@/lib/client/useApi";
 import type { Language, OpportunityRecord } from "@/lib/types";
 

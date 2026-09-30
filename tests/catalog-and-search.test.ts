@@ -4,7 +4,7 @@ import { join } from "node:path";
 
 process.env.RAAHI_DB_PATH = join(process.cwd(), "data", "raahi.test.db");
 
-import { catalogRecordCount, organizations, services } from "@/data/catalog";
+import { organizations, services } from "@/data/catalog";
 import { seedDatabase } from "@/lib/db/seed";
 import { searchServices, searchServicesHybrid } from "@/lib/rag/search";
 

@@ -1,23 +1,33 @@
 "use client";
 
-import React, { useState, useEffect, useRef, FormEvent } from "react";
+import React, { useState, useEffect, useRef, FormEvent, Suspense } from "react";
 import Link from "next/link";
-import { MessageBubble } from "@/components/chat/MessageBubble";
+import { useSearchParams } from "next/navigation";
+import { MessageBubble, type ServiceSummary } from "@/components/chat/MessageBubble";
+import type { ActionItem } from "@/components/chat/ActionPlan";
+import { nextId, useOrCreateStoredId, useStoredString } from "@/lib/client/useStoredJson";
 import { VoiceRecorder } from "@/components/chat/VoiceRecorder";
 import { EmergencyBanner } from "@/components/common/EmergencyBanner";
 import FewClickNavigator from "@/components/navigator/FewClickNavigator";
 
 type Language = "en" | "ur" | "ps";
 
+export interface Citation {
+  sourceUrl: string;
+  sourceTitle: string;
+  authorityTier?: number;
+  lastVerified?: string;
+}
+
 interface MessageState {
   id: string;
   role: "user" | "assistant";
   content: string;
-  services?: any[];
-  actionItems?: any[];
+  services?: ServiceSummary[];
+  actionItems?: ActionItem[];
   activeTool?: string | null;
   streaming?: boolean;
-  citations?: any[];
+  citations?: Citation[];
 }
 
 const UI_TEXT = {
@@ -91,14 +101,22 @@ const UI_TEXT = {
   },
 };
 
-export default function ChatPage() {
+function ChatPageInner() {
+  const searchParams = useSearchParams();
   const [language, setLanguage] = useState<Language>("ur");
-  const [inputQuery, setInputQuery] = useState("");
   const [messages, setMessages] = useState<MessageState[]>([]);
   const [loading, setLoading] = useState(false);
   const [emergencyActive, setEmergencyActive] = useState(false);
-  const [sessionId, setSessionId] = useState<string>("");
-  const [conversationId, setConversationId] = useState<string>("");
+
+  // Session + conversation live in localStorage, so they survive reloads.
+  const sessionId = useOrCreateStoredId("raahi_session_id", "session");
+  const [conversationId, setConversationId] = useStoredString("raahi_conv_id", "");
+
+  // `?need=` seeds the box; once the visitor types, their text wins.
+  const needFromUrl = searchParams.get("need") ?? "";
+  const [typedQuery, setTypedQuery] = useState<string | null>(null);
+  const inputQuery = typedQuery ?? needFromUrl;
+
   const [province, setProvince] = useState<string>("");
   const [hasCnic, setHasCnic] = useState<boolean>(true);
   const [isBisp, setIsBisp] = useState<boolean>(false);
@@ -108,26 +126,6 @@ export default function ChatPage() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const t = UI_TEXT[language];
-
-  // Initialize session & load initial need from URL query
-  useEffect(() => {
-    let sid = localStorage.getItem("raahi_session_id");
-    if (!sid) {
-      sid = `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      localStorage.setItem("raahi_session_id", sid);
-    }
-    setSessionId(sid);
-
-    const savedConv = localStorage.getItem("raahi_conv_id");
-    if (savedConv) {
-      setConversationId(savedConv);
-    }
-
-    const initialNeed = new URLSearchParams(window.location.search).get("need");
-    if (initialNeed) {
-      setInputQuery(initialNeed);
-    }
-  }, []);
 
   // Auto scroll to bottom of chat
   useEffect(() => {
@@ -140,9 +138,8 @@ export default function ChatPage() {
   };
 
   const handleNewChat = () => {
-    const newConvId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const newConvId = nextId("conv");
     setConversationId(newConvId);
-    localStorage.setItem("raahi_conv_id", newConvId);
     setMessages([]);
     setEmergencyActive(false);
     showToast(language === "en" ? "New conversation started" : "نئی گفتگو شروع کی گئی");
@@ -151,16 +148,9 @@ export default function ChatPage() {
   const handleSaveToCase = async (serviceId: string) => {
     try {
       // Find service in existing messages
-      let targetService: any = null;
-      for (const m of messages) {
-        if (m.services) {
-          const found = m.services.find((s) => s.id === serviceId);
-          if (found) {
-            targetService = found;
-            break;
-          }
-        }
-      }
+      const targetService = messages
+        .flatMap((message) => message.services ?? [])
+        .find((service) => service.id === serviceId);
 
       const res = await fetch("/api/cases", {
         method: "POST",
@@ -172,7 +162,7 @@ export default function ChatPage() {
           domain: targetService?.domain || "welfare",
           summary: inputQuery || targetService?.description || "User navigation query",
           serviceIds: [serviceId],
-          actions: targetService?.procedure?.map((p: any) => ({
+          actions: targetService?.procedure?.map((p) => ({
             label: p.title,
             labelUr: p.titleUr,
             serviceId,
@@ -250,8 +240,8 @@ export default function ChatPage() {
     const query = queryText.trim();
     if (!query || loading) return;
 
-    const userMsgId = `usr-${Date.now()}`;
-    const assistantMsgId = `ast-${Date.now()}`;
+    const userMsgId = nextId("usr");
+    const assistantMsgId = nextId("ast");
 
     // Add user message
     setMessages((prev) => [
@@ -267,7 +257,7 @@ export default function ChatPage() {
       },
     ]);
 
-    setInputQuery("");
+    setTypedQuery("");
     setLoading(true);
 
     try {
@@ -299,10 +289,7 @@ export default function ChatPage() {
       const decoder = new TextDecoder();
       let buffer = "";
 
-      let assistantText = "";
-      let foundServices: any[] = [];
-      let foundActions: any[] = [];
-      let currentActiveTool: string | null = null;
+      const contentChunks: string[] = [];
 
       while (true) {
         const { value, done } = await reader.read();
@@ -322,44 +309,45 @@ export default function ChatPage() {
             if (parsed.type === "meta") {
               if (parsed.conversationId) {
                 setConversationId(parsed.conversationId);
-                localStorage.setItem("raahi_conv_id", parsed.conversationId);
               }
             } else if (parsed.type === "content") {
-              assistantText += parsed.content;
+              contentChunks.push(String(parsed.content ?? ""));
               if (parsed.emergency) {
                 setEmergencyActive(true);
               }
 
               // Update current streaming message
+              const streamed = contentChunks.join("");
               setMessages((prev) =>
                 prev.map((msg) =>
                   msg.id === assistantMsgId
-                    ? { ...msg, content: assistantText, streaming: true }
+                    ? { ...msg, content: streamed, streaming: true }
                     : msg
                 )
               );
             } else if (parsed.type === "tool_call") {
-              currentActiveTool = parsed.tool;
+              const activeTool = typeof parsed.tool === "string" ? parsed.tool : null;
               setMessages((prev) =>
                 prev.map((msg) =>
                   msg.id === assistantMsgId
-                    ? { ...msg, activeTool: currentActiveTool }
+                    ? { ...msg, activeTool }
                     : msg
                 )
               );
             } else if (parsed.type === "search_results") {
               if (Array.isArray(parsed.results)) {
-                foundServices = [...foundServices, ...parsed.results];
+                const incoming = parsed.results as ServiceSummary[];
+                // Append to whatever the message already holds: deriving from
+                // `prev` keeps this correct no matter how many chunks arrive.
                 setMessages((prev) =>
                   prev.map((msg) =>
                     msg.id === assistantMsgId
-                      ? { ...msg, services: foundServices, activeTool: null }
+                      ? { ...msg, services: [...(msg.services ?? []), ...incoming], activeTool: null }
                       : msg
                   )
                 );
               }
             } else if (parsed.type === "done") {
-              currentActiveTool = null;
               setMessages((prev) =>
                 prev.map((msg) =>
                   msg.id === assistantMsgId
@@ -368,11 +356,12 @@ export default function ChatPage() {
                 )
               );
             } else if (parsed.type === "error") {
-              assistantText += `\n[Notice: ${parsed.error}]`;
+              contentChunks.push(`\n[Notice: ${String(parsed.error ?? "")}]`);
+              const failedText = contentChunks.join("");
               setMessages((prev) =>
                 prev.map((msg) =>
                   msg.id === assistantMsgId
-                    ? { ...msg, content: assistantText, streaming: false }
+                    ? { ...msg, content: failedText, streaming: false }
                     : msg
                 )
               );
@@ -391,7 +380,7 @@ export default function ChatPage() {
             : msg
         )
       );
-    } catch (err) {
+    } catch {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === assistantMsgId
@@ -632,7 +621,7 @@ export default function ChatPage() {
             <textarea
               rows={2}
               value={inputQuery}
-              onChange={(e) => setInputQuery(e.target.value)}
+              onChange={(e) => setTypedQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -650,7 +639,10 @@ export default function ChatPage() {
               <VoiceRecorder
                 language={language}
                 onTranscript={(transcript) => {
-                  setInputQuery((prev) => (prev ? `${prev} ${transcript}` : transcript));
+                  setTypedQuery((prev) => {
+                    const base = prev ?? needFromUrl;
+                    return base ? `${base} ${transcript}` : transcript;
+                  });
                 }}
                 disabled={loading}
               />
@@ -696,5 +688,26 @@ export default function ChatPage() {
         </p>
       </footer>
     </main>
+  );
+}
+
+/**
+ * `useSearchParams()` needs a Suspense boundary on a prerendered page: Next
+ * renders the fallback in the static HTML and the live subtree on the client.
+ */
+export default function ChatPage() {
+  return (
+    <Suspense
+      fallback={
+        <main
+          className="app-shell flex min-h-screen items-center justify-center px-4"
+          dir="rtl"
+        >
+          <p className="text-sm font-semibold text-[var(--muted)]">راہی تیار ہو رہا ہے…</p>
+        </main>
+      }
+    >
+      <ChatPageInner />
+    </Suspense>
   );
 }

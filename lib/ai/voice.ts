@@ -68,7 +68,6 @@ export async function synthesizeSpeech(text: string, language: Language = "ur") 
       const client = getDashScopeClient();
       const response = await client?.audio.speech.create({
         model: "qwen-tts",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         voice: language === "en" ? "Chelsie" : "Serena",
         input: text.slice(0, 1500),
       } as never);

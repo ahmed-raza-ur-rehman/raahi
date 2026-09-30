@@ -5,7 +5,7 @@ import React from "react";
 
 import { useLanguage } from "@/components/shell/LanguageProvider";
 import { SpeakButton } from "@/components/shell/VoiceButton";
-import { Badge, Button, Card, Loader, Section, SourceChip, StepList } from "@/components/shell/Ui";
+import { Button, Card, Loader, Section, SourceChip, StepList } from "@/components/shell/Ui";
 import { apiPost, useApi } from "@/lib/client/useApi";
 import { useRouter } from "next/navigation";
 import type { DocumentRecipe } from "@/lib/types";

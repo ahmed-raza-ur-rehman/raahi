@@ -336,11 +336,38 @@ export function validateRelief(input: Partial<CreateReliefInput>): string | unde
   return undefined;
 }
 
-/** Route the request to the channels that actually handle this hazard. */
-export function routeRelief(hazard: string, district: string): { id: string; name: string; numbers: string[] }[] {
-  const always = disasterChannels.filter((channel) => channel.priority <= 2);
-  const hazardSpecific = disasterChannels.filter((channel) => channel.priority > 2);
-  return [...always, ...hazardSpecific].map((channel) => ({
+/**
+ * Which channels actually respond to which hazard.
+ *
+ * Keyed by the ids in `HAZARDS`. Anything unlisted falls back to every channel —
+ * over-sharing a helpline in an emergency is a far better failure than
+ * withholding one.
+ */
+const HAZARD_ROUTING: Record<string, string[]> = {
+  flood: ["channel-rescue-1122", "channel-pdma", "channel-ndma", "channel-prcs"],
+  storm: ["channel-rescue-1122", "channel-pdma", "channel-ndma", "channel-prcs"],
+  landslide: ["channel-rescue-1122", "channel-pdma", "channel-ndma", "channel-alkhidmat-disaster"],
+  earthquake: ["channel-rescue-1122", "channel-pdma", "channel-ndma", "channel-alkhidmat-disaster"],
+  fire: ["channel-rescue-1122", "channel-alkhidmat-disaster"],
+  drought: ["channel-pdma", "channel-ndma", "channel-prcs", "channel-alkhidmat-disaster"],
+};
+
+/**
+ * Route the request to the channels that actually handle this hazard, always-on
+ * emergency lines (priority <= 2) first, then the hazard's specialists.
+ */
+export function routeRelief(hazard: string): { id: string; name: string; numbers: string[] }[] {
+  const key = hazard.trim().toLowerCase();
+  const preferred = HAZARD_ROUTING[key];
+
+  const selected = preferred
+    ? disasterChannels
+        .filter((channel) => preferred.includes(channel.id))
+        // Keep the curated order, which is most-reachable-first.
+        .sort((a, b) => preferred.indexOf(a.id) - preferred.indexOf(b.id))
+    : [...disasterChannels].sort((a, b) => a.priority - b.priority);
+
+  return selected.map((channel) => ({
     id: channel.id,
     name: typeof channel.name === "string" ? channel.name : channel.name.en,
     numbers: channel.numbers.filter((number) => number.length > 0),
@@ -379,7 +406,7 @@ function parseRelief(row: ReliefRow): ReliefRequest {
 export function createReliefRequest(input: CreateReliefInput): ReliefRequest {
   const now = new Date().toISOString();
   const id = `relief-${randomUUID().slice(0, 8)}`;
-  const routed = routeRelief(input.hazard, input.district).map((channel) => channel.id);
+  const routed = routeRelief(input.hazard).map((channel) => channel.id);
 
   getSqlite()
     .prepare(

@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { ServiceCard } from "./ServiceCard";
+import { ServiceCard, type ServiceCardProps } from "./ServiceCard";
+
+export type ServiceSummary = ServiceCardProps["service"];
 import { ActionPlan, ActionItem } from "./ActionPlan";
 import { CitationChip } from "./CitationChip";
 
@@ -10,7 +12,7 @@ export interface MessageBubbleProps {
   content: string;
   streaming?: boolean;
   activeTool?: string | null;
-  services?: any[];
+  services?: ServiceSummary[];
   actionItems?: ActionItem[];
   citations?: { sourceUrl: string; sourceTitle: string; authorityTier?: number; lastVerified?: string }[];
   language?: "en" | "ur" | "ps";

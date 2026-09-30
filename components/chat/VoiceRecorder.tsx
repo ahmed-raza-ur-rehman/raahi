@@ -2,6 +2,14 @@
 
 import React, { useState, useRef, useEffect } from "react";
 
+import {
+  recognitionConstructor,
+  speechLanguageTag,
+  type SpeechRecognitionErrorEventLike,
+  type SpeechRecognitionEventLike,
+  type SpeechRecognitionLike,
+} from "@/lib/client/speech";
+
 interface VoiceRecorderProps {
   language: "en" | "ur" | "ps";
   onTranscript: (transcript: string) => void;
@@ -18,7 +26,7 @@ export function VoiceRecorder({
   const [error, setError] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   // Stop recording on unmount
   useEffect(() => {
@@ -36,14 +44,12 @@ export function VoiceRecorder({
     setError(null);
 
     // 1. Try Browser SpeechRecognition first
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = recognitionConstructor();
 
     if (SpeechRecognition) {
       try {
         const recognition = new SpeechRecognition();
-        recognition.lang =
-          language === "en" ? "en-PK" : language === "ps" ? "ps-AF" : "ur-PK";
+        recognition.lang = speechLanguageTag(language);
         recognition.continuous = false;
         recognition.interimResults = true;
 
@@ -51,9 +57,9 @@ export function VoiceRecorder({
           setRecording(true);
         };
 
-        recognition.onresult = (event: any) => {
+        recognition.onresult = (event: SpeechRecognitionEventLike) => {
           const text = Array.from(event.results)
-            .map((result: any) => result[0].transcript)
+            .map((result) => result[0].transcript)
             .join("");
           if (event.results[0].isFinal) {
             onTranscript(text);
@@ -61,7 +67,7 @@ export function VoiceRecorder({
           }
         };
 
-        recognition.onerror = (event: any) => {
+        recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
           console.warn("Speech recognition error, trying media recorder fallback", event.error);
           fallbackAudioCapture();
         };
@@ -116,7 +122,7 @@ export function VoiceRecorder({
           } else {
             setError(data.error || "Could not recognize audio.");
           }
-        } catch (err) {
+        } catch {
           setError("Failed to process voice input.");
         } finally {
           setProcessing(false);
@@ -125,7 +131,7 @@ export function VoiceRecorder({
 
       mediaRecorder.start();
       setRecording(true);
-    } catch (err) {
+    } catch {
       setError(
         language === "en"
           ? "Microphone access denied. Please type your message."

@@ -6,7 +6,7 @@ import React from "react";
 
 import { useLanguage } from "@/components/shell/LanguageProvider";
 import { SpeakButton } from "@/components/shell/VoiceButton";
-import { Badge, Button, CallButton, Card, Loader, Section, SourceChip, StepList } from "@/components/shell/Ui";
+import { Button, CallButton, Card, Loader, Section, SourceChip, StepList } from "@/components/shell/Ui";
 import { apiPost, useApi } from "@/lib/client/useApi";
 import type { OpportunityRecord } from "@/lib/types";
 

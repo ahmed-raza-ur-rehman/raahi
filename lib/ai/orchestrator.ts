@@ -2,7 +2,7 @@ import { searchServicesHybrid } from "@/lib/rag/search";
 import { eligibilityEngine } from "@/lib/eligibility/engine";
 import { listActiveServices } from "@/lib/db/repositories/services";
 import { getSqlite } from "@/lib/db/client";
-import type { CitizenProfile, Domain } from "@/lib/types";
+import type { CitizenProfile, Domain, Language } from "@/lib/types";
 import { getDashScopeClient } from "@/lib/ai/client";
 import { ORCHESTRATOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { detectSafetySignals } from "@/lib/safety/detect";
@@ -393,12 +393,21 @@ export interface OrchestratorOptions {
 }
 
 export async function* runOrchestrator(options: OrchestratorOptions): AsyncGenerator<string> {
-  const { message, conversationId, sessionId, language } = options;
+  const { message, conversationId, sessionId } = options;
+  // The caller sends a free-form string; narrow it to a supported UI language.
+  const language: Language =
+    options.language === "en" || options.language === "ps" || options.language === "hkp"
+      ? options.language
+      : "ur";
   const client = getDashScopeClient();
 
   // Guardrail 1: Sanitize user input against prompt injection
   const { sanitized, flagged } = sanitizeUserInput(message);
   const effectiveMessage = sanitized || message;
+  if (flagged) {
+    // Worth knowing about: it tells us someone is probing the assistant.
+    console.warn("[raahi] stripped a prompt-injection pattern from user input");
+  }
 
   // Guardrail 2: Detect safety & emergency signals
   const safetyCheck = detectSafetySignals(effectiveMessage);
@@ -430,9 +439,9 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
           ? "یہ تصدیق شدہ خدمات آپ کے لیے مددگار ہو سکتی ہیں۔ تفصیلات ہر ذریعے سے ضرور تصدیق کریں۔"
           : "These verified services may help. Please confirm details with each official source.";
       if (safetyCheck.medical) {
-        contentText = appendDomainSafetyDisclaimer(contentText, "health", (language as any) || "ur");
+        contentText = appendDomainSafetyDisclaimer(contentText, "health", language);
       } else if (safetyCheck.legal) {
-        contentText = appendDomainSafetyDisclaimer(contentText, "legal", (language as any) || "ur");
+        contentText = appendDomainSafetyDisclaimer(contentText, "legal", language);
       }
       yield `data: ${JSON.stringify({ type: "content", content: contentText })}\n\n`;
     }
@@ -444,7 +453,10 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   const history = getConversationHistory(conversationId);
 
   // Save user message (with PII masked in storage if appropriate)
-  const userMessage: Message = { role: "user", content: effectiveMessage };
+  // Guardrail 1b: mask CNIC / phone numbers before the text leaves the box.
+  // Local safety detection and search keep the real text; only the copy sent to
+  // the model provider is masked, so a citizen's ID number is never transmitted.
+  const userMessage: Message = { role: "user", content: maskPii(effectiveMessage) };
   saveMessage(conversationId, userMessage);
 
   const messages: Message[] = [
@@ -456,7 +468,6 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   // Tool-calling loop
   let iteration = 0;
   const maxIterations = 6;
-  let collectedContent = "";
   const collectedToolCalls: ToolCall[] = [];
   const collectedServiceIds: string[] = [];
 
@@ -552,7 +563,6 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
           });
         }
         // No more tools — we're done
-        if (assistantContent) collectedContent += assistantContent;
         const assistantMessage: Message = {
           role: "assistant",
           content: assistantContent,
