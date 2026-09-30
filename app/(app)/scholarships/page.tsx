@@ -105,8 +105,8 @@ function ScholarshipCard({ record, language }: { record: OpportunityRecord; lang
 
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         <Badge tone={record.applicationFee.amount === null ? "success" : "warn"}>💰 {feeLabel}</Badge>
-        {record.requiredDocuments.slice(0, 2).map((item) => (
-          <Badge key={item.type}>📎 {L(item.label)}</Badge>
+        {record.requiredDocuments.slice(0, 2).map((item, index) => (
+          <Badge key={`${item.type}-${index}`}>📎 {L(item.label)}</Badge>
         ))}
         {record.tags.includes("english_test") ? <Badge tone="info">🗣️ {t("englishTest")}</Badge> : null}
       </div>

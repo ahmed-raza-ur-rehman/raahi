@@ -112,9 +112,12 @@ export default function ScholarshipDetailPage() {
         }
       >
         <div className="grid gap-2">
-          {record.requiredDocuments.map((item) => (
+          {record.requiredDocuments.map((item, index) => (
             <Link
-              key={item.type}
+              // Two rows can legitimately be the same document type - a
+              // student's CNIC and a guardian's CNIC, for example - so the
+              // position is part of the key.
+              key={`${item.type}-${index}`}
               href={`/documents/${item.type}`}
               className="flex items-center justify-between gap-2 rounded-xl border border-[var(--line)] bg-white p-3 text-[12.5px] font-semibold hover:border-[var(--forest)]"
             >

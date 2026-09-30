@@ -84,8 +84,8 @@ export default function LegalPage() {
                       <div>
                         <p className="mb-1 text-[11.5px] font-black text-[var(--ink-soft)]">{t("documents")}</p>
                         <div className="flex flex-wrap gap-1.5">
-                          {topic.documents.map((doc) => (
-                            <Badge key={doc.type}>📎 {L(doc.label)}</Badge>
+                          {topic.documents.map((doc, index) => (
+                            <Badge key={`${doc.type}-${index}`}>📎 {L(doc.label)}</Badge>
                           ))}
                         </div>
                       </div>
