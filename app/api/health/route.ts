@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { providerHealth } from "@/lib/ai/resilience";
 import { summariseFreshness, type VerifiableKind } from "@/lib/freshness";
+import { APP_NAME, APP_VERSION, BUILD_COMMIT_SHORT } from "@/lib/version";
 import { bloodBanks } from "@/data/blood";
 import { contacts } from "@/data/contacts";
 import { disasterGuides } from "@/data/disaster";
@@ -66,6 +67,10 @@ export async function GET() {
       // A machine can branch on this without parsing the strings.
       ready: true,
       time: new Date().toISOString(),
+      // Which code is actually running, for the person debugging a report.
+      version: APP_VERSION,
+      name: APP_NAME,
+      ...(BUILD_COMMIT_SHORT ? { commit: BUILD_COMMIT_SHORT } : {}),
       providers,
       capabilities: {
         // Present but never valued, so this is safe to expose.

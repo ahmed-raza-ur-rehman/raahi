@@ -7,7 +7,9 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 [![Services](https://img.shields.io/badge/Verified_Services-85_Services-emerald)](./data/catalog.ts)
 [![Institutions](https://img.shields.io/badge/Partner_Institutions-27_Agencies-purple)](./data/catalog.ts)
-[![Tests](https://img.shields.io/badge/Tests-16%2F16_Passing-success)](./tests)
+[![Tests](https://img.shields.io/badge/Tests-125%2F125_Passing-success)](./tests)
+[![Version](https://img.shields.io/badge/Version-1.0.0-blue)](./CHANGELOG.md)
+[![Health](https://img.shields.io/badge/Health-/api%2Fhealth-emerald)](/api/health)
 [![Author](https://img.shields.io/badge/Author-Ahmed_Raza_Ur_Rehman-orange)](https://github.com/ahmed-raza-ur-rehman)
 
 ---
@@ -287,7 +289,7 @@ components, which cannot export metadata).
 
 ```bash
 npm run typecheck   # TypeScript, no emit
-npm run test        # 77 tests
+npm run test        # 125 tests
 npm run lint        # 0 errors, 0 warnings
 npm run verify      # typecheck + test + build
 ```
@@ -302,7 +304,17 @@ The tests are not decoration. They enforce the promises the product makes:
 - localized values never render blank — including Hindko, which has no
   translations yet and correctly falls back to Urdu;
 - emergencies are detected across English, Urdu, Pashto **and Roman Urdu**,
-  while "how to prepare for a flood" is correctly *not* an emergency.
+  while "how to prepare for a flood" is correctly *not* an emergency;
+- **every AI feature still answers with the provider switched off** — chat,
+  translation, OCR, voice and search are all tested in that state;
+- **OCR never invents a document field**: when it cannot read a document it
+  returns nothing, never a placeholder;
+- **"verified" expires**: a deadline goes stale in weeks where a helpline does
+  not, and an unreadable date is never shown as verified;
+- **`/api/health` never leaks a secret**, tested with a sentinel key in the
+  environment;
+- **nobody is locked out by a shared mobile address**: two visitors behind one
+  carrier-grade NAT get separate budgets.
 
 ## ♿ Accessibility & safety
 
@@ -314,6 +326,34 @@ The tests are not decoration. They enforce the promises the product makes:
 - Form fields are wrapped in `<label>` so screen readers announce them.
 - Errors render in a bilingual boundary that offers a retry and confirms saved
   applications are safe. Nothing shows a blank screen.
+
+---
+
+## 🚑 Operating it
+
+- **[`docs/OPERATIONS.md`](./docs/OPERATIONS.md)** — deploying, environment
+  variables, what `/api/health` means, backups, logs and what to do when the AI
+  provider goes down.
+- **[`/api/health`](./app/api/health/route.ts)** — version, provider circuits,
+  capabilities and how much of the knowledge base has gone stale. Always 200:
+  a RAAHI whose AI provider is down still answers a citizen, so a load balancer
+  must never eject it for that.
+- **[`CHANGELOG.md`](./CHANGELOG.md)** — every release, and the process for
+  cutting one.
+
+**Every AI feature has a plan B.** DashScope is optional: with it, answers are
+polished by a model; without it, RAAHI answers from its own verified records.
+A circuit breaker stops calling a provider that is failing, so an outage costs
+a feature, not a 15-second wait on every request. See
+[`lib/ai/resilience.ts`](./lib/ai/resilience.ts).
+
+---
+
+## 🔒 Privacy
+
+RAAHI handles CNIC numbers, phone numbers and medical need. What it does with
+them is written out plainly, in all four languages, at **`/privacy`** — no
+account, no advertising, no analytics, and no selling of data.
 
 ---
 
