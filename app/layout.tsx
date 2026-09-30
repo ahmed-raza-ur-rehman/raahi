@@ -31,6 +31,16 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Pages are rendered per request so that the Content-Security-Policy nonce
+ * generated in `proxy.ts` can be stamped onto the scripts Next emits.
+ *
+ * The cost is small here and the trade is deliberate: every page is a thin
+ * shell whose content is fetched client-side, so we are giving up very little
+ * caching to remove `'unsafe-inline'` from the script policy entirely.
+ */
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{

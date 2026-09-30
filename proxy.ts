@@ -9,7 +9,7 @@ import { newVisitorId, rateLimitRequest, readVisitorId, VISITOR_COOKIE } from "@
  * The app handles real citizen data (CNICs, phone numbers, medical need), so
  * the baseline hardening belongs in one place rather than per-route.
  */
-function securityHeaders(response: NextResponse, isProduction: boolean): NextResponse {
+function securityHeaders(response: NextResponse, isProduction: boolean, csp: string): NextResponse {
   // Never let a browser second-guess a declared content type.
   response.headers.set("X-Content-Type-Options", "nosniff");
 
@@ -34,34 +34,44 @@ function securityHeaders(response: NextResponse, isProduction: boolean): NextRes
     );
   }
 
-  /**
-   * Content-Security-Policy.
-   *
-   * `script-src` allows 'unsafe-inline' because Next.js injects bootstrap
-   * scripts; moving to per-request nonces is the proper fix and is tracked as
-   * a follow-up. Even with that concession this blocks the attacks that matter
-   * most here: injected third-party scripts, `data:` script URLs, framing and
-   * `<base>` hijacking. Object sources are locked to none.
-   */
-  const csp = [
+  response.headers.set("Content-Security-Policy", csp);
+
+  return response;
+}
+
+/**
+ * Content-Security-Policy, built around a fresh per-request nonce.
+ *
+ * There is no 'unsafe-inline' here any more. Next.js reads the nonce out of the
+ * request header below and attaches it to the framework scripts, the page
+ * bundles and any style it generates itself, so the app loads normally while an
+ * injected inline script has nothing to match and is refused.
+ *
+ * `'strict-dynamic'` means a nonced script may load its own dependencies, which
+ * is what lets the bundles work without listing every chunk hash.
+ */
+export function buildCsp(nonce: string, isProduction: boolean): string {
+  // React uses eval in development to rebuild server error stacks. Neither
+  // React nor Next use eval in production.
+  const scriptSrc = `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isProduction ? "" : " 'unsafe-eval'"}`;
+
+  return [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'" + (isProduction ? "" : " 'unsafe-eval'"),
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    scriptSrc,
+    `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
     "font-src 'self' https://fonts.gstatic.com data:",
     // Photos are captured to object URLs / data URLs by the document scanner.
     "img-src 'self' data: blob: https:",
     "media-src 'self' data: blob:",
     "connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com",
     "worker-src 'self' blob:",
+    "manifest-src 'self'",
     "frame-ancestors 'self'",
     "base-uri 'self'",
     "form-action 'self'",
     "object-src 'none'",
+    ...(isProduction ? ["upgrade-insecure-requests"] : []),
   ].join("; ");
-
-  response.headers.set("Content-Security-Policy", csp);
-
-  return response;
 }
 
 /**
@@ -84,6 +94,16 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isProduction = process.env.NODE_ENV === "production";
 
+  // A fresh, unpredictable value per request. Set on the request so Next can
+  // stamp it onto the scripts it emits, and on the response so the browser
+  // enforces it.
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const csp = buildCsp(nonce, isProduction);
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", csp);
+
   /**
    * Give every visitor their own anonymous id, so that thousands of people
    * sharing one carrier-NAT address do not share one rate-limit bucket. It is
@@ -92,6 +112,8 @@ export function proxy(request: NextRequest) {
   const existingVisitor = readVisitorId(request);
   const visitorId = existingVisitor ?? newVisitorId();
   const issueCookie = existingVisitor === undefined;
+
+  const next = () => NextResponse.next({ request: { headers: requestHeaders } });
 
   // Only the API is rate limited; pages stay freely reachable, including for
   // someone on a shared mobile IP.
@@ -104,27 +126,27 @@ export function proxy(request: NextRequest) {
           error: "You have done that a lot just now. Please wait a moment and try again.",
           retryAfter: result.retryAfter,
         },
-        { status: 429 },
+        { status: 429, headers: requestHeaders as unknown as HeadersInit },
       );
       response.headers.set("Retry-After", String(result.retryAfter));
       response.headers.set("X-RateLimit-Limit", String(result.limit));
       response.headers.set("X-RateLimit-Remaining", "0");
-      const denied = securityHeaders(response, isProduction);
+      const denied = securityHeaders(response, isProduction, csp);
       if (issueCookie) setVisitorCookie(denied, visitorId, isProduction);
       return denied;
     }
 
-    const response = NextResponse.next();
+    const response = next();
     response.headers.set("X-RateLimit-Limit", String(result.limit));
     response.headers.set("X-RateLimit-Remaining", String(result.remaining));
-    const secured = securityHeaders(response, isProduction);
+    const secured = securityHeaders(response, isProduction, csp);
     if (issueCookie) setVisitorCookie(secured, visitorId, isProduction);
     return secured;
   }
 
-  const response = securityHeaders(NextResponse.next(), isProduction);
-  if (issueCookie) setVisitorCookie(response, visitorId, isProduction);
-  return response;
+  const secured = securityHeaders(next(), isProduction, csp);
+  if (issueCookie) setVisitorCookie(secured, visitorId, isProduction);
+  return secured;
 }
 
 export const config = {

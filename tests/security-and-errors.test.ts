@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { apiErrorText } from "@/lib/i18n/api-errors";
+import { buildCsp } from "@/proxy";
 import {
   budgetFor,
   newVisitorId,
@@ -148,4 +149,42 @@ test("the visitor cookie is read from a realistic cookie header", () => {
   });
   assert.equal(readVisitorId(withOthers), "abc-123");
   assert.equal(readVisitorId(new Request("http://localhost/api/ask")), undefined);
+});
+
+/* ─────────────────── Content-Security-Policy ─────────────────── */
+
+test("the CSP is built around a nonce, not 'unsafe-inline'", () => {
+  const csp = buildCsp("test-nonce-value", true);
+
+  assert.match(csp, /script-src [^;]*'nonce-test-nonce-value'/, "scripts must be authorised by nonce");
+  assert.ok(!csp.includes("unsafe-inline"), "'unsafe-inline' defeats the nonce entirely");
+
+  // 'strict-dynamic' is what lets the bundles load their own chunks without
+  // us having to list every content-hashed file.
+  assert.match(csp, /'strict-dynamic'/);
+});
+
+test("the production CSP does not allow eval, but development must", () => {
+  // React uses eval in development to rebuild server error stacks.
+  assert.ok(!buildCsp("n", true).includes("unsafe-eval"), "no eval in production");
+  assert.match(buildCsp("n", false), /unsafe-eval/, "development needs it or the app will not run");
+});
+
+test("the CSP keeps the hardening that matters for this app", () => {
+  const csp = buildCsp("n", true);
+  for (const directive of ["object-src 'none'", "frame-ancestors 'self'", "base-uri 'self'", "form-action 'self'"]) {
+    assert.ok(csp.includes(directive), `${directive} must stay`);
+  }
+  // The document scanner captures photos to object URLs, and the service
+  // worker is loaded from a blob worker context.
+  assert.match(csp, /img-src 'self' data: blob:/);
+  assert.match(csp, /worker-src 'self' blob:/);
+});
+
+test("every request gets a different nonce", () => {
+  // A reused nonce is not a nonce. Proxy generates one per request; this
+  // guards the helper stays nonce-driven rather than constant-driven.
+  const first = buildCsp("aaaa", true);
+  const second = buildCsp("bbbb", true);
+  assert.notEqual(first, second);
 });
