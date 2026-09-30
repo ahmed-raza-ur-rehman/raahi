@@ -8,7 +8,7 @@ import { searchServicesHybrid } from "@/lib/rag/search";
 
 const requestSchema = z.object({
   query: z.string().trim().min(2).max(1000),
-  language: z.enum(["en", "ur", "ps"]).optional(),
+  language: z.enum(["en", "ur", "ps", "hkp"]).optional(),
   profile: z.object({
     province: z.string().optional(),
     district: z.string().optional(),

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import { LanguageProvider } from "@/components/shell/LanguageProvider";
+
 export const metadata: Metadata = {
   title: "RAAHI — Pakistan's Service Navigator",
   description:
-    "RAAHI guides Pakistani citizens to verified government, welfare, health, and education services in Urdu, English, and Pashto.",
-  keywords: ["Pakistan", "BISP", "NADRA", "services", "راہی", "welfare", "خدمات"],
+    "RAAHI guides Pakistani citizens to verified government, welfare, health, education and legal services in Urdu, Pashto, Hindko and English.",
+  keywords: ["Pakistan", "BISP", "NADRA", "services", "راہی", "scholarship", "welfare", "خدمات"],
   applicationName: "RAAHI",
   openGraph: {
     title: "RAAHI — Pakistan's Service Navigator",
-    description: "Find verified routes to welfare, education, health, and documentation services.",
+    description: "Find verified routes to welfare, education, health, documentation and disaster services.",
     type: "website",
   },
 };
@@ -30,7 +32,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

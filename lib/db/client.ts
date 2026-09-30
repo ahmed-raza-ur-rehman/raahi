@@ -166,6 +166,168 @@ export function initializeDatabase(database: Database.Database) {
       content,
       tokenize='unicode61 remove_diacritics 2'
     );
+
+    /* ──────────────────────────────────────────────────────────────────────
+     * Phase 2 — unified knowledge store
+     *
+     * Every curated record (opportunity, document recipe, test, camp,
+     * disease signal, medical procedure, blood bank, disaster channel,
+     * disaster guide, legal topic, contact) is stored once as JSON with a
+     * flattened searchable index. This keeps the catalogue extensible without
+     * a migration per entity type.
+     * ────────────────────────────────────────────────────────────────────── */
+    CREATE TABLE IF NOT EXISTS knowledge_entities (
+      id TEXT PRIMARY KEY,
+      entity_type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      payload TEXT NOT NULL,
+      source_url TEXT NOT NULL,
+      source_title TEXT NOT NULL,
+      authority_tier INTEGER NOT NULL,
+      last_verified TEXT NOT NULL,
+      country TEXT,
+      province TEXT,
+      category TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS knowledge_entities_type_idx ON knowledge_entities(entity_type);
+    CREATE INDEX IF NOT EXISTS knowledge_entities_category_idx ON knowledge_entities(category);
+    CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_search USING fts5(
+      entity_id UNINDEXED,
+      entity_type UNINDEXED,
+      content,
+      tokenize='unicode61 remove_diacritics 2'
+    );
+
+    /* ── Application tracker ── */
+    CREATE TABLE IF NOT EXISTS applications (
+      id TEXT PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      ref_id TEXT,
+      title TEXT NOT NULL,
+      status TEXT NOT NULL,
+      stages TEXT NOT NULL,
+      documents TEXT NOT NULL,
+      notes TEXT NOT NULL,
+      reminders TEXT NOT NULL,
+      deadline TEXT,
+      deadline_note TEXT,
+      fee_note TEXT,
+      archived INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS applications_session_idx ON applications(session_id);
+    CREATE INDEX IF NOT EXISTS applications_status_idx ON applications(status);
+    CREATE TABLE IF NOT EXISTS application_events (
+      id TEXT PRIMARY KEY,
+      application_id TEXT NOT NULL,
+      at TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      message TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS application_events_app_idx ON application_events(application_id);
+
+    /* ── Community services ── */
+    CREATE TABLE IF NOT EXISTS blood_requests (
+      id TEXT PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      patient_name TEXT NOT NULL,
+      blood_group TEXT NOT NULL,
+      units INTEGER NOT NULL,
+      city TEXT NOT NULL,
+      hospital TEXT NOT NULL,
+      needed_by TEXT NOT NULL,
+      contact_number TEXT NOT NULL,
+      notes TEXT,
+      status TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS blood_requests_status_idx ON blood_requests(status);
+    CREATE TABLE IF NOT EXISTS donor_registrations (
+      id TEXT PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      full_name TEXT NOT NULL,
+      blood_group TEXT NOT NULL,
+      city TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      last_donation TEXT,
+      available INTEGER NOT NULL DEFAULT 1,
+      notes TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS donor_registrations_group_idx ON donor_registrations(blood_group);
+    CREATE TABLE IF NOT EXISTS relief_requests (
+      id TEXT PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      hazard TEXT NOT NULL,
+      district TEXT NOT NULL,
+      families INTEGER NOT NULL,
+      needs TEXT NOT NULL,
+      location_note TEXT,
+      contact_number TEXT NOT NULL,
+      status TEXT NOT NULL,
+      routed_to TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS relief_requests_status_idx ON relief_requests(status);
+
+    /* ── Knowledge quality ── */
+    CREATE TABLE IF NOT EXISTS corrections (
+      id TEXT PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      entity_type TEXT NOT NULL,
+      entity_id TEXT NOT NULL,
+      field TEXT NOT NULL,
+      reported_value TEXT,
+      suggested_value TEXT NOT NULL,
+      reason TEXT,
+      evidence_url TEXT,
+      reporter_contact TEXT,
+      status TEXT NOT NULL,
+      reviewer_note TEXT,
+      votes INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS corrections_entity_idx ON corrections(entity_type, entity_id);
+    CREATE INDEX IF NOT EXISTS corrections_status_idx ON corrections(status);
+
+    /* ── Web search / scraping governance (rate limiting, caching, robots) ── */
+    CREATE TABLE IF NOT EXISTS web_cache (
+      url TEXT PRIMARY KEY,
+      status INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      text TEXT NOT NULL,
+      etag TEXT,
+      fetched_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS web_search_cache (
+      query_hash TEXT PRIMARY KEY,
+      query TEXT NOT NULL,
+      results TEXT NOT NULL,
+      fetched_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS web_host_state (
+      host TEXT PRIMARY KEY,
+      tokens REAL NOT NULL,
+      last_at INTEGER NOT NULL,
+      blocked_until INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS web_robots (
+      host TEXT PRIMARY KEY,
+      rules TEXT NOT NULL,
+      fetched_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL
+    );
   `);
 }
 

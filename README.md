@@ -154,6 +154,89 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
+## 🧩 Phase 2 — The complete citizen platform
+
+RAAHI is no longer only a benefit navigator. It is now a full life-route guide that
+works **with zero API keys** and automatically upgrades itself when `DASHSCOPE_API_KEY`
+is present.
+
+### Languages
+- **Urdu · Pashto · Hindko · English** (`lib/i18n`, `lib/ai/language.ts`).
+- Hindko shares the Arabic script with Urdu, so it falls back to Urdu instead of a
+  machine translation — `hkp → ur → en → ps`.
+- Voice in and voice out: Web Speech for dictation and read-aloud, DashScope
+  `sensevoice-v1` / `qwen-tts` when a key is configured.
+
+### What a citizen can do
+| Area | Route | Backing module |
+| --- | --- | --- |
+| Scholarships (national + international) | `/scholarships` | `data/scholarships.ts` |
+| Documents & attestation | `/documents` | `data/documents.ts` |
+| Tests, IELTS, entry exams, prep plans | `/tests` | `data/tests.ts` |
+| Jobs, internships, training, admissions | `/opportunities` | `data/opportunities.ts` |
+| Important dates & deadlines | `/dates` | `lib/knowledge` |
+| Free medical camps & outbreak early warning | `/health` | `data/health.ts` |
+| Blood donor network | `/blood` | `data/blood.ts`, `lib/community` |
+| Disaster relief & safety training | `/disaster` | `data/disaster.ts` |
+| Legal guidance & free legal aid | `/legal` | `data/legal.ts` |
+| Verified helplines | `/contacts` | `data/contacts.ts` |
+| Save and track every application | `/track` | `lib/applications/tracker.ts` |
+| Knowledge base + corrections | `/kb` | `lib/knowledge`, `lib/knowledge/corrections.ts` |
+| Ask in your own words | `/ask` | `lib/ai/agents.ts` |
+
+### Honesty rules (non-negotiable)
+1. **Never invent a fee.** Unknown amounts are `null` with a note pointing at the
+   official fee page.
+2. **Never invent a date.** Recurring windows are stored as month ranges with a
+   "confirm on the official source" note.
+3. **Every record carries a source** with its authority tier and the date it was
+   verified.
+4. **Corrections are reviewed, never auto-applied.**
+
+### AI modules
+- **Agentic router + specialists** (`lib/ai/agents.ts`) — 12 agents, deterministic
+  routing, each turning a knowledge hit into steps, contacts and a draft application.
+- **Recommendation engine** (`lib/ai/recommend.ts`) — scores opportunities against a
+  citizen profile (province, income, education, goals) and produces a document and
+  test plan.
+- **Vision / OCR** (`lib/ai/vision.ts`) — `qwen-vl-max` when configured; without a key
+  it still decodes the image header, checks resolution and readability, and masks any
+  CNIC number before storage.
+- **Translation** (`lib/ai/translate.ts`) — Qwen when available, glossary otherwise.
+- **Voice** (`lib/ai/voice.ts`) — STT, TTS and a deterministic intent router.
+- **RAG** (`lib/rag/search.ts`, `lib/knowledge`) — FTS5 hybrid search over both the
+  service catalogue and the unified knowledge index.
+
+### Web search & scraping (professional and polite)
+`lib/web/dorking.ts`, `lib/web/scraper.ts`, `lib/web/search.ts`:
+- Operator queries are restricted to a whitelist of trusted publishers
+  (`OFFICIAL_DOMAINS`) — no private data, no credentials, no backup directories.
+- `robots.txt` is fetched, parsed and cached for 24 h; disallowed paths are never
+  requested.
+- A **persisted token bucket** limits requests per host (≈1 per 3 s, burst 3) and
+  backs a host off for 5–10 minutes after a 429 or repeated 5xx.
+- Every page and query result is cached with an ETag / TTL, so a repeated question
+  costs zero network requests.
+- A hard page and byte budget caps any single crawl; live search has a per-minute
+  budget (`RAAHI_LIVE_SEARCH_BUDGET`, default 12).
+- Three layers: verified local knowledge → cached results → live search (Brave,
+  Serper or Google CSE via `BRAVE_SEARCH_API_KEY` / `SERPER_API_KEY` /
+  `GOOGLE_CSE_API_KEY` + `GOOGLE_CSE_CX`). Without a provider, RAAHI still answers
+  from verified knowledge and points at the official publishers.
+
+### Data model additions
+`knowledge_entities` + `knowledge_search` (FTS5) hold every curated record as JSON
+with a flattened searchable index, so new entity types need no migration.
+Transactional tables: `applications`, `application_events`, `blood_requests`,
+`donor_registrations`, `relief_requests`, `corrections`, `web_cache`,
+`web_search_cache`, `web_host_state`, `web_robots`.
+
+```bash
+npm run seed   # now also seeds the unified knowledge index
+```
+
+---
+
 ## 📜 Intellectual Property & Protective License
 
 **Copyright &copy; 2026 Ahmed Raza Ur Rehman. All Rights Reserved.**
