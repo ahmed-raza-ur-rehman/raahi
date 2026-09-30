@@ -23,4 +23,5 @@ export const PUBLIC_ROUTES: { path: string; priority: number; changeFrequency: "
   { path: "/legal", priority: 0.7, changeFrequency: "monthly" },
   { path: "/contacts", priority: 0.8, changeFrequency: "monthly" },
   { path: "/kb", priority: 0.5, changeFrequency: "weekly" },
+  { path: "/privacy", priority: 0.4, changeFrequency: "monthly" },
 ];

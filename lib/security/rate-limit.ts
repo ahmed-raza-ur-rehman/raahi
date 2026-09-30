@@ -93,3 +93,83 @@ export function clientKey(request: Request): string {
   }
   return request.headers.get("x-real-ip") ?? "unknown";
 }
+
+/**
+ * Anonymous cookie we hand a visitor so they get their own budget.
+ *
+ * Pakistan's mobile networks put thousands of people behind a single
+ * carrier-grade NAT address. Keying only on IP would mean the first person to
+ * search for a scholarship could lock out an entire city. So the tight budget
+ * is per visitor, and the IP only carries a generous ceiling to catch someone
+ * hammering us.
+ *
+ * It is a random string and nothing else: no login, no profile, no tracking.
+ */
+export const VISITOR_COOKIE = "raahi_vid";
+
+export function newVisitorId(): string {
+  return crypto.randomUUID();
+}
+
+export function readVisitorId(request: Request): string | undefined {
+  const header = request.headers.get("cookie");
+  if (!header) return undefined;
+  for (const part of header.split(";")) {
+    const [name, ...rest] = part.trim().split("=");
+    if (name === VISITOR_COOKIE) {
+      const value = rest.join("=").trim();
+      if (value.length > 0) return value.slice(0, 64);
+    }
+  }
+  return undefined;
+}
+
+/**
+ * A short, stable hash of the browser's own headers, used only until the
+ * visitor has a cookie (their very first request). Deliberately excludes the
+ * IP: including it would re-create the shared-address problem this solves.
+ */
+function browserFingerprint(request: Request): string {
+  const material = [request.headers.get("user-agent") ?? "", request.headers.get("accept-language") ?? ""].join("|");
+
+  let hash = 2166136261;
+  for (let index = 0; index < material.length; index += 1) {
+    hash ^= material.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+/**
+ * How many legitimate visitors may share one address before we treat it as
+ * abuse. Generous on purpose - a university, an internet cafe and a whole
+ * mobile carrier can all sit behind one IP.
+ */
+const IP_HEADROOM = 25;
+const IP_ABSOLUTE_CEILING = 600;
+
+function ipCeiling(limit: number): number {
+  return Math.min(limit * IP_HEADROOM, IP_ABSOLUTE_CEILING);
+}
+
+/**
+ * Enforce both budgets and return the tighter answer.
+ *
+ * Tier 1 - the visitor: the budget a real person experiences.
+ * Tier 2 - the address: a loose ceiling, so that rotating cookies does not buy
+ * an attacker unlimited requests from one place.
+ */
+export function rateLimitRequest(request: Request, pathname: string): RateLimitResult {
+  const budget = budgetFor(pathname);
+
+  const visitor = readVisitorId(request) ?? `ua:${browserFingerprint(request)}`;
+  const perVisitor = rateLimit(`v:${visitor}:${pathname}`, budget.limit, budget.windowMs);
+  const perIp = rateLimit(`ip:${clientKey(request)}:${pathname}`, ipCeiling(budget.limit), budget.windowMs);
+
+  // Either bucket being exhausted is enough to say no.
+  if (!perVisitor.allowed) return perVisitor;
+  if (!perIp.allowed) return perIp;
+
+  // Both allowed: report the tighter one so the header is honest.
+  return perVisitor.remaining <= perIp.remaining ? perVisitor : perIp;
+}

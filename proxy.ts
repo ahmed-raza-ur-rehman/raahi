@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { budgetFor, clientKey, rateLimit } from "@/lib/security/rate-limit";
+import { newVisitorId, rateLimitRequest, readVisitorId, VISITOR_COOKIE } from "@/lib/security/rate-limit";
 
 /**
  * Security headers on every response.
@@ -64,15 +64,39 @@ function securityHeaders(response: NextResponse, isProduction: boolean): NextRes
   return response;
 }
 
+/**
+ * The cookie is httpOnly so a page script cannot read or rewrite it, and
+ * first-party so it only ever reaches us.
+ */
+function setVisitorCookie(response: NextResponse, value: string, isProduction: boolean): void {
+  response.cookies.set({
+    name: VISITOR_COOKIE,
+    value,
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    secure: isProduction,
+  });
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isProduction = process.env.NODE_ENV === "production";
 
+  /**
+   * Give every visitor their own anonymous id, so that thousands of people
+   * sharing one carrier-NAT address do not share one rate-limit bucket. It is
+   * a random string used only for this: no login, no profile, no tracking.
+   */
+  const existingVisitor = readVisitorId(request);
+  const visitorId = existingVisitor ?? newVisitorId();
+  const issueCookie = existingVisitor === undefined;
+
   // Only the API is rate limited; pages stay freely reachable, including for
   // someone on a shared mobile IP.
   if (pathname.startsWith("/api/")) {
-    const budget = budgetFor(pathname);
-    const result = rateLimit(`${clientKey(request)}:${pathname}`, budget.limit, budget.windowMs);
+    const result = rateLimitRequest(request, pathname);
 
     if (!result.allowed) {
       const response = NextResponse.json(
@@ -85,16 +109,22 @@ export function proxy(request: NextRequest) {
       response.headers.set("Retry-After", String(result.retryAfter));
       response.headers.set("X-RateLimit-Limit", String(result.limit));
       response.headers.set("X-RateLimit-Remaining", "0");
-      return securityHeaders(response, isProduction);
+      const denied = securityHeaders(response, isProduction);
+      if (issueCookie) setVisitorCookie(denied, visitorId, isProduction);
+      return denied;
     }
 
     const response = NextResponse.next();
     response.headers.set("X-RateLimit-Limit", String(result.limit));
     response.headers.set("X-RateLimit-Remaining", String(result.remaining));
-    return securityHeaders(response, isProduction);
+    const secured = securityHeaders(response, isProduction);
+    if (issueCookie) setVisitorCookie(secured, visitorId, isProduction);
+    return secured;
   }
 
-  return securityHeaders(NextResponse.next(), isProduction);
+  const response = securityHeaders(NextResponse.next(), isProduction);
+  if (issueCookie) setVisitorCookie(response, visitorId, isProduction);
+  return response;
 }
 
 export const config = {

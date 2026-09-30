@@ -2,7 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { apiErrorText } from "@/lib/i18n/api-errors";
-import { budgetFor, rateLimit } from "@/lib/security/rate-limit";
+import {
+  budgetFor,
+  newVisitorId,
+  rateLimit,
+  rateLimitRequest,
+  readVisitorId,
+} from "@/lib/security/rate-limit";
 
 /* ─────────────────── Errors people can actually read ─────────────────── */
 
@@ -82,4 +88,64 @@ test("expensive endpoints get a smaller budget than cheap ones", () => {
 
   assert.ok(ask.limit < local.limit, "a model call must be capped tighter than a local read");
   assert.equal(budgetFor("/api/vision").limit <= 10, true, "OCR is expensive and must stay small");
+});
+
+/* ─────────────────── Shared addresses (CGNAT) ─────────────────── */
+
+test("visitors behind one shared address each get their own budget", () => {
+  const shared = new Request("http://localhost/api/ask", {
+    headers: { "x-forwarded-for": "10.9.9.9" },
+  });
+
+  // /api/ask allows 20 per minute. Two different people on the same mobile
+  // carrier must not be sharing those 20 requests between them.
+  const personA = new Request("http://localhost/api/ask", {
+    headers: { "x-forwarded-for": "10.9.9.9", cookie: "raahi_vid=person-a" },
+  });
+  const personB = new Request("http://localhost/api/ask", {
+    headers: { "x-forwarded-for": "10.9.9.9", cookie: "raahi_vid=person-b" },
+  });
+
+  for (let index = 0; index < 20; index += 1) {
+    assert.equal(rateLimitRequest(personA, "/api/ask").allowed, true, "person A should have their own 20");
+  }
+  assert.equal(rateLimitRequest(personA, "/api/ask").allowed, false, "person A is now over their limit");
+
+  assert.equal(rateLimitRequest(personB, "/api/ask").allowed, true, "person B is unaffected by person A");
+  assert.equal(rateLimitRequest(shared, "/api/ask").allowed, true, "so is a brand new visitor");
+});
+
+test("the shared address still has a ceiling, so rotating cookies is not unlimited", () => {
+  // Burn through the IP ceiling with a different cookie every time.
+  let allowed = 0;
+  for (let index = 0; index < 700; index += 1) {
+    const request = new Request("http://localhost/api/ask", {
+      headers: { "x-forwarded-for": "203.0.113.7", cookie: `raahi_vid=rotating-${index}` },
+    });
+    if (rateLimitRequest(request, "/api/ask").allowed) allowed += 1;
+  }
+  assert.ok(allowed > 0, "a fresh address should not be blocked outright");
+  assert.ok(allowed < 700, `one address must not get unlimited requests (got ${allowed})`);
+});
+
+test("a visitor without a cookie yet is still counted", () => {
+  const request = new Request("http://localhost/api/ask", {
+    headers: { "x-forwarded-for": "198.51.100.4", "user-agent": "test-browser" },
+  });
+  let allowed = 0;
+  for (let index = 0; index < 25; index += 1) {
+    if (rateLimitRequest(request, "/api/ask").allowed) allowed += 1;
+  }
+  assert.ok(allowed <= 20, "the cookieless fallback must not be more generous than a real visitor");
+});
+
+test("the visitor cookie is read from a realistic cookie header", () => {
+  assert.equal(newVisitorId().length > 10, true);
+  assert.notEqual(newVisitorId(), newVisitorId(), "every visitor gets a distinct id");
+
+  const withOthers = new Request("http://localhost/api/ask", {
+    headers: { cookie: "theme=dark; raahi_vid=abc-123; other=1" },
+  });
+  assert.equal(readVisitorId(withOthers), "abc-123");
+  assert.equal(readVisitorId(new Request("http://localhost/api/ask")), undefined);
 });

@@ -16,13 +16,7 @@ process.env.RAAHI_DB_PATH = join(process.cwd(), "data", "raahi.planb.test.db");
 import { processDocument } from "@/lib/ai/ocr";
 import { translateText } from "@/lib/ai/translate";
 import { synthesizeSpeech, transcribeAudio } from "@/lib/ai/voice";
-import {
-  isCircuitOpen,
-  providerHealth,
-  recordFailure,
-  recordSuccess,
-  withProvider,
-} from "@/lib/ai/resilience";
+import { isCircuitOpen, providerHealth, recordSuccess, withProvider } from "@/lib/ai/resilience";
 import { seedDatabase } from "@/lib/db/seed";
 import { createDashScopeEmbedding } from "@/lib/rag/embeddings";
 import { searchServicesHybrid } from "@/lib/rag/search";

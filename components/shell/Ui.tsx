@@ -5,6 +5,7 @@ import React from "react";
 
 import { useLanguage } from "./LanguageProvider";
 import type { Citation, Localized, SourceRef } from "@/lib/types";
+import { describeAge, freshnessOf, type FreshnessState, type VerifiableKind } from "@/lib/freshness";
 
 /* ────────────────────────────────────────────────────────────────
  * Design language: huge touch targets, one idea per card, emoji
@@ -161,7 +162,43 @@ export function Button({
   );
 }
 
-export function SourceChip({ source }: { source: SourceRef | Citation }) {
+/**
+ * How much a reader should trust this, at a glance. A date on its own means
+ * nothing to someone deciding whether to travel across town; "may be out of
+ * date" does.
+ */
+export function FreshnessBadge({
+  lastVerified,
+  kind = "general",
+}: {
+  lastVerified?: string;
+  kind?: VerifiableKind;
+}) {
+  const { language, L } = useLanguage();
+  const freshness = freshnessOf(lastVerified, kind);
+
+  const tones: Record<FreshnessState, string> = {
+    fresh: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    aging: "bg-amber-50 text-amber-700 border-amber-200",
+    stale: "bg-rose-50 text-rose-700 border-rose-200",
+    unknown: "bg-[var(--surface-2)] text-[var(--muted)] border-[var(--line)]",
+  };
+  const marks: Record<FreshnessState, string> = { fresh: "✓", aging: "•", stale: "⚠", unknown: "?" };
+  const age = describeAge(freshness.days, language);
+
+  return (
+    <span
+      title={lastVerified ? `${L(freshness.label)} — ${lastVerified}` : L(freshness.label)}
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${tones[freshness.state]}`}
+    >
+      <span aria-hidden="true">{marks[freshness.state]}</span>
+      {L(freshness.label)}
+      {age ? ` · ${age}` : ""}
+    </span>
+  );
+}
+
+export function SourceChip({ source, kind }: { source: SourceRef | Citation; kind?: VerifiableKind }) {
   const { t } = useLanguage();
   const url = "url" in source ? source.url : source.sourceUrl;
   const title = "title" in source ? source.title : source.sourceTitle;
@@ -177,7 +214,7 @@ export function SourceChip({ source }: { source: SourceRef | Citation }) {
     >
       <span className={`tier-${Math.min(3, Math.max(1, tier))} rounded px-1.5 py-0.5`}>T{tier}</span>
       <span className="truncate">{title}</span>
-      <span className="text-[var(--muted-light)]">· {verified}</span>
+      <FreshnessBadge lastVerified={verified} kind={kind} />
       <span aria-hidden>↗</span>
       <span className="sr-only">{t("source")}</span>
     </a>

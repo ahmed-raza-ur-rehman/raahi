@@ -66,6 +66,17 @@ export default function MorePage() {
         </div>
       </Section>
 
+      <Section title={language === "en" ? "Your information" : "آپ کی معلومات"}>
+        <div className="grid gap-2 text-[12px]">
+          <Link
+            href="/privacy"
+            className="rounded-xl border border-[var(--line)] bg-white p-3 font-bold hover:border-[var(--forest)]"
+          >
+            🔒 {language === "en" ? "Privacy — what we keep and what we pass on" : "رازداری — ہم کیا رکھتے اور کیا آگے بھیجتے ہیں"}
+          </Link>
+        </div>
+      </Section>
+
       <Card className="mt-5 bg-[var(--surface-2)]">
         <p className="text-[11.5px] leading-relaxed text-[var(--muted)]">
           {language === "en"

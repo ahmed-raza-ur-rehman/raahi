@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 
 import { useLanguage } from "@/components/shell/LanguageProvider";
-import { Badge, Button, Card, Empty, Field, FilterPills, Loader, Section, inputClass } from "@/components/shell/Ui";
+import { Badge, Button, Card, Empty, Field, FilterPills, FreshnessBadge, Loader, Section, inputClass } from "@/components/shell/Ui";
 import { apiPost } from "@/lib/client/useApi";
 import { apiErrorText } from "@/lib/i18n/api-errors";
 import type { KnowledgeHit, WebSearchResult } from "@/lib/types";
@@ -135,7 +135,7 @@ function KnowledgeBasePageInner() {
                   <a href={hit.source.url} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-[var(--forest)]">
                     {hit.source.title} ↗
                   </a>
-                  <span className="text-[10px] text-[var(--muted-light)]">· {hit.source.lastVerified}</span>
+                  <FreshnessBadge lastVerified={hit.source.lastVerified} />
                   <Link
                     href={`/kb?correct=${hit.entityId}&type=${hit.entityType}&tab=correct`}
                     className="text-[11px] font-bold text-[var(--muted)]"
