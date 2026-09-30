@@ -66,7 +66,9 @@ export const disasterChannels: DisasterChannel[] = [
     name: L("NDMA — National Disaster Management Authority", "این ڈی ایم اے", "د ملي آفتونو اداره"),
     authority: "NDMA",
     scope: ["Pakistan"],
-    numbers: [],
+    // NDMA's published 24/7 emergency UAN and its Islamabad landline
+    // (verified on ndma.gov.pk and pakistan.gov.pk).
+    numbers: ["051-111-157-157", "051-9205037"],
     whatTheyDo: L(
       "National coordination, early warnings, large-scale relief planning and support to provincial authorities.",
       "قومی سطح پر ہم آہنگی، پیشگی وارننگ، بڑے پیمانے پر ریلیف کی منصوبہ بندی اور صوبائی اداروں کی معاونت۔",
@@ -89,7 +91,8 @@ export const disasterChannels: DisasterChannel[] = [
     name: L("Pakistan Red Crescent", "پاکستان ریڈ کریسنٹ", "د پاکستان سره میاشت"),
     authority: "Pakistan Red Crescent Society",
     scope: ["Pakistan"],
-    numbers: [],
+    // National HQ, Islamabad, as listed in the IFRC national-society directory.
+    numbers: ["051-9250404"],
     whatTheyDo: L("Relief goods, tents, water, medical camps, first aid and blood services during disasters.", "آفات کے وقت ریلیف سامان، خیمے، پانی، طبی کیمپ، فرسٹ ایڈ اور خون کی سہولت۔"),
     howToRequest: [
       step(1, "Contact your provincial branch", "اپنے صوبے کی برانچ سے رابطہ کریں",
@@ -109,7 +112,8 @@ export const disasterChannels: DisasterChannel[] = [
     name: L("Alkhidmat Disaster Management", "الخدمت ڈیزاسٹر مینجمنٹ", "د الخدمت د آفتونو څانګه"),
     authority: "Alkhidmat Foundation Pakistan",
     scope: ["Pakistan"],
-    numbers: [],
+    // Toll-free line published on alkhidmat.org, plus the Lahore head office.
+    numbers: ["0800-44448", "042-38020222"],
     whatTheyDo: L("Emergency relief, shelter, food packs, water, medical camps and rehabilitation after floods and earthquakes.", "سیلاب اور زلزلے کے بعد ہنگامی امداد، پناہ گاہیں، راشن، پانی، طبی کیمپ اور بحالی۔"),
     howToRequest: [
       step(1, "Report the affected area to the regional office", "متاثرہ علاقے کی اطلاع علاقائی دفتر کو دیں",
