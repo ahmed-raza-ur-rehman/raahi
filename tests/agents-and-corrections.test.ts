@@ -66,7 +66,7 @@ test("the workflow answers a scholarship question with sourced hits", async () =
   assert.ok(response.answer.en, "an answer must be provided");
   assert.ok(response.hits.length > 0, "the answer must be grounded in the knowledge base");
   assert.ok(response.trace.length > 0, "the agent must explain what it did");
-  assert.equal(response.emergency, undefined ?? response.emergency);
+  assert.notEqual(response.emergency, true, "an ordinary question is not an emergency");
 });
 
 test("the workflow works without any API key configured", async () => {
@@ -90,7 +90,7 @@ test("an emergency short-circuits everything else", async () => {
   assert.equal(response.emergency, true, "emergencies must be flagged");
   assert.ok(response.contacts.length > 0, "emergency numbers must be shown");
   assert.ok(
-    response.contacts.some((contact) => contact.phone.includes("1122")),
+    response.contacts.some((contact) => (contact.phone ?? "").includes("1122")),
     "Rescue 1122 must be among them",
   );
   assert.equal(response.hits.length, 0, "no ordinary results during an emergency");

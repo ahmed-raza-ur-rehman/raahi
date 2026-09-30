@@ -38,7 +38,9 @@ function newApplication(deadline?: string) {
     title: { en: "Ehsaas Undergraduate", ur: "احساس انڈر گریجویٹ" },
     ...(deadline ? { deadline } : {}),
     stages: stages.map((stage) => ({ ...stage })),
-    documents: [{ id: "d1", documentType: "cnic", label: { en: "CNIC", ur: "شناختی کارڈ" }, status: "missing" }],
+    documents: [
+      { id: "d1", documentType: "cnic", label: { en: "CNIC", ur: "شناختی کارڈ" }, status: "missing", updatedAt: new Date().toISOString() },
+    ],
   });
 }
 

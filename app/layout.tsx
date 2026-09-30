@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 import { LanguageProvider } from "@/components/shell/LanguageProvider";
+import { SITE_URL } from "@/lib/site";
+import { ServiceWorkerBridge } from "@/components/shell/ServiceWorkerBridge";
 
 /**
  * Zoom stays enabled: many of the people Raahi is built for need to enlarge
@@ -14,6 +16,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  // Without this, canonical and Open Graph URLs stay relative, which crawlers
+  // treat as ambiguous.
+  metadataBase: new URL(SITE_URL),
   title: "RAAHI — Pakistan's Service Navigator",
   description:
     "RAAHI guides Pakistani citizens to verified government, welfare, health, education and legal services in Urdu, Pashto, Hindko and English.",
@@ -41,6 +46,9 @@ export default function RootLayout({
           we would rather degrade to system fonts than fail a deploy.
           TODO: self-host these two families so we drop the third-party request.
         */}
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" />
+        <link rel="icon" href="/icons/raahi.svg" type="image/svg+xml" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
@@ -49,6 +57,7 @@ export default function RootLayout({
       </head>
       <body>
         <LanguageProvider>{children}</LanguageProvider>
+        <ServiceWorkerBridge />
       </body>
     </html>
   );

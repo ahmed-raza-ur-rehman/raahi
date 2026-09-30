@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 process.env.RAAHI_DB_PATH = join(process.cwd(), "data", "raahi.web.test.db");
 
+import { getSqlite } from "@/lib/db/client";
 import { seedDatabase } from "@/lib/db/seed";
 import {
   OFFICIAL_DOMAINS,
@@ -24,7 +25,6 @@ function spendTokenForTest(host: string) {
   checkRateLimit(host);
   // Force the next refill to see one fewer token by advancing time is not
   // possible here, so emulate the spend directly against the host state.
-  const { getSqlite } = require("@/lib/db/client") as typeof import("@/lib/db/client");
   const row = getSqlite()
     .prepare("SELECT tokens FROM web_host_state WHERE host = ?")
     .get(host) as { tokens: string } | undefined;
@@ -65,7 +65,7 @@ test("a known publisher resolves to a readable name", () => {
 test("dork queries stay inside official domains", () => {
   const sites = Object.keys(OFFICIAL_DOMAINS).slice(0, 2);
 
-  const dork = buildDork({ exactPhrases: ["Ehsaas scholarship"], sites });
+  const dork = buildDork({ terms: [], exactPhrases: ["Ehsaas scholarship"], sites });
   assert.ok(dork.includes("site:"), "a dork must constrain the site");
   assert.ok(dork.includes("Ehsaas scholarship"), "the phrase must be preserved");
   for (const site of sites) assert.ok(dork.includes(site), `${site} must be in the dork`);

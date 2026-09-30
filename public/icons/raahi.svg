@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="RAAHI">
+  <defs>
+    <linearGradient id="raahi-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12855f"/>
+      <stop offset="1" stop-color="#0a4f3a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#raahi-bg)"/>
+
+  <!--
+    A route: a start point, a road, a destination.
+    No text and no fine detail, so it stays legible at 48px and needs no
+    font — the mark must not depend on a webfont that may never load.
+  -->
+  <path d="M150 372C150 292 214 258 262 234c40-20 58-42 58-74"
+        fill="none" stroke="#ffffff" stroke-width="46" stroke-linecap="round" opacity="0.32"/>
+
+  <path d="M150 372C150 292 214 258 262 234c40-20 58-42 58-74"
+        fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round"/>
+
+  <circle cx="150" cy="372" r="40" fill="#ffffff"/>
+  <circle cx="320" cy="160" r="56" fill="#ffffff"/>
+  <circle cx="320" cy="160" r="26" fill="#0f6b4f"/>
+</svg>
