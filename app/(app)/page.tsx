@@ -7,7 +7,7 @@ import { useLanguage } from "@/components/shell/LanguageProvider";
 import { VoiceButton } from "@/components/shell/VoiceButton";
 import { Badge, BigTile, CallButton, Card, Loader, Section, inputClass } from "@/components/shell/Ui";
 import { useApi } from "@/lib/client/useApi";
-import { EMERGENCY_NUMBERS } from "@/data/contacts";
+import { EMERGENCY_NUMBERS } from "@/data/emergency";
 import type { ImportantDate } from "@/lib/types";
 
 export default function HomePage() {

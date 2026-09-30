@@ -696,7 +696,6 @@ export const documentRecipes: DocumentRecipe[] = [
   },
 ];
 
-export const documentsById = new Map(documentRecipes.map((record) => [record.id, record]));
 
 export function documentsByType(type: string): DocumentRecipe | undefined {
   return documentRecipes.find((record) => record.type === type);

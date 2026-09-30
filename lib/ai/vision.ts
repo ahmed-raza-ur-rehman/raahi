@@ -213,11 +213,6 @@ export async function analyzeDocument(imageBase64: string, expectedType?: string
 }
 
 /** Checklist shown next to the camera so the first photo is usable. */
-export const PHOTO_CHECKLIST = [
-  "Place the document on a flat, plain surface in daylight.",
-  "Fill the frame with the document — no table edges.",
-  "Make sure all four corners are visible.",
-  "Avoid glare: do not use flash directly on laminated cards.",
-  "Check that every word is readable before you press save.",
-  "Never photograph a document for someone else without their permission.",
-];
+// Re-exported so existing imports keep working. The definition lives in
+// ./photo-checklist so the browser can use it without the model SDK.
+export { PHOTO_CHECKLIST } from "./photo-checklist";

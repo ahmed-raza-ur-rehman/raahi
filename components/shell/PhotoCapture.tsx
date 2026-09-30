@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import { useLanguage } from "./LanguageProvider";
 import { Badge, Card, Loader } from "./Ui";
-import { PHOTO_CHECKLIST } from "@/lib/ai/vision";
+import { PHOTO_CHECKLIST } from "@/lib/ai/photo-checklist";
 
 interface VisionPayload {
   vision: {

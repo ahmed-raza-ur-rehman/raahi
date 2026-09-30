@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useLanguage } from "@/components/shell/LanguageProvider";
 import { Badge, Button, CallButton, Card, Field, FilterPills, Loader, Section, StepList, inputClass } from "@/components/shell/Ui";
 import { apiPost, useApi } from "@/lib/client/useApi";
-import { BLOOD_GROUPS, compatibleDonors, bloodRequestSteps, bloodDonationSteps, donorEligibility } from "@/data/blood";
+import { BLOOD_GROUPS, compatibleDonors, bloodRequestSteps, bloodDonationSteps, donorEligibility } from "@/data/blood-basics";
 
 type Mode = "need" | "donate" | "banks";
 

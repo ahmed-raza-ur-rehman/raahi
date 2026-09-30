@@ -281,14 +281,7 @@ export const disasterGuides: DisasterGuide[] = [
   },
 ];
 
-export const disasterChannelsById = new Map(disasterChannels.map((record) => [record.id, record]));
-export const disasterGuidesById = new Map(disasterGuides.map((record) => [record.id, record]));
 
-export const HAZARDS = [
-  { id: "flood", label: L("Flood", "سیلاب", "سېلاب") },
-  { id: "earthquake", label: L("Earthquake", "زلزلہ", "زلزله") },
-  { id: "fire", label: L("Fire", "آگ", "اور") },
-  { id: "storm", label: L("Storm / heavy rain", "طوفان / تیز بارش", "توفان") },
-  { id: "landslide", label: L("Landslide", "لینڈ سلائیڈنگ", "د ځمکې ښوېدنه") },
-  { id: "drought", label: L("Drought", "قحط سالی", "وچکالي") },
-];
+// Re-exported: the definition lives in ./hazards so the disaster screen
+// (a client component) can use it without the whole disaster corpus.
+export { HAZARDS } from "./hazards";

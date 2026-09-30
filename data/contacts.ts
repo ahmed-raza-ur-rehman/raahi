@@ -454,12 +454,8 @@ export const contacts: ContactRecord[] = [
   },
 ];
 
-export const contactsById = new Map(contacts.map((contact) => [contact.id, contact]));
 
 /** Emergency numbers shown first on every screen. */
-export const EMERGENCY_NUMBERS = [
-  { label: L("Rescue / Ambulance", "ریسکیو / ایمبولینس", "ژغورنه"), number: "1122" },
-  { label: L("Edhi Ambulance", "ایدھی ایمبولینس", "ایدهي امبولانس"), number: "115" },
-  { label: L("Police", "پولیس", "پولیس"), number: "15" },
-  { label: L("Fire Brigade", "فائر بریگیڈ", "د اور وژنه"), number: "16" },
-];
+// Re-exported: the definition lives in ./emergency so the home screen
+// (a client component) can show these without pulling in the whole corpus.
+export { EMERGENCY_NUMBERS } from "./emergency";

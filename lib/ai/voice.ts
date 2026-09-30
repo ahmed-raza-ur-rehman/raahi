@@ -1,4 +1,5 @@
 import { getDashScopeClient, isDashScopeConfigured } from "./client";
+import { SPEECH_TAGS } from "./speech-tags";
 import { withProvider } from "./resilience";
 import type { Language } from "@/lib/types";
 
@@ -10,17 +11,10 @@ export interface TranscriptionResult {
 }
 
 /** BCP-47 / platform tags for browser speech engines. */
-export const SPEECH_TAGS: Record<Language, { speech: string; tts: string; label: string }> = {
-  en: { speech: "en-PK", tts: "en-GB", label: "English" },
-  ur: { speech: "ur-PK", tts: "ur-PK", label: "اردو" },
-  ps: { speech: "ps-AF", tts: "ps-AF", label: "پښتو" },
-  hkp: { speech: "ur-PK", tts: "ur-PK", label: "ہندکو (اردو رسم الخط)" },
-};
-
-/** Languages whose script is written right-to-left, for UI layout. */
-export function isRtlLanguage(language: Language): boolean {
-  return language !== "en";
-}
+// Re-exported so server code keeps its existing import. The definition lives
+// in ./speech-tags, which has no SDK import, so client components can use it
+// without pulling the model library into the browser bundle.
+export { SPEECH_TAGS, isRtlLanguage } from "./speech-tags";
 
 /**
  * Speech-to-text. Uses DashScope SenseVoice when configured; otherwise returns

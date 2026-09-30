@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { useLanguage } from "./LanguageProvider";
-import { SPEECH_TAGS } from "@/lib/ai/voice";
+import { SPEECH_TAGS } from "@/lib/ai/speech-tags";
 import type { Language } from "@/lib/types";
 import { recognitionConstructor, type SpeechRecognitionLike } from "@/lib/client/speech";
 

@@ -5,7 +5,7 @@ import React, { useMemo, useState } from "react";
 import { useLanguage } from "@/components/shell/LanguageProvider";
 import { Badge, Button, CallButton, Card, Field, Loader, Section, StepList, inputClass } from "@/components/shell/Ui";
 import { apiPost, useApi } from "@/lib/client/useApi";
-import { HAZARDS } from "@/data/disaster";
+import { HAZARDS } from "@/data/hazards";
 import type { DisasterChannel, DisasterGuide } from "@/lib/types";
 
 interface DisasterPayload {
