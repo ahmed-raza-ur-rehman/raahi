@@ -4,6 +4,7 @@ import { pick } from "@/lib/i18n";
 import { detectSafetySignals } from "@/lib/safety/detect";
 import { appendDomainSafetyDisclaimer } from "@/lib/safety/guardrails";
 import { getDashScopeClient, isDashScopeConfigured } from "./client";
+import { withProvider } from "./resilience";
 import { detectIntent, type VoiceIntent } from "./voice";
 import type {
   AgentResponse,
@@ -565,28 +566,34 @@ async function polishWithModel(
   language: Language,
   hits: { title: string; summary: string; source: { url: string; lastVerified: string } }[],
 ): Promise<string | undefined> {
+  // Plan B is the whole point: when the model is unavailable the caller keeps
+  // the deterministic, already-grounded answer built from verified records.
   if (!isDashScopeConfigured()) return undefined;
-  try {
-    const client = getDashScopeClient();
-    const context = hits
-      .map((hit, index) => `[${index + 1}] ${hit.title}\n${hit.summary}\nSource: ${hit.source.url} (verified ${hit.source.lastVerified})`)
-      .join("\n\n");
 
-    const response = await client?.chat.completions.create({
-      model: "qwen-plus",
-      temperature: 0.2,
-      max_tokens: 700,
-      messages: [
-        {
-          role: "system",
-          content: `You are RAAHI, a Pakistani citizen service guide. Write in ${language === "en" ? "English" : language === "ps" ? "Pashto" : "Urdu"} at a 10-year-old's reading level. Use ONLY the verified context. Never invent a fee, date, phone number or requirement. If something is missing, say to confirm on the official source. Reply with 2-4 short sentences and no markdown.`,
-        },
-        { role: "user", content: `Question: ${query}\n\nVerified context:\n${context}` },
-      ],
-    });
-    const content = response?.choices?.[0]?.message?.content?.trim();
-    return content && content.length > 0 ? content : undefined;
-  } catch {
-    return undefined;
-  }
+  return withProvider<string | undefined>("dashscope-chat", {
+    timeoutMs: 10_000,
+    label: "polish",
+    call: async () => {
+      const client = getDashScopeClient();
+      const context = hits
+        .map((hit, index) => `[${index + 1}] ${hit.title}\n${hit.summary}\nSource: ${hit.source.url} (verified ${hit.source.lastVerified})`)
+        .join("\n\n");
+
+      const response = await client?.chat.completions.create({
+        model: "qwen-plus",
+        temperature: 0.2,
+        max_tokens: 700,
+        messages: [
+          {
+            role: "system",
+            content: `You are RAAHI, a Pakistani citizen service guide. Write in ${language === "en" ? "English" : language === "ps" ? "Pashto" : "Urdu"} at a 10-year-old's reading level. Use ONLY the verified context. Never invent a fee, date, phone number or requirement. If something is missing, say to confirm on the official source. Reply with 2-4 short sentences and no markdown.`,
+          },
+          { role: "user", content: `Question: ${query}\n\nVerified context:\n${context}` },
+        ],
+      });
+      const content = response?.choices?.[0]?.message?.content?.trim();
+      return content && content.length > 0 ? content : undefined;
+    },
+    fallback: () => undefined,
+  });
 }

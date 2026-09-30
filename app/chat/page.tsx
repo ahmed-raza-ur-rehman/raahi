@@ -209,15 +209,22 @@ function ChatPageInner() {
         });
 
         const data = await res.json();
-        const extracted = data.result;
+        const extracted = data.result as
+          | { available: boolean; documentType?: string; fields?: Record<string, string>; note?: string }
+          | undefined;
 
-        const responseMsg = extracted
-          ? `📋 **دستاویز کی جانچ مکمل / Document Analyzed:**\n- نوعیت: **${extracted.documentType}**\n${
-              extracted.fields?.cnicNumber ? `- CNIC: ${extracted.fields.cnicNumber}\n` : ""
-            }${extracted.fields?.name ? `- نام: ${extracted.fields.name}\n` : ""}${
-              extracted.fields?.familyHead ? `- سربراہ خاندان: ${extracted.fields.familyHead}\n` : ""
-            }\n${extracted.notes || ""}`
-          : "دستاویز کی جانچ میں دشواری ہوئی۔ براہ کرم صاف تصویر اپ لوڈ کریں۔";
+        // When automatic reading is unavailable, say so plainly. Never print a
+        // field the model did not actually read.
+        const responseMsg =
+          extracted?.available && extracted.fields && Object.keys(extracted.fields).length > 0
+            ? `📋 **دستاویز کی جانچ مکمل / Document Analyzed:**\n- نوعیت: **${extracted.documentType ?? ""}**\n${Object.entries(
+                extracted.fields,
+              )
+                .map(([key, value]) => `- ${key}: ${value}`)
+                .join("\n")}\n\n_براہ کرم ہر فیلڈ اپنی دستاویز سے ملا کر دیکھیں۔_`
+            : `📄 **دستاویز خودکار طور پر نہیں پڑھی جا سکی / The document could not be read automatically.**\n\n${
+                extracted?.note ?? ""
+              }\n\nآپ تصویر محفوظ کر سکتے ہیں اور تفصیلات خود لکھ سکتے ہیں۔`;
 
         setMessages((prev) => [
           ...prev,

@@ -1,4 +1,5 @@
 import { getDashScopeClient, isDashScopeConfigured } from "./client";
+import { withProvider } from "./resilience";
 
 export interface VisionCheck {
   ok: boolean;
@@ -133,64 +134,82 @@ export async function analyzeDocument(imageBase64: string, expectedType?: string
     };
   }
 
-  try {
-    const client = getDashScopeClient();
-    const response = await client?.chat.completions.create({
-      model: "qwen-vl-max",
-      temperature: 0,
-      max_tokens: 700,
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: STRUCTURED_PROMPT },
-            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${clean}` } },
-          ] as never,
-        },
-      ],
-    });
-    const content = response?.choices?.[0]?.message?.content;
-    if (content && typeof content === "string") {
-      const parsed = parseJson(content);
-      if (parsed) {
-        const fields: Record<string, string> = {};
-        let piiMasked = false;
-        for (const [key, value] of Object.entries(parsed.fields ?? {})) {
-          const text = String(value ?? "");
-          const masked = maskCnic(text);
-          if (masked !== text) piiMasked = true;
-          fields[key] = masked;
-        }
-        const issues = (parsed.issues ?? []).map((issue) => ({
-          ok: false,
-          severity: "warn" as const,
-          code: "vision_issue",
-          message: String(issue),
-        }));
-        return {
-          documentType: parsed.documentType ?? expectedType ?? "other",
-          confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.6,
-          fields,
-          checks: [...checks, ...issues],
-          quality,
-          simulated: false,
-          piiMasked,
-        };
-      }
-    }
-  } catch {
-    // fall through to the offline result
-  }
-
-  return {
+  // Plan B: the offline result, which still gives the citizen a real answer
+  // (whether their photo is usable) even with no model at all.
+  const offline = (note: string, failed = false): VisionResult => ({
     documentType: expectedType ?? "unknown",
     confidence: 0,
-    fields: { note: "The document could not be analysed. Please try a clearer photo." },
-    checks: [...checks, { ok: false, severity: "error", code: "analysis_failed", message: "The document could not be analysed. Please take a clearer photo." }],
+    fields: { note },
+    checks: [
+      ...checks,
+      failed
+        ? { ok: false, severity: "error" as const, code: "analysis_failed", message: "The document could not be analysed. Please take a clearer photo." }
+        : { ok: true, severity: "warn" as const, code: "vision_offline", message: "Automatic text reading is unavailable right now. The photo checks below are still valid." },
+    ],
     quality,
     simulated: true,
     piiMasked: false,
-  };
+  });
+
+  const analysed = await withProvider<VisionResult | undefined>("dashscope-vision", {
+    timeoutMs: 12_000,
+    label: "vision",
+    call: async () => {
+      const client = getDashScopeClient();
+      const response = await client?.chat.completions.create({
+        model: "qwen-vl-max",
+        temperature: 0,
+        max_tokens: 700,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: STRUCTURED_PROMPT },
+              { type: "image_url", image_url: { url: `data:image/jpeg;base64,${clean}` } },
+            ] as never,
+          },
+        ],
+      });
+      const content = response?.choices?.[0]?.message?.content;
+      if (!content || typeof content !== "string") return undefined;
+      const parsed = parseJson(content);
+      if (!parsed) return undefined;
+
+      const fields: Record<string, string> = {};
+      let piiMasked = false;
+      for (const [key, value] of Object.entries(parsed.fields ?? {})) {
+        const text = String(value ?? "");
+        const masked = maskCnic(text);
+        if (masked !== text) piiMasked = true;
+        fields[key] = masked;
+      }
+      const issues = (parsed.issues ?? []).map((issue) => ({
+        ok: false,
+        severity: "warn" as const,
+        code: "vision_issue",
+        message: String(issue),
+      }));
+      return {
+        documentType: parsed.documentType ?? expectedType ?? "other",
+        confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.6,
+        fields,
+        checks: [...checks, ...issues],
+        quality,
+        simulated: false,
+        piiMasked,
+      };
+    },
+    fallback: () => undefined,
+  });
+
+  if (analysed) return analysed;
+
+  // Nothing read the document. Say so, and still hand back the photo checks —
+  // knowing your photo is too dark is useful even without text extraction.
+  return offline(
+    "The document could not be read automatically. The photo checks below still tell you whether it is clear enough to submit.",
+    true,
+  );
 }
 
 /** Checklist shown next to the camera so the first photo is usable. */

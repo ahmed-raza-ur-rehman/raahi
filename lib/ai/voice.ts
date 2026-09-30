@@ -1,4 +1,5 @@
 import { getDashScopeClient, isDashScopeConfigured } from "./client";
+import { withProvider } from "./resilience";
 import type { Language } from "@/lib/types";
 
 export interface TranscriptionResult {
@@ -34,8 +35,21 @@ export async function transcribeAudio(
     return { text: "", language, provider: "unavailable", note: "No audio was received." };
   }
 
-  if (isDashScopeConfigured()) {
-    try {
+  // Plan B: an honest "unavailable", so the UI hands over to the browser's own
+  // Web Speech API rather than inventing a transcript.
+  const unavailable = (): TranscriptionResult => ({
+    text: "",
+    language,
+    provider: "unavailable",
+    note: "Server-side speech recognition is not available right now. Use the browser microphone button to dictate.",
+  });
+
+  if (!isDashScopeConfigured()) return unavailable();
+
+  const text = await withProvider<string | undefined>("dashscope-audio", {
+    timeoutMs: 12_000,
+    label: "transcribe",
+    call: async () => {
       const client = getDashScopeClient();
       const file = new File([new Uint8Array(audio)], "audio.wav", { type: "audio/wav" });
       const response = await client?.audio.transcriptions.create({
@@ -43,19 +57,13 @@ export async function transcribeAudio(
         model: "sensevoice-v1",
         language: language === "ps" ? "ps" : language === "en" ? "en" : "ur",
       } as never);
-      const text = (response as unknown as { text?: string })?.text?.trim();
-      if (text) return { text, language, provider: "dashscope" };
-    } catch {
-      // fall through
-    }
-  }
+      return (response as unknown as { text?: string })?.text?.trim() ?? undefined;
+    },
+    fallback: () => undefined,
+  });
 
-  return {
-    text: "",
-    language,
-    provider: "unavailable",
-    note: "Server-side speech recognition is not enabled. Use the browser microphone button to dictate.",
-  };
+  if (text) return { text, language, provider: "dashscope" };
+  return unavailable();
 }
 
 /**
@@ -63,8 +71,23 @@ export async function transcribeAudio(
  * the browser executes with its own speech synthesis engine.
  */
 export async function synthesizeSpeech(text: string, language: Language = "ur") {
-  if (isDashScopeConfigured()) {
-    try {
+  // Plan B: hand the browser a speaking plan it executes itself. The citizen
+  // still hears the answer, just from their own device instead of the server.
+  const browserPlan = () => ({
+    audioBase64: null,
+    provider: "browser" as const,
+    language,
+    voiceTag: SPEECH_TAGS[language].tts,
+    rate: 0.95,
+    pitch: 1,
+  });
+
+  if (!isDashScopeConfigured()) return browserPlan();
+
+  const audio = await withProvider<string | undefined>("dashscope-audio", {
+    timeoutMs: 12_000,
+    label: "synthesize",
+    call: async () => {
       const client = getDashScopeClient();
       const response = await client?.audio.speech.create({
         model: "qwen-tts",
@@ -73,23 +96,15 @@ export async function synthesizeSpeech(text: string, language: Language = "ur") 
       } as never);
       // The OpenAI-compatible SDK returns an ArrayBuffer-ish response.
       const maybeArrayBuffer = (response as unknown as { arrayBuffer?: () => Promise<ArrayBuffer> }).arrayBuffer;
-      if (typeof maybeArrayBuffer === "function") {
-        const buffer = Buffer.from(await maybeArrayBuffer.call(response));
-        return { audioBase64: buffer.toString("base64"), provider: "dashscope" as const, language };
-      }
-    } catch {
-      // fall through to the browser plan
-    }
-  }
+      if (typeof maybeArrayBuffer !== "function") return undefined;
+      const buffer = Buffer.from(await maybeArrayBuffer.call(response));
+      return buffer.length > 0 ? buffer.toString("base64") : undefined;
+    },
+    fallback: () => undefined,
+  });
 
-  return {
-    audioBase64: null,
-    provider: "browser" as const,
-    language,
-    voiceTag: SPEECH_TAGS[language].tts,
-    rate: 0.95,
-    pitch: 1,
-  };
+  if (audio) return { audioBase64: audio, provider: "dashscope" as const, language };
+  return browserPlan();
 }
 
 /**

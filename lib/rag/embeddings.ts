@@ -1,4 +1,5 @@
 import { getDashScopeClient } from "@/lib/ai/client";
+import { withProvider } from "@/lib/ai/resilience";
 
 export function cosineSimilarity(left: number[], right: number[]) {
   if (left.length === 0 || left.length !== right.length) {
@@ -28,15 +29,21 @@ export async function createDashScopeEmbedding(input: string) {
     return undefined;
   }
 
-  try {
-    const response = await client.embeddings.create({
-      model: "text-embedding-v3",
-      input,
-    });
-    return response.data[0]?.embedding;
-  } catch {
-    return undefined;
-  }
+  // Plan B: `undefined` means "no vector available", and every caller already
+  // falls back to full-text / keyword ranking. The breaker keeps a broken
+  // provider from slowing those calls down.
+  return withProvider<number[] | undefined>("dashscope-embeddings", {
+    timeoutMs: 10_000,
+    label: "embed",
+    call: async () => {
+      const response = await client.embeddings.create({
+        model: "text-embedding-v3",
+        input,
+      });
+      return response.data[0]?.embedding;
+    },
+    fallback: () => undefined,
+  });
 }
 
 

@@ -36,6 +36,8 @@ export default function DocumentUploaderModal({
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** An explanation of why automatic reading did not happen — not an error. */
+  const [note, setNote] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
@@ -45,6 +47,7 @@ export default function DocumentUploaderModal({
     if (!file) return;
 
     setError(null);
+    setNote(null);
     setExtractedData(null);
     setIsConfirmed(false);
 
@@ -76,23 +79,34 @@ export default function DocumentUploaderModal({
       }
 
       const data = await res.json();
-      setExtractedData(data.fields || {
-        "Document Type": selectedType.toUpperCase(),
-        "Status": "Verified by RAAHI Vision Engine",
-        "Date Processed": new Date().toLocaleDateString("en-PK"),
-      });
-      setIsConfirmed(true);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Error processing image";
-      // Fallback deterministic extraction for demo continuity
-      setExtractedData({
-        "Document Type": selectedType.toUpperCase(),
-        "Detected Category": DOCUMENT_TYPES.find(d => d.id === selectedType)?.labelEn || selectedType,
-        "Verification Status": "Pre-verified via Offline Safety Parser",
-        "Timestamp": new Date().toISOString(),
-      });
-      setIsConfirmed(true);
-      setError(language === "en" ? `Note: ${message} (Using local verified preview)` : "نوٹ: تصویری تجزیہ مکمل ہوا (تصدیق شدہ پیش نظارہ)");
+      const result = data.result as
+        | { available: boolean; fields?: Record<string, string>; note?: string; documentType?: string }
+        | undefined;
+
+      if (result && result.available && result.fields && Object.keys(result.fields).length > 0) {
+        // A real model read it. The visitor still has to confirm the details
+        // are right before anything is marked verified.
+        setExtractedData(result.fields);
+        setNote(null);
+      } else {
+        // Automatic reading is unavailable. Show why, and leave the fields
+        // EMPTY: inventing "pre-verified" values is the one thing a document
+        // tool must never do.
+        setExtractedData(null);
+        setNote(
+          result?.note ??
+            (language === "en"
+              ? "Automatic reading is unavailable. Save the document and fill in the details yourself."
+              : "خودکار پڑھنا دستیاب نہیں۔ دستاویز محفوظ کریں اور تفصیلات خود درج کریں۔"),
+        );
+      }
+    } catch {
+      setExtractedData(null);
+      setNote(
+        language === "en"
+          ? "The image could not be analysed. Save the document and fill in the details yourself."
+          : "تصویر کا تجزیہ نہیں ہو سکا۔ دستاویز محفوظ کریں اور تفصیلات خود درج کریں۔",
+      );
     } finally {
       setIsAnalyzing(false);
     }
@@ -118,7 +132,8 @@ export default function DocumentUploaderModal({
           documentType: selectedType,
           label,
           ocrData: extractedData || undefined,
-          verified: true,
+          // Only a real read that a person has checked counts as verified.
+          verified: Boolean(extractedData) && isConfirmed,
         }),
       });
 
@@ -319,6 +334,12 @@ export default function DocumentUploaderModal({
           {error && (
             <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-800">
               ⚠️ {error}
+            </div>
+          )}
+
+          {note && !error && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-900">
+              🔎 {note}
             </div>
           )}
         </div>

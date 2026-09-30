@@ -1,4 +1,5 @@
 import { getDashScopeClient, isDashScopeConfigured } from "./client";
+import { withProvider } from "./resilience";
 import { pick } from "@/lib/i18n";
 import type { Language, Localized } from "@/lib/types";
 
@@ -54,8 +55,19 @@ export async function translateText(
 ): Promise<TranslationResult> {
   if (!text.trim()) return { text, language: target, provider: "passthrough", confidence: 1 };
 
-  if (isDashScopeConfigured()) {
-    try {
+  // Plan B, computed up front so it is ready the instant it is needed.
+  const glossary = glossaryTranslate(text, target);
+  const fallback = (): TranslationResult =>
+    glossary
+      ? { text: glossary, language: target, provider: "glossary", confidence: 0.6 }
+      : { text, language: target, provider: "passthrough", confidence: 0.3 };
+
+  if (!isDashScopeConfigured()) return fallback();
+
+  const translated = await withProvider<string | undefined>("dashscope-chat", {
+    timeoutMs: 8_000,
+    label: "translate",
+    call: async () => {
       const client = getDashScopeClient();
       const response = await client?.chat.completions.create({
         model: "qwen-plus",
@@ -72,16 +84,13 @@ export async function translateText(
           },
         ],
       });
-      const translated = response?.choices?.[0]?.message?.content?.trim();
-      if (translated) return { text: translated, language: target, provider: "qwen", confidence: 0.9 };
-    } catch {
-      // fall through to the deterministic path
-    }
-  }
+      return response?.choices?.[0]?.message?.content?.trim() ?? undefined;
+    },
+    fallback: () => undefined,
+  });
 
-  const glossary = glossaryTranslate(text, target);
-  if (glossary) return { text: glossary, language: target, provider: "glossary", confidence: 0.6 };
-  return { text, language: target, provider: "passthrough", confidence: 0.3 };
+  if (translated) return { text: translated, language: target, provider: "qwen", confidence: 0.9 };
+  return fallback();
 }
 
 /**
