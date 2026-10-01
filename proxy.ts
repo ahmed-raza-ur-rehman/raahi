@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+import { isPathEnabled } from "@/lib/modules/config";
+import { moduleDisabledResponse } from "@/lib/modules/guard";
 import { newVisitorId, rateLimitRequest, readVisitorId, VISITOR_COOKIE } from "@/lib/security/rate-limit";
 
 /**
@@ -114,6 +116,29 @@ export function proxy(request: NextRequest) {
   const issueCookie = existingVisitor === undefined;
 
   const next = () => NextResponse.next({ request: { headers: requestHeaders } });
+
+  /**
+   * A module that is switched off is switched off everywhere. Enforced here
+   * rather than inside each route handler, because a guard you have to
+   * remember to add is a guard that gets missed on the next module.
+   *
+   * APIs get a 404 (never a 403: that would confirm the endpoint exists for
+   * anyone probing). Pages are rewritten to the not-found screen, so a stale
+   * bookmark lands somewhere sensible instead of a blank page.
+   */
+  if (!isPathEnabled(pathname)) {
+    if (pathname.startsWith("/api/")) {
+      const denied = securityHeaders(moduleDisabledResponse({ path: pathname }), isProduction, csp);
+      if (issueCookie) setVisitorCookie(denied, visitorId, isProduction);
+      return denied;
+    }
+    const notFound = NextResponse.rewrite(new URL("/_not-found", request.url), {
+      request: { headers: requestHeaders },
+    });
+    const hidden = securityHeaders(notFound, isProduction, csp);
+    if (issueCookie) setVisitorCookie(hidden, visitorId, isProduction);
+    return hidden;
+  }
 
   // Only the API is rate limited; pages stay freely reachable, including for
   // someone on a shared mobile IP.

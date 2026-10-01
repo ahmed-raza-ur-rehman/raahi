@@ -4,14 +4,45 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 import { useLanguage } from "@/components/shell/LanguageProvider";
+import { useModules } from "@/components/shell/ModulesProvider";
+import { MODULE_BY_ID, type ModuleId } from "@/lib/modules/registry";
 import { VoiceButton } from "@/components/shell/VoiceButton";
 import { Badge, BigTile, CallButton, Card, Loader, Section, inputClass } from "@/components/shell/Ui";
 import { useApi } from "@/lib/client/useApi";
 import { EMERGENCY_NUMBERS } from "@/data/emergency";
 import type { ImportantDate } from "@/lib/types";
 
+/**
+ * Home-screen tiles, keyed by module id. The icon and route come from the
+ * registry so they cannot drift apart; the wording stays here, because "What
+ * do you need today?" deserves better copy than a module title.
+ */
+const TILES: {
+  id: ModuleId;
+  titleKey: string;
+  subtitleKey: string;
+  accent: "forest" | "sky" | "purple" | "amber" | "rose";
+}[] = [
+  { id: "scholarships", titleKey: "tileScholarship", subtitleKey: "tileScholarshipSub", accent: "forest" },
+  { id: "documents", titleKey: "tileDocuments", subtitleKey: "tileDocumentsSub", accent: "sky" },
+  { id: "tests", titleKey: "tileTests", subtitleKey: "tileTestsSub", accent: "purple" },
+  { id: "dates", titleKey: "tileDates", subtitleKey: "tileDatesSub", accent: "amber" },
+  { id: "opportunities", titleKey: "tileJobs", subtitleKey: "tileJobsSub", accent: "forest" },
+  { id: "health", titleKey: "tileHealth", subtitleKey: "tileHealthSub", accent: "rose" },
+  { id: "blood", titleKey: "tileBlood", subtitleKey: "tileBloodSub", accent: "rose" },
+  { id: "disaster", titleKey: "tileDisaster", subtitleKey: "tileDisasterSub", accent: "amber" },
+  { id: "legal", titleKey: "tileLegal", subtitleKey: "tileLegalSub", accent: "purple" },
+  { id: "track", titleKey: "myApplications", subtitleKey: "progress", accent: "sky" },
+];
+
 export default function HomePage() {
   const { t, L, language } = useLanguage();
+  const { modules } = useModules();
+  const tiles = TILES.filter((tile) => modules.some((module) => module.id === tile.id)).map((tile) => ({
+    ...tile,
+    href: MODULE_BY_ID.get(tile.id)?.href ?? "/",
+    icon: MODULE_BY_ID.get(tile.id)?.icon ?? "\ud83d\udcc4",
+  }));
   const router = useRouter();
   const [draft, setDraft] = useState("");
   const dates = useApi<{ results: ImportantDate[] }>("/api/dates");
@@ -90,16 +121,22 @@ export default function HomePage() {
       {/* ── Service tiles ────────────────────────────────────── */}
       <Section title={language === "en" ? "What do you need today?" : "آج آپ کو کیا چاہیے؟"}>
         <div className="grid grid-cols-2 gap-2.5">
-          <BigTile href="/scholarships" icon="🎓" title={t("tileScholarship")} subtitle={t("tileScholarshipSub")} accent="forest" />
-          <BigTile href="/documents" icon="📄" title={t("tileDocuments")} subtitle={t("tileDocumentsSub")} accent="sky" />
-          <BigTile href="/tests" icon="📝" title={t("tileTests")} subtitle={t("tileTestsSub")} accent="purple" />
-          <BigTile href="/dates" icon="🗓️" title={t("tileDates")} subtitle={t("tileDatesSub")} accent="amber" />
-          <BigTile href="/opportunities" icon="💼" title={t("tileJobs")} subtitle={t("tileJobsSub")} accent="forest" />
-          <BigTile href="/health" icon="🏥" title={t("tileHealth")} subtitle={t("tileHealthSub")} accent="rose" />
-          <BigTile href="/blood" icon="🩸" title={t("tileBlood")} subtitle={t("tileBloodSub")} accent="rose" />
-          <BigTile href="/disaster" icon="🚨" title={t("tileDisaster")} subtitle={t("tileDisasterSub")} accent="amber" />
-          <BigTile href="/legal" icon="⚖️" title={t("tileLegal")} subtitle={t("tileLegalSub")} accent="purple" />
-          <BigTile href="/track" icon="📂" title={t("myApplications")} subtitle={t("progress")} accent="sky" />
+          {/*
+            The tiles are the module list, filtered. The copy comes from the
+            dictionary because it is curated for the home screen; which tiles
+            appear comes from the registry, so a deployment never offers a
+            module it has switched off.
+          */}
+          {tiles.map((tile) => (
+            <BigTile
+              key={tile.id}
+              href={tile.href}
+              icon={tile.icon}
+              title={t(tile.titleKey)}
+              subtitle={t(tile.subtitleKey)}
+              accent={tile.accent}
+            />
+          ))}
         </div>
       </Section>
 

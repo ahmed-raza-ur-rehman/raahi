@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import React from "react";
 
 import { useLanguage } from "@/components/shell/LanguageProvider";
@@ -213,12 +214,12 @@ export default function PrivacyPage() {
             >
               ✏️ {language === "en" ? "Report a mistake" : "غلظی کی اطلاع دیں"}
             </Link>
-            <Link
+            <ModuleLink id="contacts"
               href="/contacts"
               className="inline-flex items-center rounded-xl border border-[var(--line)] bg-white px-3.5 py-2 text-[12.5px] font-black"
             >
               📞 {language === "en" ? "Official contacts" : "سرکاری رابطے"}
-            </Link>
+            </ModuleLink>
           </div>
         </Card>
       </Section>

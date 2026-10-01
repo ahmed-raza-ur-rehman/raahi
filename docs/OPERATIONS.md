@@ -50,10 +50,72 @@ of them and upgrades itself when you add them.
 | `RAAHI_LIVE_SEARCH_BUDGET` | Max live web searches per deployment per hour. Unset means a sane default. |
 | `NEXT_PUBLIC_SITE_URL` | Canonical origin for SEO. Set it to your real domain in production. |
 | `RAAHI_BUILD_COMMIT` | Reported by `/api/health` so you can tell which code is running. Most CI systems can set this. |
+| `RAAHI_MODULES` | Allow-list of module ids: only those run. Empty means everything runs. |
+| `RAAHI_DISABLED_MODULES` | Deny-list of module ids: everything except those runs. |
 
 Copy `.env.example` to `.env.local` to start. Never commit a real `.env` —
 `.gitignore` blocks it, and a test fails the build if that protection is
 removed.
+
+---
+
+## Switching modules on and off
+
+RAAHI ships every capability, but no deployment has to run all of them. A
+district office may only want scholarships and documents; a relief organisation
+may only want disaster, blood and health. Each capability is declared once, in
+`lib/modules/registry.ts`, and two environment variables decide which of them a
+deployment offers:
+
+```bash
+# Only these run (core modules stay on regardless):
+RAAHI_MODULES=scholarships,documents,tests
+
+# Or, everything except these:
+RAAHI_DISABLED_MODULES=portal,programs,classic
+```
+
+Switching a module off removes it everywhere at once, because everywhere asks
+the registry what exists:
+
+- it leaves the bottom navigation, the home screen and the More grid;
+- its pages return 404 instead of an empty screen;
+- its API routes stop answering;
+- it disappears from the sitemap;
+- its records stop appearing in command-palette search, so nobody is ever sent
+  somewhere that refuses to work.
+
+What stays on no matter what: the home screen, **Ask**, and the emergency
+numbers. Someone in trouble must always land somewhere useful.
+
+Two things help you see what a deployment is actually running:
+
+- `GET /api/modules` — the enabled modules, the navigation, the groups, and any
+  names from your environment variable that the registry did not recognise (a
+  typo is reported rather than silently doing nothing).
+- The footer of **More** — shows the version, the build commit, and how many of
+  RAAHI's capabilities this deployment has switched on.
+
+Adding a capability means adding one entry to the registry and one route. The
+navigation, sitemap, API guard, palette and More screen all follow;
+`tests/modules.test.ts` fails if a module points at a page that does not exist,
+or a knowledge result has no module able to open it.
+
+---
+
+## The command palette
+
+One box that reaches everything, from any screen: **Ctrl/Cmd + K**, or the
+search button in the header. It searches the modules, the knowledge base and
+the things you can do, in Urdu, Pashto, Hindko, English or Roman Urdu, and acts
+on the answer — open a screen, open the record itself, switch language, or call
+a number. The microphone works where the browser supports it, for anyone who
+would rather speak than type.
+
+Search results are routed by the module that owns them, so a deployment only
+ever offers a result it can open — a scholarship opens the scholarship, a job
+opens the jobs screen, and a record from a switched-off module is not offered
+at all.
 
 ---
 

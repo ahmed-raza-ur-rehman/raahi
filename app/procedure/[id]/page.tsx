@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import {
   ProcedureWalkthrough,
   type ProcedureStepItem,
@@ -82,12 +82,12 @@ export default function ProcedurePage({ params }: ProcedurePageProps) {
         <p className="mt-1 text-sm text-[var(--muted)]">
           درخواست کردہ سرکاری سروس یا طریقہ ڈیٹا بیس میں موجود نہیں ہے۔
         </p>
-        <Link
+        <ModuleLink id="chat"
           href="/chat"
           className="mt-4 inline-block rounded-xl bg-[var(--forest)] px-4 py-2 text-xs font-bold text-white"
         >
           چیٹ میں نیا راستہ تلاش کریں
-        </Link>
+        </ModuleLink>
       </main>
     );
   }
@@ -99,12 +99,12 @@ export default function ProcedurePage({ params }: ProcedurePageProps) {
     >
       {/* Top Bar */}
       <header className="flex items-center justify-between border-b border-[var(--line)] pb-4 mb-6">
-        <Link
+        <ModuleLink id="chat"
           href="/chat"
           className="flex items-center gap-1 text-xs font-bold text-[var(--forest)] hover:underline"
         >
           ← {language === "en" ? "Back to Chat" : "چیٹ پر واپس جائیں"}
-        </Link>
+        </ModuleLink>
 
         <div className="flex gap-0.5 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] p-0.5 text-xs">
           {(["ur", "ps", "en"] as const).map((lang) => (

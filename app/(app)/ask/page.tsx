@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 
@@ -254,12 +254,12 @@ function AgentAnswer({
               {t("startApplication")}
             </Button>
             {created ? (
-              <Link
+              <ModuleLink id="track"
                 href="/track"
                 className="inline-flex items-center rounded-xl border border-emerald-300 bg-white px-3 py-2 text-[12px] font-bold text-emerald-800"
               >
                 📂 {t("myApplications")}
-              </Link>
+              </ModuleLink>
             ) : null}
           </div>
         </div>

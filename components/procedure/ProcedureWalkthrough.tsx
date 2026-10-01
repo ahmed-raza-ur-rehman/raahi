@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import { CitationChip } from "@/components/chat/CitationChip";
 import { useStoredJson } from "@/lib/client/useStoredJson";
 
@@ -284,12 +285,12 @@ export function ProcedureWalkthrough({
 
       {/* Navigation Footer */}
       <div className="flex items-center justify-between border-t border-[var(--line)] pt-6">
-        <Link
+        <ModuleLink id="chat"
           href="/chat"
           className="rounded-xl border border-[var(--line)] bg-white px-4 py-2 text-sm font-bold text-[var(--forest)] hover:bg-slate-50"
         >
           ← {language === "en" ? "Back to Chat" : "چیٹ پر واپس جائیں"}
-        </Link>
+        </ModuleLink>
 
         <Link
           href="/cases"

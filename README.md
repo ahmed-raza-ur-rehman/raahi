@@ -96,6 +96,33 @@ RAAHI never guesses or invents welfare criteria:
 - **Emergency Escalation:** Detects life-threatening symptoms or domestic crises and instantly triggers emergency banners with direct hotline dials (Rescue 1122, Edhi 115, Legal Aid 0800-70806).
 
 ### 6. 🤝 Enterprise Partner Onboarding Portal
+### 7. 🧩 Module system — run only what this deployment needs
+Every capability RAAHI has is declared **once**, in `lib/modules/registry.ts`,
+and two environment variables decide which of them a deployment runs:
+
+```bash
+RAAHI_MODULES=scholarships,documents,tests      # only these
+RAAHI_DISABLED_MODULES=portal,programs,classic  # everything except these
+```
+
+Switching a module off removes it **everywhere at once**, because everywhere
+asks the registry what exists: bottom navigation, home screen, More grid,
+sitemap, API routes and search results. It cannot be half-removed, and a
+citizen is never offered a screen that then refuses to work. Adding a
+capability is one registry entry and one route — not edits to six files.
+
+What stays on no matter what: the home screen, **Ask**, and the emergency
+numbers. Someone in trouble must always land somewhere useful.
+
+### 8. ⌘ One box that reaches everything
+The command palette (`Ctrl`/`Cmd + K`, or the search button in the header)
+searches the modules, the knowledge base and the things you can do — in
+English, Urdu, Pashto, Hindko and Roman Urdu — and *acts* on the answer: open a
+screen, open the record itself, switch language, or call a number. It takes
+speech where the browser allows it and is fully keyboard-driven, for anyone who
+cannot easily tap small targets. Results are routed by the module that owns
+them, so a deployment only offers what it can actually open.
+
 - Enables welfare organizations (Alkhidmat, Akhuwat, Bait-ul-Mal) to register, publish, and update their programs, eligibility criteria, and step-by-step operational workflows through an intuitive web portal.
 
 ---
@@ -256,6 +283,8 @@ cp .env.example .env.local   # then fill in only what you have
 | `RAAHI_LIVE_SEARCH_BUDGET` | Live searches per minute (default `12`) — protects the quota |
 | `RAAHI_DB_PATH` | Where the SQLite file lives (default `data/raahi.db`) |
 | `NEXT_PUBLIC_SITE_URL` | Canonical, sitemap and social-preview origin |
+| `RAAHI_MODULES` | Allow-list of module ids — only those run (empty = all) |
+| `RAAHI_DISABLED_MODULES` | Deny-list of module ids — everything except those |
 
 Without any search key, web research answers from the curated official-source
 index instead of live results. It never fails and never blocks — it just has

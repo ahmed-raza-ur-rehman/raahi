@@ -5,14 +5,22 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 import { LanguageProvider, useLanguage } from "./LanguageProvider";
-import type { Language } from "@/lib/types";
+import type { Language, Localized } from "@/lib/types";
 
-const NAV = [
-  { href: "/", icon: "🏠", key: "navHome" },
-  { href: "/ask", icon: "🧭", key: "navAsk" },
-  { href: "/track", icon: "📂", key: "navTrack" },
-  { href: "/contacts", icon: "📞", key: "navContacts" },
-  { href: "/more", icon: "☰", key: "navMore" },
+export interface NavItem {
+  href: string;
+  icon: string;
+  title: Localized;
+}
+
+/**
+ * The bottom navigation, supplied by the server from the module registry so a
+ * deployment only offers the modules it has switched on. The fallback keeps
+ * this component usable anywhere, including outside the app group.
+ */
+const DEFAULT_NAV: NavItem[] = [
+  { href: "/", icon: "🏠", title: { en: "Home", ur: "گھر", ps: "کور", hkp: "گھر" } },
+  { href: "/more", icon: "☰", title: { en: "More", ur: "مزید", ps: "نور", hkp: "ہور" } },
 ];
 
 const LANGUAGE_OPTIONS: { id: Language; short: string }[] = [
@@ -43,6 +51,19 @@ function Header() {
         </Link>
 
         <div className="flex items-center gap-1.5">
+          {/*
+            Keyboard shortcuts are invisible, so the palette needs a door as
+            well. This opens the same search that Ctrl+K does.
+          */}
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event("raahi:open-palette"))}
+            aria-label={language === "en" ? "Search everything" : "ہر چیز تلاش کریں"}
+            className="flex items-center gap-1 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] px-2 py-1.5 text-[11px] font-bold text-[var(--muted)] transition hover:border-[var(--forest)] hover:text-[var(--forest)]"
+          >
+            <span aria-hidden="true">🔎</span>
+            <span className="hidden sm:inline">{language === "en" ? "Search" : "تلاش"}</span>
+          </button>
           <div className="flex overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--surface-2)] text-[10.5px]">
             {LANGUAGE_OPTIONS.map((option) => (
               <button
@@ -70,14 +91,14 @@ function Header() {
   );
 }
 
-function BottomNav() {
+function BottomNav({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
-  const { t } = useLanguage();
+  const { L } = useLanguage();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
       <div className="mx-auto flex max-w-3xl items-stretch justify-between px-2">
-        {NAV.map((item) => {
+        {items.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href);
           return (
             <Link
@@ -88,7 +109,7 @@ function BottomNav() {
               }`}
             >
               <span className="text-lg leading-none">{item.icon}</span>
-              <span>{t(item.key)}</span>
+              <span>{L(item.title)}</span>
             </Link>
           );
         })}
@@ -97,14 +118,21 @@ function BottomNav() {
   );
 }
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  children,
+  nav,
+}: {
+  children: React.ReactNode;
+  /** Supplied by the server from the module registry. */
+  nav?: NavItem[];
+}) {
   const { dir, language } = useLanguage();
 
   return (
     <div dir={dir} lang={language} className="min-h-screen bg-[var(--paper)] pb-24">
       <Header />
       <main className="mx-auto max-w-3xl px-4 py-4">{children}</main>
-      <BottomNav />
+      <BottomNav items={nav && nav.length > 0 ? nav : DEFAULT_NAV} />
     </div>
   );
 }

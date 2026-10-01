@@ -2,7 +2,10 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 import { LanguageProvider } from "@/components/shell/LanguageProvider";
+import { ModulesProvider } from "@/components/shell/ModulesProvider";
+import { enabledModules, summariseModule } from "@/lib/modules/config";
 import { SITE_URL } from "@/lib/site";
+import CommandPalette from "@/components/shell/CommandPalette";
 import { ServiceWorkerBridge } from "@/components/shell/ServiceWorkerBridge";
 
 /**
@@ -66,7 +69,21 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          {/*
+            Which modules this deployment runs, resolved on the server so the
+            first paint already knows. Turning a module off changes every
+            screen at once.
+          */}
+          <ModulesProvider modules={enabledModules().map(summariseModule)}>
+            {children}
+          {/*
+            Mounted here, at the root, so it is reachable from every screen —
+            including the ones outside the app shell. Ctrl+K anywhere.
+          */}
+            <CommandPalette />
+          </ModulesProvider>
+        </LanguageProvider>
         <ServiceWorkerBridge />
       </body>
     </html>

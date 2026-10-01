@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import { useRouter } from "next/navigation";
 import type { Domain, Language, ServiceRecord } from "@/lib/types";
 
@@ -509,12 +510,12 @@ export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNa
                 <p className="text-xs font-bold text-[var(--ink)]">
                   {language === "en" ? "No specific programs found for this combination." : "اس امتزاج کے لیے کوئی خاص سروس نہیں ملی۔"}
                 </p>
-                <Link
+                <ModuleLink id="programs"
                   href="/programs"
                   className="mt-2 inline-block text-xs font-bold text-[var(--forest)] hover:underline"
                 >
                   {language === "en" ? "Browse all 85 services" : "تمام 85 خدمات کی فہرست دیکھیں"}
-                </Link>
+                </ModuleLink>
               </div>
             ) : (
               <div className="space-y-3">

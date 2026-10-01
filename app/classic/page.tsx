@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import FewClickNavigator from "@/components/navigator/FewClickNavigator";
 
 type Language = "en" | "ur" | "ps";
@@ -102,12 +103,12 @@ export default function Home() {
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <Link
+            <ModuleLink id="programs"
               href="/programs"
               className="rounded-xl border border-[var(--line)] bg-white px-2.5 py-1.5 text-xs font-bold text-[var(--forest)] hover:bg-[var(--forest-light)] transition hidden sm:inline-block"
             >
               📋 {language === "en" ? "Catalog (85)" : "سروس کیٹلاگ"}
-            </Link>
+            </ModuleLink>
 
             <Link
               href="/cases"
@@ -116,12 +117,12 @@ export default function Home() {
               📂 {language === "en" ? "Cases" : "کیسز"}
             </Link>
 
-            <Link
+            <ModuleLink id="emergency"
               href="/emergency"
               className="rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-bold text-rose-800 hover:bg-rose-100 transition"
             >
               🚨 1122
-            </Link>
+            </ModuleLink>
 
             <div className="flex gap-0.5 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] p-0.5 text-xs">
               {(["ur", "ps", "en"] as Language[]).map((lang) => (
@@ -169,7 +170,7 @@ export default function Home() {
 
           {/* Primary CTA Buttons */}
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Link
+            <ModuleLink id="chat"
               href="/chat"
               className="flex items-center gap-2 rounded-2xl bg-[var(--forest)] px-6 py-4 text-base font-bold text-white shadow-lg shadow-emerald-900/15 transition hover:bg-[var(--forest-dark)] active:scale-[0.98]"
             >
@@ -178,21 +179,21 @@ export default function Home() {
                 {language === "en" ? "Start In Chat" : "اپنی ضرورت بتائیں اور رہنمائی لیں"}
               </span>
               <span>{language === "en" ? "→" : "←"}</span>
-            </Link>
+            </ModuleLink>
 
-            <Link
+            <ModuleLink id="programs"
               href="/programs"
               className="rounded-2xl border-2 border-[var(--line)] bg-white px-5 py-3.5 text-sm font-bold text-[var(--ink-soft)] hover:border-[var(--forest)] hover:bg-[var(--forest-light)] transition"
             >
               📋 {language === "en" ? "Browse All 85 Services" : "تمام 85 خدمات دیکھیں"}
-            </Link>
+            </ModuleLink>
 
-            <Link
+            <ModuleLink id="portal"
               href="/portal"
               className="rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] px-4 py-3.5 text-xs font-bold text-[var(--muted)] hover:text-[var(--ink)] hover:bg-white transition"
             >
               🏛️ {language === "en" ? "Partner Portal" : "تنظیمی پورٹل"}
-            </Link>
+            </ModuleLink>
           </div>
 
           {/* ─── Statistics Bar ───────────────────────────────────── */}
@@ -324,25 +325,25 @@ export default function Home() {
             {language === "en" ? "Home" : "ہوم"}
           </Link>
           <span>·</span>
-          <Link href="/chat" className="hover:underline">
+          <ModuleLink id="chat" href="/chat" className="hover:underline">
             {language === "en" ? "AI Chat" : "اے آئی چیٹ"}
-          </Link>
+          </ModuleLink>
           <span>·</span>
-          <Link href="/programs" className="hover:underline">
+          <ModuleLink id="programs" href="/programs" className="hover:underline">
             {language === "en" ? "All Services (85)" : "تمام خدمات (85)"}
-          </Link>
+          </ModuleLink>
           <span>·</span>
           <Link href="/cases" className="hover:underline">
             {language === "en" ? "My Cases" : "میرے کیسز"}
           </Link>
           <span>·</span>
-          <Link href="/portal" className="hover:underline">
+          <ModuleLink id="portal" href="/portal" className="hover:underline">
             {language === "en" ? "Partner Portal" : "تنظیمی پورٹل"}
-          </Link>
+          </ModuleLink>
           <span>·</span>
-          <Link href="/emergency" className="text-rose-700 hover:underline">
+          <ModuleLink id="emergency" href="/emergency" className="text-rose-700 hover:underline">
             🚨 {language === "en" ? "Emergency 1122" : "ہنگامی 1122"}
-          </Link>
+          </ModuleLink>
         </div>
 
         <p className="font-medium text-[var(--ink-soft)]">

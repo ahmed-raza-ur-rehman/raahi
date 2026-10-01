@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import type { Domain, ServiceRecord } from "@/lib/types";
 
 const DOMAINS: Array<{ id: Domain | "all"; labelEn: string; labelUr: string; icon: string }> = [
@@ -72,12 +73,12 @@ export default function ProgramsCatalogPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link
+            <ModuleLink id="chat"
               href="/chat"
               className="rounded-xl bg-[var(--forest)] px-3 py-1.5 text-xs font-bold text-white hover:bg-[var(--forest-dark)] transition"
             >
               💬 {language === "en" ? "AI Chat" : "اے آئی چیٹ"}
-            </Link>
+            </ModuleLink>
 
             <button
               type="button"

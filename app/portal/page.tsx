@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import type { Domain } from "@/lib/types";
 
 interface Org {
@@ -199,12 +200,12 @@ export default function OrganizationPortalPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link
+            <ModuleLink id="programs"
               href="/programs"
               className="rounded-xl border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--forest)] hover:bg-[var(--forest-light)] transition"
             >
               📋 {language === "en" ? "Catalog (85)" : "سروس کیٹلاگ"}
-            </Link>
+            </ModuleLink>
 
             <button
               type="button"

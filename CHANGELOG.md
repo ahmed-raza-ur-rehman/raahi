@@ -13,6 +13,59 @@ about to recommend to a citizen.
 
 ---
 
+## [1.0.2] — 2026-10-01
+
+RAAHI grows two things it needed in order to be one product instead of eighteen
+screens: the ability to run only the parts a deployment wants, and one box that
+reaches all of them.
+
+### Added
+
+- **A module registry.** Every capability is declared once, in
+  `lib/modules/registry.ts`, and two environment variables decide which of them
+  a deployment runs: `RAAHI_MODULES` (only these) or `RAAHI_DISABLED_MODULES`
+  (everything except these). Turning a module off removes it everywhere at
+  once — bottom navigation, home screen, More grid, sitemap, API routes and
+  search results — because everywhere asks the registry what exists. Adding a
+  capability is one registry entry and one route, not six files.
+- **A universal command palette.** `Ctrl`/`Cmd + K`, or the search button in
+  the header, from any screen. It searches the modules, the knowledge base and
+  the things you can do — in English, Urdu, Pashto, Hindko and Roman Urdu —
+  and acts on the answer: open a screen, open the record itself, switch
+  language, or call a number. It takes speech where the browser allows it,
+  navigates with the arrow keys, and works on a keyboard for anyone who cannot
+  easily tap small targets.
+- **`GET /api/modules`** reports what this deployment is running: the modules,
+  the navigation, the groups, and any name in the environment variable the
+  registry did not recognise — a typo is reported rather than silently doing
+  nothing.
+- **A loading skeleton** for screens inside the app shell, so a slow connection
+  shows progress instead of a blank page.
+- **The version and build commit in the More footer**, with how many of RAAHI's
+  capabilities this deployment has switched on.
+
+### Changed
+
+- **Search results are routed by the module that owns them.** A knowledge
+  result opens in the screen that can show it, and where a record could belong
+  to more than one module — an `opportunity` is either a scholarship or a job —
+  the record's own kind decides. A record from a switched-off module is not
+  offered at all: being sent somewhere that refuses to work is worse than not
+  being offered it.
+- **Links between screens follow the modules too.** A link to a capability this
+  deployment does not run now disappears instead of opening a 404.
+
+### Fixed
+
+- **The home screen offered modules that were switched off.** Its tiles were a
+  hard-coded list; they are now the enabled modules, so a restricted deployment
+  never shows a door it has locked.
+- **Disabled modules were reachable by direct URL.** `proxy.ts` now guards
+  every route centrally — pages rewrite to not-found, API routes answer 404 —
+  so the guard cannot be forgotten when a module is added later.
+
+---
+
 ## [1.0.1] — 2026-09-30
 
 Two changes, both about what a visitor actually experiences: how much data
