@@ -59,35 +59,35 @@ export function maskPii(text: string): string {
  */
 export function appendDomainSafetyDisclaimer(text: string, domain: Domain | string, language: Language = "ur"): string {
   if (domain === "health") {
-    const disclaimers: Record<Language, string> = {
+    const disclaimers: Partial<Record<Language, string>> & Record<"en", string> = {
       ur: "\n\n⚠️ **طبی احتیاط:** راہی صرف فلاحی ہسپتالوں اور سرکاری سہولیات تک رہنمائی فراہم کرتا ہے۔ یہ طبی تشخیص یا دوا کی سفارش نہیں ہے۔ ایمرجنسی کی صورت میں فوری **1122** پر کال کریں۔",
       en: "\n\n⚠️ **Medical Disclaimer:** RAAHI provides access navigation only, not medical diagnosis or prescription. In case of an emergency, call **1122** immediately.",
       ps: "\n\n⚠️ **طبي خبرداری:** راہی یوازې روغتیايي اسانتیاوو ته لارښوونه کوي، دا طبي نسخه یا درملنه نه ده. په بیړني حالت کې **1122** ته زنګ ووهئ.",
     };
     if (!text.includes("1122") && !text.includes("طبی احتیاط") && !text.includes("Medical Disclaimer")) {
-      return text + disclaimers[language];
+      return text + (disclaimers[language] ?? disclaimers.ur ?? disclaimers.en);
     }
   }
 
   if (domain === "legal") {
-    const disclaimers: Record<Language, string> = {
+    const disclaimers: Partial<Record<Language, string>> & Record<"en", string> = {
       ur: "\n\n⚖️ **قانونی وضاحت:** یہ معلومات عام رہنمائی کے لیے ہیں۔ یہ قانونی وکیل کا متبادل نہیں ہے۔ مفت قانونی مدد کے لیے لیگل ایڈ سوسائٹی ہیلپ لائن **0800-70806** پر رابطہ کریں۔",
       en: "\n\n⚖️ **Legal Notice:** This information is for general procedural guidance only and does not constitute legal counsel. For free legal representation, contact the Legal Aid Society at **0800-70806**.",
       ps: "\n\n⚖️ **قانوني خبرداری:** دا یوازې عام معلومات دي. د وړیا قانوني مرستې لپاره **0800-70806** سره اړیکه ونیسئ.",
     };
     if (!text.includes("0800-70806") && !text.includes("قانونی وضاحت")) {
-      return text + disclaimers[language];
+      return text + (disclaimers[language] ?? disclaimers.ur ?? disclaimers.en);
     }
   }
 
   if (domain === "welfare") {
-    const disclaimers: Record<Language, string> = {
+    const disclaimers: Partial<Record<Language, string>> & Record<"en", string> = {
       ur: "\n\n📌 **سرکاری اہلیت کی یاد دہانی:** راہی پر اہلیت کا تخمینہ سرکاری قوانین کے مطابق لگایا جاتا ہے، تاہم حتمی امداد اور فنڈز کا فیصلہ متعلقہ ادارہ (BISP/بیت المال) خود کرتا ہے۔",
       en: "\n\n📌 **Official Verification Note:** RAAHI estimates eligibility based on public criteria. Final grant disbursement is subject to official verification by the respective authority.",
       ps: "\n\n📌 **رسمي خبرتیا:** د مرستې وروستۍ پریکړه د اړوندې ادارې لخوا کیږي.",
     };
     if (!text.includes("سرکاری اہلیت کی یاد دہانی") && !text.includes("Official Verification Note")) {
-      return text + disclaimers[language];
+      return text + (disclaimers[language] ?? disclaimers.ur ?? disclaimers.en);
     }
   }
 

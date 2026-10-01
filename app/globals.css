@@ -49,7 +49,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
   font-feature-settings: "cv03","cv04","cv11";
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -64,20 +64,20 @@ img, video { max-width: 100%; }
 
 /* ─── Urdu / RTL typography ────────────────────────────────────── */
 [dir="rtl"], [lang="ur"], [lang="ps"] {
-  font-family: 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Arial Unicode MS', serif;
+  font-family: var(--font-urdu), 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Arial Unicode MS', serif;
   line-height: 2.0;
   letter-spacing: 0;
 }
 
 [dir="rtl"] .latin, [dir="rtl"] .ltr-override {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
   direction: ltr;
   display: inline-block;
   line-height: 1.4;
 }
 
 [dir="ltr"] {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
 }
 
@@ -453,3 +453,18 @@ img, video { max-width: 100%; }
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 .delay-500 { animation-delay: 0.5s; }
+
+/* ─── Reduced motion ───────────────────────────────────────────────
+   Animation makes some people ill, and on a low-end phone every frame
+   is battery the visitor may not have to spare. Honour the OS setting.
+   ──────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

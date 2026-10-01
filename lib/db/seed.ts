@@ -1,6 +1,7 @@
 import { assertCatalogIntegrity, organizations, services } from "@/data/catalog";
 
 import { getSqlite } from "./client";
+import { ensureKnowledgeSeeded, seedKnowledge } from "./seed-knowledge";
 
 export interface SeedSummary {
   organizations: number;
@@ -10,6 +11,8 @@ export interface SeedSummary {
   requirements: number;
   procedureSteps: number;
   knowledgeChunks: number;
+  /** Unified Phase-2 knowledge index (opportunities, documents, tests, health, …). */
+  knowledgeEntities: number;
 }
 
 function sourceId(index: number) {
@@ -182,6 +185,8 @@ export function seedDatabase(): SeedSummary {
     }
   })();
 
+  const knowledge = seedKnowledge();
+
   return {
     organizations: organizations.length,
     sources: sourceRecords.length,
@@ -190,11 +195,27 @@ export function seedDatabase(): SeedSummary {
     requirements: services.reduce((total, service) => total + service.requiredDocuments.length, 0),
     procedureSteps: services.reduce((total, service) => total + service.procedure.length, 0),
     knowledgeChunks: services.length,
+    knowledgeEntities: knowledge.entities,
   };
 }
 
 export function ensureDatabaseSeeded(): SeedSummary | undefined {
   const database = getSqlite();
   const row = database.prepare("SELECT COUNT(*) AS count FROM services").get() as { count: number };
-  return row.count > 0 ? undefined : seedDatabase();
+  const seededKnowledge = ensureKnowledgeSeeded();
+  if (row.count > 0) {
+    return seededKnowledge ? { ...EMPTY_SUMMARY, knowledgeEntities: seededKnowledge.entities } : undefined;
+  }
+  return seedDatabase();
 }
+
+const EMPTY_SUMMARY: SeedSummary = {
+  organizations: 0,
+  sources: 0,
+  services: 0,
+  eligibilityRules: 0,
+  requirements: 0,
+  procedureSteps: 0,
+  knowledgeChunks: 0,
+  knowledgeEntities: 0,
+};

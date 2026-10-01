@@ -35,6 +35,13 @@ export interface ServiceCardProps {
       channel: string;
       url?: string;
     }[];
+    /** Eligibility verdict attached by the chat stream, when one was computed. */
+    eligibility?: {
+      status: "likely" | "possible" | "unlikely" | "unknown";
+      confidenceReason?: string;
+      missingInfo?: string[];
+      missingDocuments?: string[];
+    };
   };
   eligibility?: {
     status: "likely" | "possible" | "unlikely" | "unknown";

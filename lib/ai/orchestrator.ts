@@ -2,8 +2,9 @@ import { searchServicesHybrid } from "@/lib/rag/search";
 import { eligibilityEngine } from "@/lib/eligibility/engine";
 import { listActiveServices } from "@/lib/db/repositories/services";
 import { getSqlite } from "@/lib/db/client";
-import type { CitizenProfile, Domain } from "@/lib/types";
+import type { CitizenProfile, Domain, Language } from "@/lib/types";
 import { getDashScopeClient } from "@/lib/ai/client";
+import { isCircuitOpen, recordFailure, recordSuccess } from "@/lib/ai/resilience";
 import { ORCHESTRATOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { detectSafetySignals } from "@/lib/safety/detect";
 import {
@@ -392,13 +393,66 @@ export interface OrchestratorOptions {
   caseId?: string;
 }
 
+/**
+ * Plan B for the chat, shared by every path where the model cannot answer:
+ * no key, a provider outage, a circuit we have already seen fail, or a stream
+ * that dies half way through. The citizen gets verified services from our own
+ * knowledge base rather than an error.
+ *
+ * Emits `search_results`, the event type the chat UI renders as service cards.
+ */
+async function* verifiedOnlyStream(
+  language: Language,
+  query: string,
+  safetyCheck: ReturnType<typeof detectSafetySignals>,
+): AsyncGenerator<string> {
+  const results = await searchServicesHybrid({ query, limit: 5 });
+  if (results.length > 0) {
+    yield `data: ${JSON.stringify({ type: "search_results", results: results.map((r) => r.service) })}\n\n`;
+    let summaryText =
+      language === "en"
+        ? "Here are verified services that may help. Please confirm details with each official source."
+        : language === "ps"
+        ? "ستاسو د اړتیا لپاره تایید شوې لارې دلته دي:"
+        : "آپ کی ضرورت کے لیے سرکاری و فلاحی تصدیق شدہ سہولیات درج ذیل ہیں:";
+    if (safetyCheck.medical) {
+      summaryText = appendDomainSafetyDisclaimer(summaryText, "health", language);
+    } else if (safetyCheck.legal) {
+      summaryText = appendDomainSafetyDisclaimer(summaryText, "legal", language);
+    }
+    yield `data: ${JSON.stringify({ type: "content", content: summaryText })}\n\n`;
+  } else {
+    yield `data: ${JSON.stringify({
+      type: "content",
+      content:
+        language === "en"
+          ? "I do not have verified information for this request. Please contact the relevant organization directly."
+          : "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔",
+    })}\n\n`;
+  }
+  yield `data: ${JSON.stringify({ type: "done", case_relevant_service_ids: results.map((r) => r.service.id) })}\n\n`;
+}
+
 export async function* runOrchestrator(options: OrchestratorOptions): AsyncGenerator<string> {
-  const { message, conversationId, sessionId, language } = options;
-  const client = getDashScopeClient();
+  const { message, conversationId, sessionId } = options;
+  // The caller sends a free-form string; narrow it to a supported UI language.
+  const language: Language =
+    options.language === "en" || options.language === "ps" || options.language === "hkp"
+      ? options.language
+      : "ur";
+  // Plan B: if the circuit is open we already know the provider is failing, so
+  // skip it entirely and answer from verified data rather than making every
+  // visitor wait out a timeout. The circuit lets one request through once it
+  // has cooled down, so recovery is automatic.
+  const client = isCircuitOpen("dashscope-chat") ? undefined : getDashScopeClient();
 
   // Guardrail 1: Sanitize user input against prompt injection
   const { sanitized, flagged } = sanitizeUserInput(message);
   const effectiveMessage = sanitized || message;
+  if (flagged) {
+    // Worth knowing about: it tells us someone is probing the assistant.
+    console.warn("[raahi] stripped a prompt-injection pattern from user input");
+  }
 
   // Guardrail 2: Detect safety & emergency signals
   const safetyCheck = detectSafetySignals(effectiveMessage);
@@ -417,26 +471,8 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   }
 
   if (!client) {
-    // Fallback to RAG-only if no API key
-    const results = await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
-    if (results.length === 0) {
-      yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔" : "I do not have verified information for this request. Please contact the relevant organization directly." })}\n\n`;
-    } else {
-      for (const result of results) {
-        yield `data: ${JSON.stringify({ type: "service", service: result.service, citation: result.citation })}\n\n`;
-      }
-      let contentText =
-        language === "ur"
-          ? "یہ تصدیق شدہ خدمات آپ کے لیے مددگار ہو سکتی ہیں۔ تفصیلات ہر ذریعے سے ضرور تصدیق کریں۔"
-          : "These verified services may help. Please confirm details with each official source.";
-      if (safetyCheck.medical) {
-        contentText = appendDomainSafetyDisclaimer(contentText, "health", (language as any) || "ur");
-      } else if (safetyCheck.legal) {
-        contentText = appendDomainSafetyDisclaimer(contentText, "legal", (language as any) || "ur");
-      }
-      yield `data: ${JSON.stringify({ type: "content", content: contentText })}\n\n`;
-    }
-    yield `data: ${JSON.stringify({ type: "done" })}\n\n`;
+    // No key, or the circuit is open: answer from verified data only.
+    yield* verifiedOnlyStream(language, effectiveMessage, safetyCheck);
     return;
   }
 
@@ -444,7 +480,10 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   const history = getConversationHistory(conversationId);
 
   // Save user message (with PII masked in storage if appropriate)
-  const userMessage: Message = { role: "user", content: effectiveMessage };
+  // Guardrail 1b: mask CNIC / phone numbers before the text leaves the box.
+  // Local safety detection and search keep the real text; only the copy sent to
+  // the model provider is masked, so a citizen's ID number is never transmitted.
+  const userMessage: Message = { role: "user", content: maskPii(effectiveMessage) };
   saveMessage(conversationId, userMessage);
 
   const messages: Message[] = [
@@ -456,185 +495,173 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   // Tool-calling loop
   let iteration = 0;
   const maxIterations = 6;
-  let collectedContent = "";
   const collectedToolCalls: ToolCall[] = [];
   const collectedServiceIds: string[] = [];
 
-  while (iteration < maxIterations) {
-    iteration++;
+  try {
+    while (iteration < maxIterations) {
+      iteration++;
 
-    let response;
-    try {
-      response = await client.chat.completions.create({
-        model: "qwen-max",
-        messages: messages as Parameters<typeof client.chat.completions.create>[0]["messages"],
-        tools: TOOLS,
-        tool_choice: "auto",
-        temperature: 0.2,
-        max_tokens: 2000,
-        stream: true,
-      });
-    } catch (apiErr) {
-      console.warn("Qwen API call failed, falling back to verified RAG services:", apiErr);
-      const results = await searchServicesHybrid({ query: message, limit: 5 });
-      if (results.length > 0) {
-        yield `data: ${JSON.stringify({ type: "search_results", results: results.map((r) => r.service) })}\n\n`;
-        const summaryText =
-          language === "en"
-            ? `Here are verified official and welfare routes for "${message}". Review each official requirement below:`
-            : language === "ps"
-            ? `ستاسو د اړتیا لپاره تایید شوې لارې دلته دي:`
-            : `آپ کی ضرورت کے لیے سرکاری و فلاحی تصدیق شدہ سہولیات درج ذیل ہیں:`;
-        yield `data: ${JSON.stringify({ type: "content", content: summaryText })}\n\n`;
-      } else {
-        yield `data: ${JSON.stringify({
-          type: "content",
-          content:
-            language === "en"
-              ? "No verified services found for this specific query."
-              : "اس درخواست کے لیے تصدیق شدہ معلومات نہیں مل سکیں۔ براہ کرم متعلقہ محکمے سے رابطہ کریں۔",
-        })}\n\n`;
-      }
-      yield `data: ${JSON.stringify({
-        type: "done",
-        case_relevant_service_ids: results.map((r) => r.service.id),
-      })}\n\n`;
-      return;
-    }
-
-    let assistantContent = "";
-    const assistantToolCalls: ToolCall[] = [];
-    let currentToolCall: { id: string; name: string; args: string } | null = null;
-
-    for await (const chunk of response) {
-      const delta = chunk.choices[0]?.delta;
-      if (!delta) continue;
-
-      if (delta.content) {
-        assistantContent += delta.content;
-        yield `data: ${JSON.stringify({ type: "content", content: delta.content })}\n\n`;
-      }
-
-      // Handle tool call streaming
-      if (delta.tool_calls) {
-        for (const tcDelta of delta.tool_calls) {
-          if (tcDelta.index !== undefined) {
-            if (currentToolCall && tcDelta.index !== assistantToolCalls.length) {
-              assistantToolCalls.push({
-                id: currentToolCall.id,
-                type: "function",
-                function: { name: currentToolCall.name, arguments: currentToolCall.args },
-              });
-              currentToolCall = null;
-            }
-            if (!currentToolCall) {
-              currentToolCall = {
-                id: tcDelta.id ?? `tool-${Date.now()}`,
-                name: tcDelta.function?.name ?? "",
-                args: tcDelta.function?.arguments ?? "",
-              };
-            } else {
-              if (tcDelta.function?.name) currentToolCall.name += tcDelta.function.name;
-              if (tcDelta.function?.arguments) currentToolCall.args += tcDelta.function.arguments;
-            }
-          }
-        }
-      }
-
-      // Check for finish
-      const finishReason = chunk.choices[0]?.finish_reason;
-      if (finishReason === "stop" || (finishReason as unknown as string) === "end_turn") {
-        if (currentToolCall) {
-          assistantToolCalls.push({
-            id: currentToolCall.id,
-            type: "function",
-            function: { name: currentToolCall.name, arguments: currentToolCall.args },
-          });
-        }
-        // No more tools — we're done
-        if (assistantContent) collectedContent += assistantContent;
-        const assistantMessage: Message = {
-          role: "assistant",
-          content: assistantContent,
-          ...(assistantToolCalls.length > 0 ? { tool_calls: assistantToolCalls } : {}),
-        };
-        saveMessage(conversationId, assistantMessage);
-        yield `data: ${JSON.stringify({ type: "done", case_relevant_service_ids: collectedServiceIds })}\n\n`;
+      let response;
+      try {
+        response = await client.chat.completions.create({
+          model: "qwen-max",
+          messages: messages as Parameters<typeof client.chat.completions.create>[0]["messages"],
+          tools: TOOLS,
+          tool_choice: "auto",
+          temperature: 0.2,
+          max_tokens: 2000,
+          stream: true,
+        });
+        recordSuccess("dashscope-chat");
+      } catch (apiErr) {
+        recordFailure("dashscope-chat", apiErr);
+        console.warn("Qwen API call failed, falling back to verified RAG services:", apiErr);
+        yield* verifiedOnlyStream(language, message, safetyCheck);
         return;
       }
 
-      if (finishReason === "tool_calls") {
-        if (currentToolCall) {
-          assistantToolCalls.push({
-            id: currentToolCall.id,
-            type: "function",
-            function: { name: currentToolCall.name, arguments: currentToolCall.args },
-          });
+      let assistantContent = "";
+      const assistantToolCalls: ToolCall[] = [];
+      let currentToolCall: { id: string; name: string; args: string } | null = null;
+
+      for await (const chunk of response) {
+        const delta = chunk.choices[0]?.delta;
+        if (!delta) continue;
+
+        if (delta.content) {
+          assistantContent += delta.content;
+          yield `data: ${JSON.stringify({ type: "content", content: delta.content })}\n\n`;
         }
-        break;
-      }
-    }
 
-    // Execute tools
-    if (assistantToolCalls.length === 0) break;
-
-    const assistantMessage: Message = {
-      role: "assistant",
-      content: assistantContent,
-      tool_calls: assistantToolCalls,
-    };
-    saveMessage(conversationId, assistantMessage);
-    messages.push(assistantMessage);
-    collectedToolCalls.push(...assistantToolCalls);
-
-    for (const toolCall of assistantToolCalls) {
-      yield `data: ${JSON.stringify({ type: "tool_call", tool: toolCall.function.name })}\n\n`;
-
-      let toolArgs: Record<string, unknown> = {};
-      try {
-        toolArgs = JSON.parse(toolCall.function.arguments) as Record<string, unknown>;
-      } catch {
-        toolArgs = {};
-      }
-
-      const toolResult = await executeTool(toolCall.function.name, toolArgs, sessionId);
-
-      // Extract service IDs for case suggestion
-      if (toolCall.function.name === "search_knowledge") {
-        try {
-          const parsed = JSON.parse(toolResult) as { services?: { id: string }[] };
-          if (parsed.services) {
-            for (const svc of parsed.services.slice(0, 5)) {
-              if (svc.id && !collectedServiceIds.includes(svc.id)) {
-                collectedServiceIds.push(svc.id);
+        // Handle tool call streaming
+        if (delta.tool_calls) {
+          for (const tcDelta of delta.tool_calls) {
+            if (tcDelta.index !== undefined) {
+              if (currentToolCall && tcDelta.index !== assistantToolCalls.length) {
+                assistantToolCalls.push({
+                  id: currentToolCall.id,
+                  type: "function",
+                  function: { name: currentToolCall.name, arguments: currentToolCall.args },
+                });
+                currentToolCall = null;
+              }
+              if (!currentToolCall) {
+                currentToolCall = {
+                  id: tcDelta.id ?? `tool-${Date.now()}`,
+                  name: tcDelta.function?.name ?? "",
+                  args: tcDelta.function?.arguments ?? "",
+                };
+              } else {
+                if (tcDelta.function?.name) currentToolCall.name += tcDelta.function.name;
+                if (tcDelta.function?.arguments) currentToolCall.args += tcDelta.function.arguments;
               }
             }
           }
-        } catch {
-          // ignore
         }
-      }
 
-      // Yield search results as structured data for the UI
-      if (toolCall.function.name === "search_knowledge") {
-        try {
-          const parsed = JSON.parse(toolResult) as { services?: unknown[] };
-          if (parsed.services) {
-            yield `data: ${JSON.stringify({ type: "search_results", results: parsed.services })}\n\n`;
+        // Check for finish
+        const finishReason = chunk.choices[0]?.finish_reason;
+        if (finishReason === "stop" || (finishReason as unknown as string) === "end_turn") {
+          if (currentToolCall) {
+            assistantToolCalls.push({
+              id: currentToolCall.id,
+              type: "function",
+              function: { name: currentToolCall.name, arguments: currentToolCall.args },
+            });
           }
-        } catch {
-          // ignore
+          // No more tools — we're done
+          const assistantMessage: Message = {
+            role: "assistant",
+            content: assistantContent,
+            ...(assistantToolCalls.length > 0 ? { tool_calls: assistantToolCalls } : {}),
+          };
+          saveMessage(conversationId, assistantMessage);
+          yield `data: ${JSON.stringify({ type: "done", case_relevant_service_ids: collectedServiceIds })}\n\n`;
+          return;
+        }
+
+        if (finishReason === "tool_calls") {
+          if (currentToolCall) {
+            assistantToolCalls.push({
+              id: currentToolCall.id,
+              type: "function",
+              function: { name: currentToolCall.name, arguments: currentToolCall.args },
+            });
+          }
+          break;
         }
       }
 
-      const toolMsg: Message = {
-        role: "tool",
-        content: toolResult,
-        tool_call_id: toolCall.id,
+      // Execute tools
+      if (assistantToolCalls.length === 0) break;
+
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: assistantContent,
+        tool_calls: assistantToolCalls,
       };
-      saveMessage(conversationId, { ...toolMsg, role: "assistant", content: `[tool:${toolCall.function.name}] ${toolResult}` });
-      messages.push({ role: "tool" as const, content: toolResult, tool_call_id: toolCall.id });
+      saveMessage(conversationId, assistantMessage);
+      messages.push(assistantMessage);
+      collectedToolCalls.push(...assistantToolCalls);
+
+      for (const toolCall of assistantToolCalls) {
+        yield `data: ${JSON.stringify({ type: "tool_call", tool: toolCall.function.name })}\n\n`;
+
+        let toolArgs: Record<string, unknown> = {};
+        try {
+          toolArgs = JSON.parse(toolCall.function.arguments) as Record<string, unknown>;
+        } catch {
+          toolArgs = {};
+        }
+
+        const toolResult = await executeTool(toolCall.function.name, toolArgs, sessionId);
+
+        // Extract service IDs for case suggestion
+        if (toolCall.function.name === "search_knowledge") {
+          try {
+            const parsed = JSON.parse(toolResult) as { services?: { id: string }[] };
+            if (parsed.services) {
+              for (const svc of parsed.services.slice(0, 5)) {
+                if (svc.id && !collectedServiceIds.includes(svc.id)) {
+                  collectedServiceIds.push(svc.id);
+                }
+              }
+            }
+          } catch {
+            // ignore
+          }
+        }
+
+        // Yield search results as structured data for the UI
+        if (toolCall.function.name === "search_knowledge") {
+          try {
+            const parsed = JSON.parse(toolResult) as { services?: unknown[] };
+            if (parsed.services) {
+              yield `data: ${JSON.stringify({ type: "search_results", results: parsed.services })}\n\n`;
+            }
+          } catch {
+            // ignore
+          }
+        }
+
+        const toolMsg: Message = {
+          role: "tool",
+          content: toolResult,
+          tool_call_id: toolCall.id,
+        };
+        saveMessage(conversationId, { ...toolMsg, role: "assistant", content: `[tool:${toolCall.function.name}] ${toolResult}` });
+        messages.push({ role: "tool" as const, content: toolResult, tool_call_id: toolCall.id });
+      }
     }
+
+  } catch (streamErr) {
+    // The stream died part way through. Rather than leave the chat hanging
+    // on a half-written answer, finish with verified services instead.
+    recordFailure("dashscope-chat", streamErr);
+    console.warn("Qwen stream failed mid-answer, falling back to verified services:", streamErr);
+    yield* verifiedOnlyStream(language, message, safetyCheck);
+    return;
   }
 
   yield `data: ${JSON.stringify({ type: "done", case_relevant_service_ids: collectedServiceIds })}\n\n`;

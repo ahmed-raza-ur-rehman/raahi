@@ -190,3 +190,177 @@ export const messages = sqliteTable(
   (table) => [index("messages_conversation_idx").on(table.conversationId)],
 );
 
+
+/* ────────────────────────────────────────────────────────────────
+ * Phase 2 tables
+ * ──────────────────────────────────────────────────────────────── */
+
+export const knowledgeEntities = sqliteTable(
+  "knowledge_entities",
+  {
+    id: text("id").primaryKey(),
+    entityType: text("entity_type").notNull(),
+    title: text("title").notNull(),
+    summary: text("summary").notNull(),
+    payload: text("payload").notNull(),
+    sourceUrl: text("source_url").notNull(),
+    sourceTitle: text("source_title").notNull(),
+    authorityTier: integer("authority_tier").notNull(),
+    lastVerified: text("last_verified").notNull(),
+    country: text("country"),
+    province: text("province"),
+    category: text("category"),
+    ...timestamps,
+  },
+  (table) => [
+    index("knowledge_entities_type_idx").on(table.entityType),
+    index("knowledge_entities_category_idx").on(table.category),
+  ],
+);
+
+export const applications = sqliteTable(
+  "applications",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    kind: text("kind").notNull(),
+    refId: text("ref_id"),
+    title: text("title").notNull(),
+    status: text("status").notNull(),
+    stages: text("stages", { mode: "json" }).$type<unknown[]>().notNull(),
+    documents: text("documents", { mode: "json" }).$type<unknown[]>().notNull(),
+    notes: text("notes", { mode: "json" }).$type<{ id: string; at: string; text: string }[]>().notNull(),
+    reminders: text("reminders", { mode: "json" }).$type<unknown[]>().notNull(),
+    deadline: text("deadline"),
+    deadlineNote: text("deadline_note"),
+    feeNote: text("fee_note"),
+    archived: integer("archived", { mode: "boolean" }).notNull().default(false),
+    ...timestamps,
+  },
+  (table) => [
+    index("applications_session_idx").on(table.sessionId),
+    index("applications_status_idx").on(table.status),
+  ],
+);
+
+export const applicationEvents = sqliteTable(
+  "application_events",
+  {
+    id: text("id").primaryKey(),
+    applicationId: text("application_id").notNull(),
+    at: text("at").notNull(),
+    kind: text("kind").notNull(),
+    message: text("message").notNull(),
+  },
+  (table) => [index("application_events_app_idx").on(table.applicationId)],
+);
+
+export const bloodRequests = sqliteTable(
+  "blood_requests",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    patientName: text("patient_name").notNull(),
+    bloodGroup: text("blood_group").notNull(),
+    units: integer("units").notNull(),
+    city: text("city").notNull(),
+    hospital: text("hospital").notNull(),
+    neededBy: text("needed_by").notNull(),
+    contactNumber: text("contact_number").notNull(),
+    notes: text("notes"),
+    status: text("status").notNull(),
+    ...timestamps,
+  },
+  (table) => [index("blood_requests_status_idx").on(table.status)],
+);
+
+export const donorRegistrations = sqliteTable(
+  "donor_registrations",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    fullName: text("full_name").notNull(),
+    bloodGroup: text("blood_group").notNull(),
+    city: text("city").notNull(),
+    phone: text("phone").notNull(),
+    lastDonation: text("last_donation"),
+    available: integer("available", { mode: "boolean" }).notNull().default(true),
+    notes: text("notes"),
+    ...timestamps,
+  },
+  (table) => [index("donor_registrations_group_idx").on(table.bloodGroup)],
+);
+
+export const reliefRequests = sqliteTable(
+  "relief_requests",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    hazard: text("hazard").notNull(),
+    district: text("district").notNull(),
+    families: integer("families").notNull(),
+    needs: text("needs").notNull(),
+    locationNote: text("location_note"),
+    contactNumber: text("contact_number").notNull(),
+    status: text("status").notNull(),
+    routedTo: text("routed_to").notNull(),
+    ...timestamps,
+  },
+  (table) => [index("relief_requests_status_idx").on(table.status)],
+);
+
+export const corrections = sqliteTable(
+  "corrections",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    entityType: text("entity_type").notNull(),
+    entityId: text("entity_id").notNull(),
+    field: text("field").notNull(),
+    reportedValue: text("reported_value"),
+    suggestedValue: text("suggested_value").notNull(),
+    reason: text("reason"),
+    evidenceUrl: text("evidence_url"),
+    reporterContact: text("reporter_contact"),
+    status: text("status").notNull(),
+    reviewerNote: text("reviewer_note"),
+    votes: integer("votes").notNull().default(0),
+    ...timestamps,
+  },
+  (table) => [
+    index("corrections_entity_idx").on(table.entityType, table.entityId),
+    index("corrections_status_idx").on(table.status),
+  ],
+);
+
+export const webCache = sqliteTable("web_cache", {
+  url: text("url").primaryKey(),
+  status: integer("status").notNull(),
+  title: text("title").notNull(),
+  text: text("text").notNull(),
+  etag: text("etag"),
+  fetchedAt: text("fetched_at").notNull(),
+  expiresAt: text("expires_at").notNull(),
+});
+
+export const webSearchCache = sqliteTable("web_search_cache", {
+  queryHash: text("query_hash").primaryKey(),
+  query: text("query").notNull(),
+  results: text("results").notNull(),
+  fetchedAt: text("fetched_at").notNull(),
+  expiresAt: text("expires_at").notNull(),
+});
+
+export const webHostState = sqliteTable("web_host_state", {
+  host: text("host").primaryKey(),
+  tokens: text("tokens").notNull(),
+  lastAt: integer("last_at").notNull(),
+  blockedUntil: integer("blocked_until").notNull().default(0),
+});
+
+export const webRobots = sqliteTable("web_robots", {
+  host: text("host").primaryKey(),
+  rules: text("rules").notNull(),
+  fetchedAt: text("fetched_at").notNull(),
+  expiresAt: text("expires_at").notNull(),
+});

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import { useRouter } from "next/navigation";
 import type { Domain, Language, ServiceRecord } from "@/lib/types";
 
@@ -106,6 +107,8 @@ const INCOME_RANGES = [
   { id: "high", labelEn: "Above Rs 50,000", labelUr: "50,000 سے زیادہ" },
 ];
 
+const NO_RESULTS: ServiceRecord[] = [];
+
 export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNavigatorProps) {
   const router = useRouter();
   const [language, setLanguage] = useState<Language>(initialLanguage);
@@ -121,23 +124,34 @@ export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNa
   const [specialCategory, setSpecialCategory] = useState<string>("none");
 
   // Results State
-  const [results, setResults] = useState<ServiceRecord[]>([]);
-  const [loadingResults, setLoadingResults] = useState<boolean>(false);
+  const [settled, setSettled] = useState<{ key: string; items: ServiceRecord[] } | undefined>(undefined);
   const [creatingCase, setCreatingCase] = useState<boolean>(false);
 
-  // When criteria change and we are at step 3, fetch matching services
+  // Identifies the exact request currently being shown. Keying results this way
+  // means a slow response for old criteria can never overwrite newer results.
+  const requestKey = step === 3 && selectedDomain ? `${selectedDomain}|${selectedProvince}` : null;
+  const fresh = requestKey !== null && settled?.key === requestKey;
+  const results = fresh ? settled.items : NO_RESULTS;
+  const loadingResults = requestKey !== null && !fresh;
+
+  // When criteria change and we are at step 3, fetch matching services.
+  // Every setState happens in an async continuation, and the keyed result means
+  // a superseded response is discarded instead of flashing stale data.
   useEffect(() => {
-    if (step === 3 && selectedDomain) {
-      setLoadingResults(true);
-      fetch(`/api/programs?domain=${selectedDomain}&province=${encodeURIComponent(selectedProvince)}`)
-        .then((r) => r.json())
-        .then((data) => {
-          setResults(data.results || []);
-          setLoadingResults(false);
-        })
-        .catch(() => setLoadingResults(false));
-    }
-  }, [step, selectedDomain, selectedProvince]);
+    if (!requestKey || !selectedDomain) return;
+    let cancelled = false;
+    fetch(`/api/programs?domain=${selectedDomain}&province=${encodeURIComponent(selectedProvince)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled) setSettled({ key: requestKey, items: data.results || [] });
+      })
+      .catch(() => {
+        if (!cancelled) setSettled({ key: requestKey, items: [] });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [requestKey, selectedDomain, selectedProvince]);
 
   const handleSelectNeed = (domain: Domain) => {
     setSelectedDomain(domain);
@@ -496,12 +510,12 @@ export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNa
                 <p className="text-xs font-bold text-[var(--ink)]">
                   {language === "en" ? "No specific programs found for this combination." : "اس امتزاج کے لیے کوئی خاص سروس نہیں ملی۔"}
                 </p>
-                <Link
+                <ModuleLink id="programs"
                   href="/programs"
                   className="mt-2 inline-block text-xs font-bold text-[var(--forest)] hover:underline"
                 >
                   {language === "en" ? "Browse all 85 services" : "تمام 85 خدمات کی فہرست دیکھیں"}
-                </Link>
+                </ModuleLink>
               </div>
             ) : (
               <div className="space-y-3">

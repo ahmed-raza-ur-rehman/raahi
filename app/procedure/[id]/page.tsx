@@ -1,15 +1,43 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { ProcedureWalkthrough } from "@/components/procedure/ProcedureWalkthrough";
+import { ModuleLink } from "@/components/shell/ModuleLink";
+import {
+  ProcedureWalkthrough,
+  type ProcedureStepItem,
+} from "@/components/procedure/ProcedureWalkthrough";
+
+/** Shape returned by GET /api/procedures/[id]. */
+interface ProcedurePayload {
+  serviceId: string;
+  name: string;
+  nameUr: string;
+  namePs?: string;
+  domain: string;
+  organizationId: string;
+  description: string;
+  descriptionUr: string;
+  steps: ProcedureStepItem[];
+  requiredDocuments: {
+    type: string;
+    label: string;
+    labelUr?: string;
+    mandatory: boolean;
+  }[];
+  source: {
+    url: string;
+    title: string;
+    authorityTier?: number;
+    lastVerified?: string;
+  };
+}
 
 interface ProcedurePageProps {
   params: Promise<{ id: string }>;
 }
 
 export default function ProcedurePage({ params }: ProcedurePageProps) {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ProcedurePayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [language, setLanguage] = useState<"en" | "ur" | "ps">("ur");
@@ -21,7 +49,7 @@ export default function ProcedurePage({ params }: ProcedurePageProps) {
           if (!res.ok) throw new Error("Procedure not found");
           return res.json();
         })
-        .then((result) => {
+        .then((result: ProcedurePayload) => {
           setData(result);
           setLoading(false);
         })
@@ -54,12 +82,12 @@ export default function ProcedurePage({ params }: ProcedurePageProps) {
         <p className="mt-1 text-sm text-[var(--muted)]">
           درخواست کردہ سرکاری سروس یا طریقہ ڈیٹا بیس میں موجود نہیں ہے۔
         </p>
-        <Link
+        <ModuleLink id="chat"
           href="/chat"
           className="mt-4 inline-block rounded-xl bg-[var(--forest)] px-4 py-2 text-xs font-bold text-white"
         >
           چیٹ میں نیا راستہ تلاش کریں
-        </Link>
+        </ModuleLink>
       </main>
     );
   }
@@ -71,12 +99,12 @@ export default function ProcedurePage({ params }: ProcedurePageProps) {
     >
       {/* Top Bar */}
       <header className="flex items-center justify-between border-b border-[var(--line)] pb-4 mb-6">
-        <Link
+        <ModuleLink id="chat"
           href="/chat"
           className="flex items-center gap-1 text-xs font-bold text-[var(--forest)] hover:underline"
         >
           ← {language === "en" ? "Back to Chat" : "چیٹ پر واپس جائیں"}
-        </Link>
+        </ModuleLink>
 
         <div className="flex gap-0.5 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] p-0.5 text-xs">
           {(["ur", "ps", "en"] as const).map((lang) => (

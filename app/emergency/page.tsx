@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import { EmergencyBanner } from "@/components/common/EmergencyBanner";
 
 export default function EmergencyPage() {
@@ -78,12 +79,12 @@ export default function EmergencyPage() {
       </div>
 
       <footer className="border-t border-[var(--line)] pt-4 pb-2 text-center">
-        <Link
+        <ModuleLink id="chat"
           href="/chat"
           className="rounded-xl bg-[var(--forest)] px-4 py-2 text-xs font-bold text-white hover:bg-[var(--forest-dark)] inline-block"
         >
           🧭 {language === "en" ? "Return to RAAHI Chat" : "راہی چیٹ پر واپس جائیں"}
-        </Link>
+        </ModuleLink>
       </footer>
     </main>
   );

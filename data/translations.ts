@@ -25,6 +25,18 @@ export const translations: Record<Language, Record<string, string>> = {
     unknown: "مزید معلومات درکار ہیں",
     myCases: "میرے کیسز",
   },
+  hkp: {
+    appName: "راہی",
+    homePrompt: "دسو تہ کیہ چاہیدا اے",
+    source: "ذرائع",
+    verified: "آخری جائزہ",
+    actionPlan: "تہاڈا ایکشن پلان",
+    possible: "ممکن — ذرائع توں تصدیق کرو",
+    likely: "ممکنہ طور تے اہل — ذرائع توں تصدیق کرو",
+    unlikely: "تہاڈے دسیاں گلاں دے مطابق امکان گھٹ اے",
+    unknown: "ہور معلومات دی لوڑ اے",
+    myCases: "میرے کیسز",
+  },
   ps: {
     appName: "راهي",
     homePrompt: "ووایاست تاسو ته څه پکار دي",

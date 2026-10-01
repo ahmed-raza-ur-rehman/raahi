@@ -11,7 +11,7 @@ const schema = z.object({
   conversationId: z.string().optional(),
   sessionId: z.string().optional(),
   caseId: z.string().optional(),
-  language: z.enum(["en", "ur", "ps"]).optional(),
+  language: z.enum(["en", "ur", "ps", "hkp"]).optional(),
   profile: z.record(z.string(), z.unknown()).default({}),
   stream: z.boolean().default(true),
 });
@@ -131,4 +131,4 @@ export async function POST(request: Request) {
     results: searchResults,
     relevantServiceIds,
   });
-}
+}

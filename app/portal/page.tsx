@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import type { Domain } from "@/lib/types";
 
 interface Org {
@@ -28,7 +29,8 @@ export default function OrganizationPortalPage() {
   const [description, setDescription] = useState("");
   const [descriptionUr, setDescriptionUr] = useState("");
   const [coverage, setCoverage] = useState<string>("Pakistan");
-  const [applicationMethod, setApplicationMethod] = useState<"online" | "in_person" | "phone" | "sms" | "mixed">("online");
+  type ApplicationMethod = "online" | "in_person" | "phone" | "sms" | "mixed";
+  const [applicationMethod, setApplicationMethod] = useState<ApplicationMethod>("online");
   const [sourceUrl, setSourceUrl] = useState("");
   const [sourceTitle, setSourceTitle] = useState("");
   const [authorityTier, setAuthorityTier] = useState(1);
@@ -48,7 +50,8 @@ export default function OrganizationPortalPage() {
   const [stepTitle, setStepTitle] = useState("");
   const [stepTitleUr, setStepTitleUr] = useState("");
   const [stepDesc, setStepDesc] = useState("");
-  const [stepChannel, setStepChannel] = useState<"online" | "in_person" | "phone" | "sms">("online");
+  type StepChannel = "online" | "in_person" | "phone" | "sms";
+  const [stepChannel, setStepChannel] = useState<StepChannel>("online");
   const [procedureSteps, setProcedureSteps] = useState<Array<{ order: number; title: string; titleUr: string; description: string; descriptionUr: string; channel: "online" | "in_person" | "phone" | "sms" }>>([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -197,12 +200,12 @@ export default function OrganizationPortalPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link
+            <ModuleLink id="programs"
               href="/programs"
               className="rounded-xl border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-bold text-[var(--forest)] hover:bg-[var(--forest-light)] transition"
             >
               📋 {language === "en" ? "Catalog (85)" : "سروس کیٹلاگ"}
-            </Link>
+            </ModuleLink>
 
             <button
               type="button"
@@ -409,7 +412,7 @@ export default function OrganizationPortalPage() {
                   </label>
                   <select
                     value={applicationMethod}
-                    onChange={(e) => setApplicationMethod(e.target.value as any)}
+                    onChange={(e) => setApplicationMethod(e.target.value as ApplicationMethod)}
                     className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface-2)] p-2.5 text-xs font-semibold"
                   >
                     <option value="online">🌐 Online Portal</option>
@@ -634,7 +637,7 @@ export default function OrganizationPortalPage() {
 
                   <select
                     value={stepChannel}
-                    onChange={(e) => setStepChannel(e.target.value as any)}
+                    onChange={(e) => setStepChannel(e.target.value as StepChannel)}
                     className="rounded-lg border border-[var(--line)] bg-white p-2 text-xs font-medium"
                   >
                     <option value="online">Online</option>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { ModuleLink } from "@/components/shell/ModuleLink";
 import type { CitizenCase } from "@/lib/types";
 
 type Language = "en" | "ur" | "ps";
@@ -52,12 +53,12 @@ export default function CasesPage() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <Link
+            <ModuleLink id="chat"
               href="/chat"
               className="rounded-xl bg-[var(--forest)] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--forest-dark)] transition"
             >
               + {language === "en" ? "New Route" : "نیا راستہ تلاش کریں"}
-            </Link>
+            </ModuleLink>
 
             <div className="flex gap-0.5 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] p-0.5 text-xs">
               {(["ur", "ps", "en"] as Language[]).map((lang) => (
@@ -135,12 +136,12 @@ export default function CasesPage() {
                   ? "Search for assistance or programs in chat and click 'Save to Case' to track your progress here."
                   : "چیٹ میں اپنی ضرورت تلاش کریں اور 'کیس محفوظ کریں' پر کلک کریں تاکہ آپ کی پیش رفت یہاں محفوظ رہے۔"}
               </p>
-              <Link
+              <ModuleLink id="chat"
                 href="/chat"
                 className="mt-4 inline-block rounded-xl bg-[var(--forest)] px-4 py-2 text-xs font-bold text-white hover:bg-[var(--forest-dark)]"
               >
                 {language === "en" ? "Start In Chat →" : "چیٹ میں جائیں →"}
-              </Link>
+              </ModuleLink>
             </div>
           ) : (
             <div className="mt-6 space-y-4">
