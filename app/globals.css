@@ -75,9 +75,19 @@ button { cursor: pointer; }
   .app-shell { box-shadow: none; }
 }
 
-@media (prefers-reduced-motion: reduce) {
+  @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
-}
+  }
+
+  :root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+  :root[data-text-scale="large"] { font-size: 108%; }
+  :root[data-text-scale="xlarge"] { font-size: 118%; }
+  :root[data-contrast="high"] { --line: #6b8177; --line-soft: #a9bcb3; --muted: #40564d; --ink-soft: #18342a; }
+  :root[data-contrast="high"] .card-premium, :root[data-contrast="high"] button, :root[data-contrast="high"] a { outline-color: var(--forest); }
+  :root[data-density="compact"] .card-premium { padding-top: .8rem; padding-bottom: .8rem; }
+  :root[data-density="compact"] section { scroll-margin-top: 1rem; }
+  :focus-visible { outline: 3px solid var(--forest); outline-offset: 3px; }
+  @media (forced-colors: active) { button, a, input, select, textarea { forced-color-adjust: auto; } }
 a { color: inherit; text-decoration: none; }
 img, video { max-width: 100%; }
 ::selection { background: #b8ebd2; color: var(--ink); }
