@@ -84,8 +84,8 @@ img, video { max-width: 100%; }
 
 /* ─── Urdu / RTL typography ────────────────────────────────────── */
 [dir="rtl"], [lang="ur"], [lang="ps"] {
-  font-family: 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Arial Unicode MS', serif;
-  line-height: 2.0;
+  font-family: 'Noto Naskh Arabic', 'Noto Sans Arabic', 'Arial Unicode MS', sans-serif;
+  line-height: 1.75;
   letter-spacing: 0;
 }
 
@@ -113,11 +113,20 @@ img, video { max-width: 100%; }
 }
 
 @media (min-width: 900px) {
+  .app-shell {
+    padding-inline: clamp(2rem, 5vw, 5rem) !important;
+  }
+
   .app-shell > div:first-child {
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
-    column-gap: clamp(2rem, 5vw, 5rem);
+    grid-template-columns: minmax(0, 1.12fr) minmax(360px, .88fr);
+    column-gap: clamp(2.5rem, 6vw, 6rem);
     align-items: start;
+  }
+
+  .app-shell > div:first-child > section:first-of-type {
+    max-width: 980px;
+    margin-inline: auto;
   }
 
   .app-shell > div:first-child > header,
