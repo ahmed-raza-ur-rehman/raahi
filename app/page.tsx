@@ -287,7 +287,7 @@ export default function Home() {
 
           {/* ─── Fast Guided Navigator (Few-Click Path) ─────────────── */}
           <section className="py-6 border-t border-[var(--line)]">
-          <FewClickNavigator initialLanguage={language} />
+          <FewClickNavigator language={language} onLanguageChange={changeLanguage} />
         </section>
 
         {/* ─── 5 Real Citizen Demo Scenarios ─────────────────────── */}

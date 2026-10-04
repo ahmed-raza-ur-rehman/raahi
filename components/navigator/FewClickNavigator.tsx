@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import type { Domain, Language, ServiceRecord } from "@/lib/types";
 
 interface FewClickNavigatorProps {
-  initialLanguage?: Language;
+  language: Language;
+  onLanguageChange: (language: Language) => void;
   onSelectService?: (service: ServiceRecord) => void;
 }
 
@@ -106,9 +107,8 @@ const INCOME_RANGES = [
   { id: "high", labelEn: "Above Rs 50,000", labelUr: "50,000 سے زیادہ" },
 ];
 
-export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNavigatorProps) {
+export default function FewClickNavigator({ language, onLanguageChange }: FewClickNavigatorProps) {
   const router = useRouter();
-  const [language, setLanguage] = useState<Language>(initialLanguage);
 
   // Navigator Step
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -234,7 +234,7 @@ export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNa
               <button
                 key={lang}
                 type="button"
-                onClick={() => setLanguage(lang)}
+                onClick={() => onLanguageChange(lang)}
                 className={`rounded px-2 py-0.5 font-bold transition cursor-pointer ${
                   language === lang
                     ? "bg-[var(--forest)] text-white shadow-xs"
