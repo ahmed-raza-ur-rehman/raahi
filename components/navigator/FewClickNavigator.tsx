@@ -200,7 +200,7 @@ export default function FewClickNavigator({ language }: FewClickNavigatorProps) 
       dir={language === "en" ? "ltr" : "rtl"}
     >
       {/* ─── Top Control Header ─────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line-soft)] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line-soft)] pb-4" aria-label={language === "en" ? "Guided navigator progress" : "رہنمائی کی پیش رفت"}>
         <div className="flex items-center gap-2">
           <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--forest-light)] text-base font-black text-[var(--forest)]">
             ⚡
@@ -219,8 +219,8 @@ export default function FewClickNavigator({ language }: FewClickNavigatorProps) 
           </div>
         </div>
 
-        {/* Language & Step Indicator */}
-          <div className="flex items-center gap-1 text-xs font-mono text-[var(--muted)] font-bold me-1">
+        {/* Shared page language controls the navigator; this component intentionally has no separate switcher. */}
+          <div className="flex items-center gap-1 text-xs font-mono text-[var(--muted)] font-bold me-1" aria-live="polite">
             <span>{language === "en" ? "Step" : "مرحلہ"}</span>
             <span className="rounded-md bg-[var(--surface-2)] px-2 py-0.5 text-[var(--forest)]">
               {step}/3
@@ -371,7 +371,7 @@ export default function FewClickNavigator({ language }: FewClickNavigatorProps) 
           {/* Vulnerable Situation */}
           <div>
             <label className="block text-xs font-bold text-[var(--ink)] mb-2">
-              👨‍👩‍👧 {language === "en" ? "Special Condition (If applicable):" : "خصوصی رعایت / زمرہ:"}
+              👨‍���‍👧 {language === "en" ? "Special Condition (If applicable):" : "خصوصی رعایت / زمرہ:"}
             </label>
             <div className="flex flex-wrap gap-2">
               {[

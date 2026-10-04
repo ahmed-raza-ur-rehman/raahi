@@ -127,7 +127,7 @@ export default function Home() {
               <p className="text-[11px] text-[var(--muted)] font-medium">
                 {language === "en"
                   ? "Citizen Service Navigator for Pakistan"
-                  : "پاکستان کا سرکاری و عوامی رہنمائی ��ظام"}
+                  : "پاکستان کا سرکاری و عوامی رہنمائی نظام"}
               </p>
             </div>
           </div>

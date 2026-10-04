@@ -661,10 +661,10 @@ export default function ChatPage() {
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  submitQuery(inputQuery);
-                }
+if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && e.keyCode !== 229) {
+              e.preventDefault();
+              submitQuery(inputQuery);
+            }
               }}
               placeholder={t.placeholder}
               disabled={loading}
