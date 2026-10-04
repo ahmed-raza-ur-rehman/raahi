@@ -8,6 +8,7 @@ import type { Domain, Language, ServiceRecord } from "@/lib/types";
 interface FewClickNavigatorProps {
   language: Language;
   onSelectService?: (service: ServiceRecord) => void;
+  onAskAboutService?: (service: ServiceRecord) => void;
 }
 
 const PRIMARY_NEEDS: Array<{
@@ -106,7 +107,7 @@ const INCOME_RANGES = [
   { id: "high", labelEn: "Above Rs 50,000", labelUr: "50,000 سے زیادہ" },
 ];
 
-export default function FewClickNavigator({ language }: FewClickNavigatorProps) {
+export default function FewClickNavigator({ language, onAskAboutService }: FewClickNavigatorProps) {
   const router = useRouter();
 
   // Navigator Step
@@ -126,16 +127,25 @@ export default function FewClickNavigator({ language }: FewClickNavigatorProps) 
 
   // When criteria change and we are at step 3, fetch matching services
   useEffect(() => {
-    if (step === 3 && selectedDomain) {
-      setLoadingResults(true);
-      fetch(`/api/programs?domain=${selectedDomain}&province=${encodeURIComponent(selectedProvince)}`)
-        .then((r) => r.json())
-        .then((data) => {
-          setResults(data.results || []);
-          setLoadingResults(false);
-        })
-        .catch(() => setLoadingResults(false));
-    }
+    if (step !== 3 || !selectedDomain) return;
+
+    const controller = new AbortController();
+    setLoadingResults(true);
+    setResults([]);
+    fetch(`/api/programs?domain=${selectedDomain}&province=${encodeURIComponent(selectedProvince)}`, { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load programs");
+        return response.json();
+      })
+      .then((data) => setResults(data.results || []))
+      .catch((error) => {
+        if (error.name !== "AbortError") setResults([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoadingResults(false);
+      });
+
+    return () => controller.abort();
   }, [step, selectedDomain, selectedProvince]);
 
   const handleSelectNeed = (domain: Domain) => {
@@ -529,13 +539,24 @@ export default function FewClickNavigator({ language }: FewClickNavigatorProps) 
 
                     {/* Step-by-Step Procedure Quick Link */}
                     <div className="mt-3.5 border-t border-[var(--line-soft)] pt-2.5 flex items-center justify-between text-xs">
-                      <Link
-                        href={`/procedure/${svc.id}`}
-                        className="font-bold text-[var(--forest)] hover:underline inline-flex items-center gap-1"
-                      >
-                        <span>📋 {language === "en" ? "Step-by-Step Guide" : "طریقہ کار گائیڈ"}</span>
-                        <span>{language === "en" ? "→" : "←"}</span>
-                      </Link>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Link
+                          href={`/procedure/${svc.id}`}
+                          className="font-bold text-[var(--forest)] hover:underline inline-flex items-center gap-1"
+                        >
+                          <span>{language === "en" ? "Step-by-Step Guide" : "طریقہ کار گائیڈ"}</span>
+                          <span>{language === "en" ? "→" : "←"}</span>
+                        </Link>
+                        {onAskAboutService && (
+                          <button
+                            type="button"
+                            onClick={() => onAskAboutService(svc)}
+                            className="font-bold text-[var(--ink-soft)] hover:text-[var(--forest)] hover:underline"
+                          >
+                            {language === "en" ? "Ask RAAHI" : "راہی سے پوچھیں"}
+                          </button>
+                        )}
+                      </div>
 
                       <a
                         href={svc.sourceUrl}
