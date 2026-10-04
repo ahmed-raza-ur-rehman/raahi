@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import FewClickNavigator from "@/components/navigator/FewClickNavigator";
 
@@ -77,6 +77,37 @@ const DOMAINS = [
 export default function Home() {
   const [language, setLanguage] = useState<Language>("ur");
 
+  useEffect(() => {
+    const saved = document.cookie.match(/(?:^|; )raahi-language=([^;]+)/)?.[1] as Language | undefined;
+    if (saved && ["en", "ur", "ps"].includes(saved)) setLanguage(saved);
+
+    const channel = "BroadcastChannel" in window ? new BroadcastChannel("raahi-preferences") : null;
+    const onPreference = (event: MessageEvent<{ language?: Language }>) => {
+      if (event.data.language && ["en", "ur", "ps"].includes(event.data.language)) setLanguage(event.data.language);
+    };
+    channel?.addEventListener("message", onPreference);
+    return () => {
+      channel?.removeEventListener("message", onPreference);
+      channel?.close();
+    };
+  }, []);
+
+  const changeLanguage = (nextLanguage: Language) => {
+    setLanguage(nextLanguage);
+    document.cookie = `raahi-language=${nextLanguage}; max-age=31536000; path=/; SameSite=Lax`;
+    if ("BroadcastChannel" in window) {
+      const channel = new BroadcastChannel("raahi-preferences");
+      channel.postMessage({ language: nextLanguage });
+      channel.close();
+    }
+  };
+
+  const copy = {
+    en: { live: "Live guidance workspace", liveText: "Search verified services, upload evidence, or coordinate a case with RAAHI.", search: "Search services or describe your need", searchCta: "Open smart search", secure: "Private by design", secureText: "Your documents stay scoped to your case.", agents: "Specialist agents", agentsText: "Navigator, eligibility, documents, and safety checks work together." },
+    ur: { live: "براہ راست رہنمائی ورک اسپیس", liveText: "تصدیق شدہ خدمات تلاش کریں، دستاویزات دیں یا راہی کے ساتھ کیس ترتیب دیں۔", search: "خدمات تلاش کریں یا اپنی ضرورت لکھیں", searchCta: "سمارٹ سرچ کھولیں", secure: "رازداری اولین", secureText: "آپ کی دستاویزات صرف آپ کے کیس تک محدود رہتی ہیں۔", agents: "ماہر ایجنٹس", agentsText: "رہنمائی، اہلیت، دستاویزات اور حفاظتی جانچ ساتھ کام کرتے ہیں۔" },
+    ps: { live: "د لارښوونې کاري ځای", liveText: "تصدیق شوي خدمتونه ولټوئ، اسناد ورکړئ یا خپله قضیه تنظیم کړئ.", search: "خدمتونه ولټوئ یا خپله اړتیا ولیکئ", searchCta: "سمارټ لټون پرانیزئ", secure: "محرمیت لومړی", secureText: "ستاسو اسناد یوازې ستاسو له قضیې سره تړلي وي.", agents: "متخصص استازي", agentsText: "لارښود، وړتیا، اسناد او خوندیتوب یوځای کار کوي." },
+  }[language];
+
   return (
     <main
       className="app-shell flex min-h-screen flex-col justify-between px-4 sm:px-6 py-5"
@@ -128,7 +159,9 @@ export default function Home() {
                 <button
                   key={lang}
                   type="button"
-                  onClick={() => setLanguage(lang)}
+                  onClick={() => changeLanguage(lang)}
+                  aria-pressed={language === lang}
+                  aria-label={`Switch language to ${lang === "ur" ? "Urdu" : lang === "ps" ? "Pashto" : "English"}`}
                   className={`rounded px-2.5 py-1 font-bold transition ${
                     language === lang
                       ? "bg-[var(--forest)] text-white shadow-xs"
@@ -224,8 +257,36 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─── Fast Guided Navigator (Few-Click Path) ─────────────── */}
-        <section className="py-6 border-t border-[var(--line)]">
+          <section aria-labelledby="workspace-title" className="grid gap-3 border-t border-[var(--line)] py-6 sm:grid-cols-[1.25fr_.75fr]">
+            <div className="card-premium p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[.14em] text-[var(--forest)]">{copy.live}</p>
+                  <h2 id="workspace-title" className="mt-1 text-lg font-black text-[var(--ink)]">{copy.liveText}</h2>
+                </div>
+                <span className="rounded-full bg-[var(--success-bg)] px-2.5 py-1 text-[11px] font-bold text-[var(--success)]">Online</span>
+              </div>
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <Link href="/programs" className="input-field flex min-h-12 items-center justify-between gap-3 text-sm font-medium text-[var(--muted)]" aria-label={copy.search}>
+                  <span>{copy.search}</span><span className="rounded-lg bg-[var(--forest-light)] px-2 py-1 text-xs font-bold text-[var(--forest)]">⌘ K</span>
+                </Link>
+                <Link href="/programs" className="btn-primary min-h-12 shrink-0">{copy.searchCta}</Link>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-rows-2">
+              <div className="rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] p-4">
+                <p className="text-sm font-black text-[var(--ink)]">{copy.secure}</p>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{copy.secureText}</p>
+              </div>
+              <div className="rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] p-4">
+                <p className="text-sm font-black text-[var(--ink)]">{copy.agents}</p>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{copy.agentsText}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* ─── Fast Guided Navigator (Few-Click Path) ─────────────── */}
+          <section className="py-6 border-t border-[var(--line)]">
           <FewClickNavigator initialLanguage={language} />
         </section>
 
