@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import FewClickNavigator from "@/components/navigator/FewClickNavigator";
+import PreferencesWorkspace from "@/components/common/PreferencesWorkspace";
+import ServiceDiscoveryWorkbench from "@/components/common/ServiceDiscoveryWorkbench";
 
 type Language = "en" | "ur" | "ps";
 
@@ -127,7 +129,7 @@ export default function Home() {
               <p className="text-[11px] text-[var(--muted)] font-medium">
                 {language === "en"
                   ? "Citizen Service Navigator for Pakistan"
-                  : "پاکستان کا سرکاری و عوامی رہنمائی نظام"}
+                  : "پاکستان کا سرکاری و عوامی رہنمائی ��ظام"}
               </p>
             </div>
           </div>
@@ -344,6 +346,14 @@ export default function Home() {
               );
             })}
           </div>
+        </section>
+
+        <section className="py-6 border-t border-[var(--line)]">
+          <ServiceDiscoveryWorkbench language={language} />
+        </section>
+
+        <section className="py-6 border-t border-[var(--line)]">
+          <PreferencesWorkspace language={language} onLanguageChange={changeLanguage} compact />
         </section>
 
         {/* ─── Explore by Domain ──────────────────────────────────── */}

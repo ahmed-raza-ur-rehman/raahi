@@ -568,9 +568,18 @@ export default function ChatPage() {
 
             {/* Mode Content */}
             <div className="mt-6 w-full max-w-2xl text-start">
-              {entryMode === "navigator" ? (
-                <FewClickNavigator language={language} />
-              ) : (
+  {entryMode === "navigator" ? (
+  <FewClickNavigator
+    language={language}
+    onAskAboutService={(service) =>
+      submitQuery(
+        language === "en"
+          ? `Please explain eligibility, required documents, and next steps for ${service.name}.`
+          : `براہ کرم ${service.nameUr} کی اہلیت، ضروری دستاویزات اور اگلے مراحل سمجھائیں۔`
+      )
+    }
+  />
+  ) : (
                 <div className="space-y-2">
                   <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] ps-1">
                     {language === "en" ? "Common citizen requests:" : "شہریوں کی عام ضروریات:"}
