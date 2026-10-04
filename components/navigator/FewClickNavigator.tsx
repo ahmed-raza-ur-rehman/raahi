@@ -7,7 +7,6 @@ import type { Domain, Language, ServiceRecord } from "@/lib/types";
 
 interface FewClickNavigatorProps {
   language: Language;
-  onLanguageChange: (language: Language) => void;
   onSelectService?: (service: ServiceRecord) => void;
 }
 
@@ -107,7 +106,7 @@ const INCOME_RANGES = [
   { id: "high", labelEn: "Above Rs 50,000", labelUr: "50,000 سے زیادہ" },
 ];
 
-export default function FewClickNavigator({ language, onLanguageChange }: FewClickNavigatorProps) {
+export default function FewClickNavigator({ language }: FewClickNavigatorProps) {
   const router = useRouter();
 
   // Navigator Step
@@ -221,31 +220,12 @@ export default function FewClickNavigator({ language, onLanguageChange }: FewCli
         </div>
 
         {/* Language & Step Indicator */}
-        <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-xs font-mono text-[var(--muted)] font-bold me-1">
             <span>{language === "en" ? "Step" : "مرحلہ"}</span>
             <span className="rounded-md bg-[var(--surface-2)] px-2 py-0.5 text-[var(--forest)]">
               {step}/3
             </span>
           </div>
-
-          <div className="flex gap-0.5 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] p-0.5 text-xs">
-            {(["ur", "en"] as Language[]).map((lang) => (
-              <button
-                key={lang}
-                type="button"
-                onClick={() => onLanguageChange(lang)}
-                className={`rounded px-2 py-0.5 font-bold transition cursor-pointer ${
-                  language === lang
-                    ? "bg-[var(--forest)] text-white shadow-xs"
-                    : "text-[var(--muted)] hover:text-[var(--ink)]"
-                }`}
-              >
-                {lang === "ur" ? "اردو" : "EN"}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* ─── STEP 1: Select Primary Goal ────────────────────────────── */}
@@ -372,7 +352,7 @@ export default function FewClickNavigator({ language, onLanguageChange }: FewCli
                     : "border border-[var(--line)] bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-white"
                 }`}
               >
-                {language === "en" ? "✓ Yes, I have valid CNIC" : "✓ جی ہاں، شناختی کارڈ موجود ہے"}
+                {language === "en" ? "✓ Yes, I have valid CNIC" : "✓ جی ہاں، ��ناختی کارڈ موجود ہے"}
               </button>
               <button
                 type="button"

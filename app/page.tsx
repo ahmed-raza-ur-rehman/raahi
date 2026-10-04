@@ -127,7 +127,7 @@ export default function Home() {
               <p className="text-[11px] text-[var(--muted)] font-medium">
                 {language === "en"
                   ? "Citizen Service Navigator for Pakistan"
-                  : "پاکستان کا سرکاری و عوامی رہنمائی نظام"}
+                  : "پاکستان کا سرکاری و عوامی رہنمائی ��ظام"}
               </p>
             </div>
           </div>
@@ -287,7 +287,7 @@ export default function Home() {
 
           {/* ─── Fast Guided Navigator (Few-Click Path) ─────────────── */}
           <section className="py-6 border-t border-[var(--line)]">
-          <FewClickNavigator language={language} onLanguageChange={changeLanguage} />
+          <FewClickNavigator language={language} />
         </section>
 
         {/* ─── 5 Real Citizen Demo Scenarios ─────────────────────── */}

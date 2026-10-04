@@ -569,7 +569,7 @@ export default function ChatPage() {
             {/* Mode Content */}
             <div className="mt-6 w-full max-w-2xl text-start">
               {entryMode === "navigator" ? (
-                <FewClickNavigator language={language} onLanguageChange={changeLanguage} />
+                <FewClickNavigator language={language} />
               ) : (
                 <div className="space-y-2">
                   <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] ps-1">
