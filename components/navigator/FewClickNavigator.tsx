@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Domain, Language, ServiceRecord } from "@/lib/types";
 
 interface FewClickNavigatorProps {
-  initialLanguage?: Language;
+  language: Language;
   onSelectService?: (service: ServiceRecord) => void;
 }
 
@@ -106,9 +106,8 @@ const INCOME_RANGES = [
   { id: "high", labelEn: "Above Rs 50,000", labelUr: "50,000 سے زیادہ" },
 ];
 
-export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNavigatorProps) {
+export default function FewClickNavigator({ language }: FewClickNavigatorProps) {
   const router = useRouter();
-  const [language, setLanguage] = useState<Language>(initialLanguage);
 
   // Navigator Step
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -201,7 +200,7 @@ export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNa
       dir={language === "en" ? "ltr" : "rtl"}
     >
       {/* ─── Top Control Header ─────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line-soft)] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line-soft)] pb-4" aria-label={language === "en" ? "Guided navigator progress" : "رہنمائی کی پیش رفت"}>
         <div className="flex items-center gap-2">
           <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--forest-light)] text-base font-black text-[var(--forest)]">
             ⚡
@@ -220,32 +219,13 @@ export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNa
           </div>
         </div>
 
-        {/* Language & Step Indicator */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 text-xs font-mono text-[var(--muted)] font-bold me-1">
+        {/* Shared page language controls the navigator; this component intentionally has no separate switcher. */}
+          <div className="flex items-center gap-1 text-xs font-mono text-[var(--muted)] font-bold me-1" aria-live="polite">
             <span>{language === "en" ? "Step" : "مرحلہ"}</span>
             <span className="rounded-md bg-[var(--surface-2)] px-2 py-0.5 text-[var(--forest)]">
               {step}/3
             </span>
           </div>
-
-          <div className="flex gap-0.5 rounded-lg border border-[var(--line)] bg-[var(--surface-2)] p-0.5 text-xs">
-            {(["ur", "en"] as Language[]).map((lang) => (
-              <button
-                key={lang}
-                type="button"
-                onClick={() => setLanguage(lang)}
-                className={`rounded px-2 py-0.5 font-bold transition cursor-pointer ${
-                  language === lang
-                    ? "bg-[var(--forest)] text-white shadow-xs"
-                    : "text-[var(--muted)] hover:text-[var(--ink)]"
-                }`}
-              >
-                {lang === "ur" ? "اردو" : "EN"}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* ─── STEP 1: Select Primary Goal ────────────────────────────── */}
@@ -372,7 +352,7 @@ export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNa
                     : "border border-[var(--line)] bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-white"
                 }`}
               >
-                {language === "en" ? "✓ Yes, I have valid CNIC" : "✓ جی ہاں، شناختی کارڈ موجود ہے"}
+                {language === "en" ? "✓ Yes, I have valid CNIC" : "✓ جی ہاں، ��ناختی کارڈ موجود ہے"}
               </button>
               <button
                 type="button"
@@ -391,7 +371,7 @@ export default function FewClickNavigator({ initialLanguage = "ur" }: FewClickNa
           {/* Vulnerable Situation */}
           <div>
             <label className="block text-xs font-bold text-[var(--ink)] mb-2">
-              👨‍👩‍👧 {language === "en" ? "Special Condition (If applicable):" : "خصوصی رعایت / زمرہ:"}
+              👨‍���‍👧 {language === "en" ? "Special Condition (If applicable):" : "خصوصی رعایت / زمرہ:"}
             </label>
             <div className="flex flex-wrap gap-2">
               {[

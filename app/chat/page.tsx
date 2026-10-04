@@ -109,6 +109,33 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const t = UI_TEXT[language];
 
+  const changeLanguage = (nextLanguage: Language) => {
+    setLanguage(nextLanguage);
+    document.cookie = `raahi-language=${nextLanguage}; max-age=31536000; path=/; SameSite=Lax`;
+    if ("BroadcastChannel" in window) {
+      const channel = new BroadcastChannel("raahi-preferences");
+      channel.postMessage({ language: nextLanguage });
+      channel.close();
+    }
+  };
+
+  // Restore the shared language preference so every entry point uses one UI language.
+  useEffect(() => {
+    const saved = document.cookie.match(/(?:^|; )raahi-language=([^;]+)/)?.[1] as Language | undefined;
+    if (saved && ["en", "ur", "ps"].includes(saved)) setLanguage(saved);
+
+    const channel = "BroadcastChannel" in window ? new BroadcastChannel("raahi-preferences") : null;
+    const onPreference = (event: MessageEvent<{ language?: Language }>) => {
+      if (event.data.language && ["en", "ur", "ps"].includes(event.data.language)) setLanguage(event.data.language);
+    };
+    channel?.addEventListener("message", onPreference);
+
+    return () => {
+      channel?.removeEventListener("message", onPreference);
+      channel?.close();
+    };
+  }, []);
+
   // Initialize session & load initial need from URL query
   useEffect(() => {
     let sid = localStorage.getItem("raahi_session_id");
@@ -433,7 +460,7 @@ export default function ChatPage() {
                 {t.appName}
               </span>
               <p className="text-[11px] text-[var(--muted)] font-medium">
-                {language === "en" ? "Verified Citizen Navigator" : "تصدیق شدہ عوامی رہنمائی"}
+                {language === "en" ? "Verified Citizen Navigator" : "تصد��ق شدہ عوامی رہنمائی"}
               </p>
             </div>
           </Link>
@@ -468,7 +495,7 @@ export default function ChatPage() {
                     ? "bg-[var(--forest)] text-white shadow-xs"
                     : "text-[var(--muted)] hover:text-[var(--ink)]"
                 }`}
-                onClick={() => setLanguage(lang)}
+                onClick={() => changeLanguage(lang)}
               >
                 {lang === "ur" ? "اردو" : lang === "ps" ? "پښتو" : "EN"}
               </button>
@@ -542,7 +569,7 @@ export default function ChatPage() {
             {/* Mode Content */}
             <div className="mt-6 w-full max-w-2xl text-start">
               {entryMode === "navigator" ? (
-                <FewClickNavigator initialLanguage={language} />
+                <FewClickNavigator language={language} />
               ) : (
                 <div className="space-y-2">
                   <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] ps-1">
@@ -634,10 +661,10 @@ export default function ChatPage() {
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  submitQuery(inputQuery);
-                }
+if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && e.keyCode !== 229) {
+              e.preventDefault();
+              submitQuery(inputQuery);
+            }
               }}
               placeholder={t.placeholder}
               disabled={loading}
