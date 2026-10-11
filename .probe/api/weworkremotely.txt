@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss">
+  <channel>
+    <title>We Work Remotely: Remote jobs in design, programming, marketing and more</title>
+    <link>https://weworkremotely.com/remote-jobs.rss</link>
+    <description>We Work Remotely: Remote jobs in design, programming, marketing and more</description>
+    <language>en-US</language>
+    <ttl>60</ttl>
+    <item>
+      <title>Descript: Brand Design Lead</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>Sales and Marketing</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; San Francisco, CA or Remote, US
+&lt;/p&gt;
+
+&lt;h2&gt;About the Role&lt;/h2&gt;
+&lt;p&gt;Descript helps creators and companies tell stories through video. The creative team ensures that our brand lives up to the ethos of our customers. We ship work that’s brave, creative, and a bit uncomfortable, pushing with conviction where human creativity matters.&lt;/p&gt;
+&lt;p&gt;As the Brand Design Lead, you will evolve the brand as you create for campaigns, web experiences, and events. You’ll move between big picture concepting, building brand systems, and designing with an expert level of craft. Reporting to the Director of Brand &amp;amp; Content, you will be trusted and supported to create daring work that reminds people of the joy of telling stories.&lt;/p&gt;
+&lt;h2&gt;What You'll Do&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Set a high bar and execute work that exceeds it
+&lt;ul&gt;
+&lt;li&gt;Evolve and extend the Descript brand to show up well in campaigns, web, and events&lt;/li&gt;
+&lt;li&gt;Lead concept and design for launches and campaigns, from brief through delivery&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Build a brand system that scales
+&lt;ul&gt;
+&lt;li&gt;Develop brand systems and toolkits that allow the work to scale in expected (and some unexpected) ways&lt;/li&gt;
+&lt;li&gt;Enable product, marketing, and sales partners to create on-brand assets without relying on you&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Multiply your creative impact
+&lt;ul&gt;
+&lt;li&gt;Use AI tools and processes to deliver scale without compromising quality&lt;/li&gt;
+&lt;li&gt;Direct internal and external creative partners from illustrators to design engineers&lt;/li&gt;
+&lt;li&gt;Mentor designers around you and be an ambassador for your craft around the company&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;What You Bring&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Minimum Qualifications
+&lt;ul&gt;
+&lt;li&gt;6+ years in brand design, in-house or agency&lt;/li&gt;
+&lt;li&gt;Portfolio showcasing a range of both strategic thinking and executional craft across web, social, and paid channels&lt;/li&gt;
+&lt;li&gt;Strong command of typography, color, and composition&lt;/li&gt;
+&lt;li&gt;Evidence of building a brand system that scaled beyond your output&lt;/li&gt;
+&lt;li&gt;Experience directing outside creative partners&lt;/li&gt;
+&lt;li&gt;Fluency with AI tools to produce and scale work alongside a clear perspective of where not to use them&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Preferred Qualifications
+&lt;ul&gt;
+&lt;li&gt;Brand work within a SaaS company (especially the creative software space)&lt;/li&gt;
+&lt;li&gt;Motion, front-end dev, or illustration skills&lt;/li&gt;
+&lt;li&gt;Experience creating generative brand tooling&lt;/li&gt;
+&lt;li&gt;Comfort with being on camera and sharing your work publicly&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Success In This Role&lt;/h2&gt;
+&lt;p&gt;First 12 months:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Our identity feels evolved because you challenged it, pushed it, and fought for something outside any project brief you were given&lt;/li&gt;
+&lt;li&gt;You launched a brand campaign that did numbers in your ex-coworker group chat (hopefully for good, but that’s not guaranteed)&lt;/li&gt;
+&lt;li&gt;Sure, the Descript website is more on brand and converts well, but there are also immersive moments you are genuinely proud of pulling off&lt;/li&gt;
+&lt;li&gt;You regularly spend time with people around the company you never thought you’d be collaborating with&lt;/li&gt;
+&lt;li&gt;You shipped something you weren’t proud of, picked yourself up and learned from it&lt;/li&gt;
+&lt;li&gt;There’s some Descript merch around you that you actually want&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;The base salary range for this role is $140,000 - $185,000. Final offer amounts will carefully consider multiple factors, including prior experience, expertise, location, level, and may vary from the amount above.&lt;/p&gt;&lt;div class="content-conclusion"&gt;&lt;h2 class="p-security"&gt;About Descript&lt;/h2&gt;
+&lt;p class="p-security"&gt;Descript is building a simple, intuitive, fully-powered editing tool for video and audio — an editing tool built for the age of AI. We are a team of 150&amp;nbsp;and the backing of some of the world's greatest investors (&lt;a href="https://www.descript.com/blog/article/all-new-descript-backed-by-openai-startup-fund"&gt;OpenAI&lt;/a&gt;, &lt;a href="https://www.a16z.com/"&gt;Andreessen Horowitz&lt;/a&gt;,&amp;nbsp;&lt;a href="https://redpoint.com/"&gt;Redpoint Ventures&lt;/a&gt;, &lt;a href="https://medium.com/spark-capital/welcome-descript-a6caddb91039"&gt;Spark Capital&lt;/a&gt;).&amp;nbsp;&lt;/p&gt;
+&lt;p class="p-security"&gt;Descript is the special company that's in possession of both product market fit and the raw materials (passionate user community, great product, large market) for growth, but is still early enough that each new employee has a measurable influence on the direction of the company.&lt;/p&gt;
+&lt;p class="p-security"&gt;Benefits include a generous healthcare package, 401k matching program, catered lunches, and flexible vacation time.&amp;nbsp;&lt;a href="https://tours.momentumvirtualtours.com/tours/WtZKwedwv"&gt;Our headquarters&lt;/a&gt; are located in the Mission District of San Francisco, CA. We're hiring for a mix of remote roles and hybrid roles.&amp;nbsp; For those who are remote, we have a handful of opportunities throughout the year for in person collaboration.&amp;nbsp; For our hybrid roles, we're flexible, and you're an adult—we don't expect or mandate that you're in the office every day. We do believe there are valuable and serendipitous moments of discovery and collaboration that come from working together in person.&amp;nbsp;&lt;/p&gt;
+&lt;p class="p-security"&gt;Descript is an equal opportunity workplace—we are dedicated to equal employment opportunities regardless of race, color, ancestry, religion, sex, national origin, sexual orientation, age, citizenship, marital status, disability, gender identity, or Veteran status. We believe in actively building a team rich in diverse backgrounds, experiences, and opinions to better allow our employees, products, and community to thrive.&amp;nbsp;&lt;/p&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/descript-brand-design-lead"&gt;https://weworkremotely.com/remote-jobs/descript-brand-design-lead&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Sun, 11 Oct 2026 07:31:11 +0000</pubDate>
+      <expires_at>Tue, 10 Nov 2026 07:31:11 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/descript-brand-design-lead</guid>
+      <link>https://weworkremotely.com/remote-jobs/descript-brand-design-lead</link>
+    </item>
+    <item>
+      <title>Stripe: Account Executive, Product Sales - Tax</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>Sales and Marketing</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; US-Remote
+&lt;/p&gt;
+
+&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;
+&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world's largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone's reach while doing the most important work of your career.&lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Product Sales is a team of functional and technical specialists who both lead and advise on deals for the most strategically important products in the Stripe portfolio. Revenue suite Product Sales is tasked with pursuing a $100B market opportunity for back-office finance automation across billing, tax, revenue reporting, and data.&lt;/p&gt;
+&lt;h2&gt;&lt;strong&gt;What you’ll do&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;As a Tax Account Executive at Stripe, you'll use your sales and product expertise to help drive growth through both existing and new-to-Stripe customers. You'll collaborate with the core sales, marketing, product marketing, and product teams to develop deep product and industry knowledge and drive strategic deals. You'll lead in-depth product discussions with existing and prospective customers and build and execute against our go-to-market strategy.&lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;Responsibilities&lt;/strong&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Drive revenue and retain users to achieve and over perform on target and KPIs&lt;/li&gt;
+&lt;li&gt;Lead discussions with our largest existing and prospective customers&lt;/li&gt;
+&lt;li&gt;Contribute to the development of go-to-market playbooks alongside product, marketing, sales, and technical services stakeholders&lt;/li&gt;
+&lt;li&gt;Understand and articulate the value propositions of Stripe Tax to key stakeholders, including technical teams, financial departments, partners and C-suite executives.&lt;/li&gt;
+&lt;li&gt;Develop a deep understanding of global indirect tax requirements of potential customers.&lt;/li&gt;
+&lt;li&gt;Build and maintain relationships with clients, guiding them through the sales process and helping ensure a successful implementation of Stripe Tax.&lt;/li&gt;
+&lt;li&gt;Collaborate closely with the product, engineering, marketing, and customer success teams to ensure client satisfaction and long-term growth.&lt;/li&gt;
+&lt;li&gt;Stay up-to-date on industry trends in data, analytics, and reporting to identify new opportunities and keep Stripe ahead of the curve.&lt;/li&gt;
+&lt;li&gt;Identify and pursue expansion opportunities with existing Stripe Tax users to drive adoption of additional compliance tools.&lt;/li&gt;
+&lt;li&gt;Lead renewal conversations with existing Stripe Tax users, leveraging a deep understanding of their evolving business needs.&lt;/li&gt;
+&lt;li&gt;Ensure users are able to quickly go live by proactively addressing any outstanding questions from the sales process.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;&lt;strong&gt;Who you are&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;You are an adept salesperson, capable of engaging in business-level and technical conversations at multiple levels of the organization, including C-Level roles. You are used to building value in competitive situations and enjoy working on products that require deep product understanding, combined with technical knowledge. You’re comfortable working with clients as you are with internal stakeholders (including executives). You’re excited to become an expert and to share your knowledge. You’re an organized self-starter, an excellent communicator who is highly analytical and has a track record for improving the processes and organizations around you.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Minimum requirements&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;8+ years of sales or prospecting experience at a technology company and a track record of top performance&lt;/li&gt;
+&lt;li&gt;Owning a direct sales quota, with direct sales experience closing new business and/or expansion of existing users&lt;/li&gt;
+&lt;li&gt;A proven ability to build strong collaborative working relationships with business partners&lt;/li&gt;
+&lt;li&gt;A proven ability to be a self-starter capable of driving business results without significant supervision&lt;/li&gt;
+&lt;li&gt;An enthusiastic “roll up your sleeves” mentality&lt;/li&gt;
+&lt;li&gt;Excellent verbal and written communication skills&lt;/li&gt;
+&lt;li&gt;Strong presentation skills, particularly for in-person meetings with multiple stakeholders&lt;/li&gt;
+&lt;li&gt;Proven ability to lead complex negotiations involving bespoke commercial agreements&lt;/li&gt;
+&lt;li&gt;Ability to understand complex technical requirements and craft solutions across multiple stakeholders&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Preferred qualifications&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;3+ years of experience specifically selling financial services or similar software&amp;nbsp;&lt;/li&gt;
+&lt;li&gt;Experience in selling Tax solutions&lt;/li&gt;
+&lt;li&gt;Proven ability to sell complex software solutions&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;In-office Expectations&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Office-assigned Stripes in most of our locations are currently expected to spend at least 50% of the time in a given month in their local office or with users. This expectation may vary depending on role, team and location. For example, Stripes in Stripe Delivery Center roles in Mexico City, Mexico, Bengaluru, India, and Dublin, Ireland work 100% from the office. Also, some teams have greater in-office attendance requirements, to appropriately support our users and workflows, which the hiring manager will discuss. This approach helps strike a balance between bringing people together for in-person collaboration and learning from each other, while supporting flexibility when possible.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/stripe-account-executive-product-sales-tax"&gt;https://weworkremotely.com/remote-jobs/stripe-account-executive-product-sales-tax&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Sun, 11 Oct 2026 07:31:07 +0000</pubDate>
+      <expires_at>Tue, 10 Nov 2026 07:31:07 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/stripe-account-executive-product-sales-tax</guid>
+      <link>https://weworkremotely.com/remote-jobs/stripe-account-executive-product-sales-tax</link>
+    </item>
+    <item>
+      <title>Vercel: Software Engineer - Data Platform</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>Full-Stack Programming</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Remote - United States
+&lt;/p&gt;
+
+&lt;div class="content-intro"&gt;&lt;h2&gt;About Vercel:&lt;/h2&gt;
+&lt;p&gt;&lt;span&gt;Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer experience.&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span&gt;Now we're scaling our products for both agents and people to ship and run software, built in the open and trusted by OpenAI, PayPal, Ramp, Supreme, and millions of developers worldwide.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;&lt;h2&gt;About the Role&lt;/h2&gt;
+&lt;p&gt;We're looking for a Staff level Engineer to lead the design and development of a next-generation Data Platform at Vercel. This is a unique opportunity to architect a foundational system that will power data across our products and business, supporting everything from real-time analytics to AI/ML initiatives.&lt;/p&gt;
+&lt;p&gt;Reporting directly to the Senior Director of Data Engineering, you'll define the technical vision for our data ecosystem, work across the organization to align engineering strategy with product goals, and build scalable, reliable systems using modern technologies like Kafka, ClickHouse, Tinybird, and Snowflake.&lt;/p&gt;
+&lt;p&gt;You'll lead from the front, writing production-grade code, setting high standards for design and data governance, and mentoring a team of engineers as the organization grows. If you're excited by the challenge of building scalable data systems that drive product innovation, we'd love to hear from you.&lt;/p&gt;
+&lt;h2&gt;What You Will Do&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Design and implement a next-generation data platform that supports diverse requirements, including batch and real-time integrations, advanced analytics, and multiple data types, leveraging Kafka, Kafka-based tooling, and additional streaming technologies to power real-time data movement and processing.&lt;/li&gt;
+&lt;li&gt;Work with engineering, product, and senior leadership teams across Vercel to architect solutions that address business needs, aligning technical strategies with product goals and ensuring seamless data availability and usability.&lt;/li&gt;
+&lt;li&gt;Define and maintain guidelines for data ingestion, creation, enrichment, and storage, while overseeing data modeling, ETL processes, and data warehousing (ClickHouse, Tinybird, Snowflake) to achieve low-latency analytics and scalable storage.&lt;/li&gt;
+&lt;li&gt;Develop end-to-end solutions across the tech stack, setting the example for engineering excellence, and provide mentorship and direction that fosters continuous improvement and innovation in the team.&lt;/li&gt;
+&lt;li&gt;Partner with Security, Compliance, and Legal teams to ensure adherence to data protection standards, and champion high availability and fault tolerance through comprehensive monitoring, alerting, and incident response practices.&lt;/li&gt;
+&lt;li&gt;Drive architectural decisions and roadmap planning that ensure efficiency, scalability, and high performance, and evaluate build-vs-buy trade-offs, integrating vendor solutions where appropriate.&lt;/li&gt;
+&lt;li&gt;Collaborate with data scientists and machine learning teams to evolve infrastructure that supports advanced analytics and AI initiatives, serving as a key contributor to strategy, tooling, and platform enhancements for ML-related workloads.&lt;/li&gt;
+&lt;li&gt;Act as a key decision-maker for discovering, vetting, and selecting data architectures and technologies critical to Vercel's success, and establish multi-phase strategic roadmaps that align with overall business objectives and drive data platform maturity.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;About You&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;8+ years of experience in data engineering, data architecture, or related roles, with at least 5 years at the Principal Engineer level.&lt;/li&gt;
+&lt;li&gt;Proven track record designing and operating large-scale data infrastructures at high scale in a complex, fast-paced environment, with experience across Kafka and its ecosystem (e.g., Kafka Streams, Confluent Platform), ClickHouse, Tinybird, Snowflake, and broader big data frameworks.&lt;/li&gt;
+&lt;li&gt;Proficiency in cloud platforms (AWS, GCP, or Azure) and associated big data services.&lt;/li&gt;
+&lt;li&gt;Strong background in data governance and security, and adept at ensuring compliance with regulatory standards and protecting sensitive information.&lt;/li&gt;
+&lt;li&gt;Outstanding communication and collaboration skills, with the ability to influence technical and non-technical stakeholders across varying organizational levels.&lt;/li&gt;
+&lt;li&gt;A leadership mindset, with demonstrated ability to mentor teams, drive consensus, and advocate for best practices across the organization.&lt;/li&gt;
+&lt;li&gt;A Master's degree in Computer Science, Engineering, or a related field is preferred.&lt;/li&gt;
+&lt;li&gt;Industry recognition or notable contributions in data engineering (e.g., published works, open-source contributions) is a plus.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Compensation &amp;amp; Benefits:&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Competitive compensation package, including equity.&lt;/li&gt;
+&lt;li&gt;Inclusive Healthcare Package.&lt;/li&gt;
+&lt;li&gt;Learn and Grow - we provide mentorship and send you to events that help you build your network and skills.&lt;/li&gt;
+&lt;li&gt;Flexible Time Off.&lt;/li&gt;
+&lt;li&gt;We will provide you the gear you need to do your role, and a WFH budget for you to outfit your space as needed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The San Francisco, CA base pay range for this role is $232,000 - $348,000. Actual salary will be based on job-related skills, experience, and location. Compensation outside of San Francisco may be adjusted based on employee location. The total compensation package may include benefits, equity-based compensation, and eligibility for a company bonus or variable pay program depending on the role. Your recruiter can share more details during the hiring process.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;div class="content-conclusion"&gt;&lt;h2&gt;&lt;strong&gt;Disclosures:&lt;/strong&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Privacy: &lt;/strong&gt;Please review our &lt;span&gt;&lt;a href="https://vercel.com/legal/job-applicant-privacy-notice"&gt;Job Applicant Privacy Policy&lt;/a&gt;&lt;/span&gt; for more information on how we handle your data.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Equal Opportunity:&amp;nbsp;&lt;/strong&gt;Vercel is committed to fostering and empowering an inclusive community within our organization. We do not discriminate on the basis of race, religion, color, gender expression or identity, sexual orientation, national origin, citizenship, age, marital status, veteran status, disability status, or any other characteristic protected by law. Vercel encourages everyone to apply for our available positions, even if they don't necessarily check every box on the job description.&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/vercel-software-engineer-data-platform"&gt;https://weworkremotely.com/remote-jobs/vercel-software-engineer-data-platform&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Sun, 11 Oct 2026 07:31:07 +0000</pubDate>
+      <expires_at>Tue, 10 Nov 2026 07:31:07 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/vercel-software-engineer-data-platform</guid>
+      <link>https://weworkremotely.com/remote-jobs/vercel-software-engineer-data-platform</link>
+    </item>
+    <item>
+      <title>Descript: Applied Research Scientist, AI Research</title>
+      <region>Anywhere in the World</region>
+      <country></country>
+      <state></state>
+      <skills></skills>
+      <category>All Other Remote</category>
+      <type>Full-Time</type>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; San Francisco, CA or Remote, US
+&lt;/p&gt;
+
+&lt;p&gt;Descript's Research team builds the models behind the product's most distinctive features: Video Regenerate and lipsync, video translation, zero-shot voice and roomtone cloning, and Studio Sound. We don't build general-purpose generative models. We pick specific problems in the editing workflow and build specialized models for them. This isn't research for its own sake. Everything we build is meant to ship, and most of it has, going from prototype to a production feature used by millions of creators within months.&lt;/p&gt;
+&lt;p&gt;This role is focused on multimodal understanding: training models to perceive edited media the way a human video editor does. Underlord, our AI editing agent, reasons about a project largely through a textual r

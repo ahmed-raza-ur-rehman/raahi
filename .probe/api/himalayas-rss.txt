@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:himalayasJobs="https://himalayas.app/ns/jobs" xmlns:media="http://search.yahoo.com/mrss/">
+    <channel>
+        <title><![CDATA[Remote jobs from Himalayas]]></title>
+        <description><![CDATA[Discover the best remote and work from home jobs on Himalayas at top remote companies.]]></description>
+        <link>https://himalayas.app/jobs</link>
+        <image>
+            <url>https://cdn-images.himalayas.app/og_images/default-open-graph-image.jpg</url>
+            <title>Remote jobs from Himalayas</title>
+            <link>https://himalayas.app/jobs</link>
+        </image>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Sun, 11 Oct 2026 08:22:59 GMT</lastBuildDate>
+        <atom:link href="https://himalayas.app/jobs/rss" rel="self" type="application/rss+xml"/>
+        <pubDate>Sun, 11 Oct 2026 08:20:37 GMT</pubDate>
+        <copyright><![CDATA[2026 Himalayas Remote Jobs Pty Ltd]]></copyright>
+        <language><![CDATA[en]]></language>
+        <ttl>1440</ttl>
+        <himalayasJobs:lastBuildDate>Sun, 11 Oct 2026 08:20:37 GMT</himalayasJobs:lastBuildDate>
+        <item>
+            <title><![CDATA[ServiceNow Senior Engineer]]></title>
+            <description><![CDATA[About Orbia: Orbia Advance Corporation is a Purpose-led company with big aspirations.]]></description>
+            <link>https://himalayas.app/companies/orbia/jobs/servicenow-senior-engineer</link>
+            <guid isPermaLink="true">https://himalayas.app/companies/orbia/jobs/servicenow-senior-engineer</guid>
+            <category><![CDATA[ServiceNow-Developer]]></category>
+            <category><![CDATA[ServiceNow-Engineer]]></category>
+            <category><![CDATA[ServiceNow-Administrator]]></category>
+            <category><![CDATA[ITSM-Engineer]]></category>
+            <category><![CDATA[Senior-ServiceNow-Engineer]]></category>
+            <category><![CDATA[ServiceNow-Senior-Applications-Engineer]]></category>
+            <category><![CDATA[Senior-ServiceNow-Developer]]></category>
+            <category><![CDATA[ServiceNow-Software-Engineer]]></category>
+            <category><![CDATA[Senior-ServiceNow-Architect]]></category>
+            <category><![CDATA[ServiceNow-Staff-Engineer]]></category>
+            <pubDate>Sun, 11 Oct 2026 08:20:37 GMT</pubDate>
+            <media:content url="https://cdn-images.himalayas.app/vdi0t928ydafwf5n2z4lebtcjwkf" medium="image">
+            </media:content>
+            <himalayasJobs:companyName>Orbia</himalayasJobs:companyName>
+            <himalayasJobs:companyLogo>https://cdn-images.himalayas.app/vdi0t928ydafwf5n2z4lebtcjwkf</himalayasJobs:companyLogo>
+            <himalayasJobs:locationRestriction>Brazil</himalayasJobs:locationRestriction>
+            <himalayasJobs:timezoneRestriction>-5</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>-4</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>-3</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>-2</himalayasJobs:timezoneRestriction>
+            <content:encoded><![CDATA[<p><strong>About <a href="https://himalayas.app/companies/orbia">Orbia</a>:<br><a href="https://himalayas.app/companies/orbia">Orbia</a> Advance Corporation is a Purpose-led company with big aspirations. We are out to advance life around the world while maximising value to our shareholders, customers and employees. The Company is passionate about the topics that define how people will live and thrive tomorrow: the future of cities, buildings, agriculture, and materials. <a href="https://himalayas.app/companies/orbia">Orbia</a> Advance Corporation has five business groups which offer innovative solutions across multiple industries including building and infrastructure, data communications, chemicals and more. In 2018, <a href="https://himalayas.app/companies/orbia">Orbia</a> Advance Corporation bought a majority stake in Israeli-based Netafim, the world’s leader in drip irrigation, and is helping the world ‘grow more with less’ as it helps to solve food and water scarcity. <a href="https://himalayas.app/companies/orbia">Orbia</a> Advance Corporation has operations in 41 countries with more than 22,000 employees.</strong></p><p><strong>We started as a producer of commodities and have evolved to become a provider of innovative solutions that address the global issues of rapid urbanisation, water and food scarcity, and a growing and aging population. We’re already a global leader in Polymers, Fluor, Building &amp; Infrastructure, Datacom, and Precision Irrigation. We have embarked on a CEO-led transformation, as part of our journey to become a truly purpose-led, future fit company.</strong></p><hr><p><strong>We're Hiring: ServiceNow Senior Engineer | Remote Brazil</strong></p><p><strong>Are you passionate about ServiceNow and eager to make an impact in a global environment? Join our team as a<strong>ServiceNow Senior Engineer</strong>and help drive innovation, automation, and continuous improvement across our enterprise ServiceNow platform.</strong></p><p><strong>📍<strong>Location:</strong>Remote, Brazil</strong></p><p><strong>🌎<strong>Scope:</strong>Global</strong></p><p><strong>💼<strong>Full-Time</strong></strong></p><h3><strong>About the Role</strong></h3><p><strong>As a ServiceNow Senior Engineer, you will be responsible for supporting, developing, and enhancing ServiceNow solutions that improve business processes and user experiences across the organization. You will collaborate with global stakeholders, resolve complex platform issues, develop automation solutions, and contribute to the ongoing evolution of our ServiceNow ecosystem.</strong></p><p><strong>This role combines platform support, development, configuration, integrations, and continuous improvement initiatives.</strong></p><h3><strong>What You'll Do</strong></h3><p><strong>✅ Manage and resolve incidents and service requests within agreed SLAs</strong></p><p><strong>✅ Troubleshoot and provide functional and technical solutions across ServiceNow modules</strong></p><p><strong>✅ Develop enhancements, workflows, catalog items, and platform configurations</strong></p><p><strong>✅ Support integrations and automation initiatives</strong></p><p><strong>✅ Perform Root Cause Analysis (RCA) and recommend long-term solutions</strong></p><p><strong>✅ Collaborate with developers, architects, and business stakeholders globally</strong></p><p><strong>✅ Monitor platform performance and ensure platform stability</strong></p><p><strong>✅ Maintain technical documentation and knowledge articles</strong></p><p><strong>✅ Support testing and user acceptance activities</strong></p><p><strong>✅ Drive adoption of ServiceNow best practices and capabilities</strong></p><h3><strong>What We're Looking For</strong></h3><p><strong>✔ 3+ years of hands-on ServiceNow experience</strong></p><p><strong>✔ ServiceNow Certified System Administrator (<strong>CSA</strong>) - Required</strong></p><p><strong>✔ ServiceNow Certified Application Developer (<strong>CAD</strong>) - Required</strong></p><h3><strong>✔ Experience with:</strong></h3><ul>
+<li><h3><strong>ITSM</strong></h3></li>
+<li><h3><strong>SPM (Strategic Portfolio Management)</strong></h3></li>
+<li><h3><strong>Service Catalog / Catalog Management</strong></h3></li>
+<li><h3><strong>Flow Designer</strong></h3></li>
+<li><h3><strong>Integration Hub</strong></h3></li>
+<li><h3><strong>Virtual Agent</strong></h3></li>
+<li><h3><strong>Now Assist</strong></h3></li>
+</ul><h3><strong>✔ Experience with:</strong></h3><ul>
+<li><h3><strong>JavaScript</strong></h3></li>
+<li><h3><strong>Glide API</strong></h3></li>
+<li><h3><strong>REST/SOAP integrations</strong></h3></li>
+<li><h3><strong>Workflow automation</strong></h3></li>
+</ul><p><strong>✔ Strong problem-solving and troubleshooting skills</strong></p><h3><strong>✔ Fluent English communication skills</strong></h3><p><strong>✔ Ability to collaborate with global teams and occasionally overlap with India business hours</strong></p><h3><strong>Nice to Have</strong></h3><p><strong>⭐ CIS Certifications (ITSM, SPM, ITOM, HRSD)</strong></p><h3><strong>⭐ Experience with ITOM and HRSD modules</strong></h3><h3><strong>⭐ Agile/Scrum experience</strong></h3><p><strong>⭐ Experience in global enterprise environments</strong></p><h3><strong>Why Join Us?</strong></h3><h3><strong>🌎 Work with a global team</strong></h3><h3><strong>🏠 100% Remote within Brazil</strong></h3><p><strong>🚀 Opportunity to impact enterprise-wide digital transformation initiatives</strong></p><p><strong>📈 Exposure to cutting-edge ServiceNow technologies, including AI-powered capabilities</strong></p><p><strong>If you're ready to take your ServiceNow career to the next level, we'd love to hear from you!<br><br><br><em>Our Global brands: Dura-Line, Koura Global, Vestolit, Netafim, Alphagary, Wavin.</em></strong></p><p><strong><em>They offer a broad range of value-added solutions and finished products that contribute to customers’ success and ultimate improve the quality of life for people around the world. Along its commitment to good citizenship, <a href="https://himalayas.app/companies/orbia">Orbia</a> Advance Corporation delivers Total Value to customers, employees and investors worldwide, every day</em>.</strong></p><p>Originally posted on <a href="https://himalayas.app">Himalayas</a></p>]]></content:encoded>
+            <himalayasJobs:expiryDate>Thu, 10 Dec 2026 08:20:37 GMT</himalayasJobs:expiryDate>
+            <guid>https://himalayas.app/companies/orbia/jobs/servicenow-senior-engineer</guid>
+        </item>
+        <item>
+            <title><![CDATA[[C3I] Data Architect]]></title>
+            <description><![CDATA[Project – the aim you’ll haveWe are the Data & Analytics Global Capability at Software Mind.]]></description>
+            <link>https://himalayas.app/companies/software-mind/jobs/c3i-data-architect</link>
+            <guid isPermaLink="true">https://himalayas.app/companies/software-mind/jobs/c3i-data-architect</guid>
+            <category><![CDATA[Data-Architect]]></category>
+            <category><![CDATA[Data-Engineer]]></category>
+            <category><![CDATA[Solutions-Architect]]></category>
+            <category><![CDATA[Cloud-Data-Architect]]></category>
+            <category><![CDATA[Senior-Data-Architect]]></category>
+            <pubDate>Sun, 11 Oct 2026 08:19:13 GMT</pubDate>
+            <media:content url="https://cdn-images.himalayas.app/hdgm3lg3adk5t1ewe0hmdxc5ao5r" medium="image">
+            </media:content>
+            <himalayasJobs:companyName>Software Mind</himalayasJobs:companyName>
+            <himalayasJobs:companyLogo>https://cdn-images.himalayas.app/hdgm3lg3adk5t1ewe0hmdxc5ao5r</himalayasJobs:companyLogo>
+            <himalayasJobs:locationRestriction>Poland</himalayasJobs:locationRestriction>
+            <himalayasJobs:timezoneRestriction>1</himalayasJobs:timezoneRestriction>
+            <content:encoded><![CDATA[<h3>Project – the aim you’ll have</h3><p>We are the Data &amp; Analytics Global Capability at <a href="https://himalayas.app/companies/software-mind">Software Mind</a>. We design, build and maintain data and analytics solutions for clients across industries: financial services, telco, media &amp; entertainment, retail, manufacturing, gaming, healthcare and more. Our projects run on modern data platforms, mainly Snowflake and Databricks on Azure, AWS and GCP, as well as on-premises and hybrid environments.</p><h3>Role – how you’ll contribute</h3><h3>Architecture &amp; Delivery:</h3><ul>
+<li>Assess the client’s current data landscape and design target-state architectures (cloud, hybrid, on-prem) aligned with their business goals.</li>
+<li>Select technologies based on the client’s needs, constraints and existing stack, with Snowflake and Databricks as our core platforms.</li>
+<li>Design lakehouse, warehouse and data lake architectures, including ingestion, ETL/ELT pipelines, CDC, streaming and API integrations.</li>
+<li>Design data models (conceptual, logical, physical) using Kimball, Data Vault or 3NF, as well as semantic layers for BI and AI.</li>
+<li>Define security (IAM, encryption, masking, row-level security), HA/DR, performance and cost optimization.</li>
+<li>Build data governance foundations: catalog, metadata, lineage, data quality and data contracts.</li>
+<li>Make sure platforms are ready for advanced analytics, ML, GenAI and real-time use cases.</li>
+<li>Create reference architectures, reusable patterns and accelerators for our Data &amp; AI offering.</li>
+<li>Act as technical authority for delivery teams: review designs and keep quality consistent across projects.</li>
+</ul><h3>Presales &amp; Client Advisory</h3><ul>
+<li>Partner with sales and industry teams as technical presales: discovery workshops, solution design, estimations and the technical parts of proposals and RFPs.</li>
+<li>Present architectures and recommendations to client stakeholders, from engineering teams to C-level.</li>
+<li>Design and run PoCs and technical demos.</li>
+<li>Evaluate new approaches and tools (data mesh, streaming-first, AI-native platforms) and share what you learn internally and externally.</li>
+</ul><h3>Expectations – the experience you need</h3><ul>
+<li>7+ years in data engineering or data architecture, including at least 3 years in an architect role.</li>
+<li>Hands-on experience designing and delivering solutions on Snowflake and Databricks (Delta Lake, Unity Catalog, Spark): expert level in at least one, working knowledge of the other.</li>
+<li>Experience with at least one major cloud (Azure, AWS or GCP) and its data services.</li>
+<li>Strong data modeling skills (Kimball, Data Vault, 3NF).</li>
+<li>Strong SQL and good Python.</li>
+<li>Experience with orchestration and transformation tools (e.g. Airflow, dbt, Azure Data Factory).</li>
+<li>Solid understanding of data security, governance and regulatory requirements.</li>
+<li>Client-facing experience, ideally in consulting or IT services, and the ability to explain technical trade-offs to business stakeholders.</li>
+<li>Very good English, spoken and written (C1).</li>
+</ul><h3>Additional skills – the edge you have</h3><ul>
+<li>Snowflake (SnowPro Advanced), Databricks or cloud architect certifications.</li>
+<li>Experience with Microsoft Fabric, BigQuery or Redshift.</li>
+<li>Streaming (Kafka, Spark Structured Streaming) and event-driven architectures.</li>
+<li>Data catalogs and MDM (Unity Catalog, Collibra, Atlan, DataHub).</li>
+<li>Semantic layer and knowledge graphs (dbt Semantic Layer, ontologies, RDF/OWL).</li>
+<li>Domain experience in one of our verticals (BFSI, telco, retail/manufacturing, gaming &amp; betting, healthcare, media).</li>
+<li>Previous presales or solution consulting experience.</li>
+</ul><h3>What we offer:</h3><ul>
+<li>Flexible and remote cooperation options</li>
+<li>International projects with leading global clients</li>
+<li>Travels related to international projects</li>
+<li>Non-corporate atmosphere</li>
+<li>Access* to language classes</li>
+<li>Access* to knowledge-sharing initiatives</li>
+<li>Access* to private healthcare and life insurance</li>
+<li>Access* to multisport card</li>
+</ul><p><strong>*The availability and terms of individual benefits may vary depending on the chosen form of cooperation.</strong></p><p><a href="https://himalayas.app/companies/software-mind">Software Mind</a> develops solutions that make an impact for companies around the globe. Tech giants &amp; unicorns, transformative projects, emerging technologies and limitless opportunities – these are a few words that describe an average day for us. Building cross-functional engineering teams that take ownership and crave more means we’re always on the lookout for talented people who bring passion and creativity to every project. Our culture embraces openness, acts with respect, shows grit &amp; guts and combines cooperation with enjoyment.</p><p>Originally posted on <a href="https://himalayas.app">Himalayas</a></p>]]></content:encoded>
+            <himalayasJobs:expiryDate>Thu, 10 Dec 2026 08:19:12 GMT</himalayasJobs:expiryDate>
+            <guid>https://himalayas.app/companies/software-mind/jobs/c3i-data-architect</guid>
+        </item>
+        <item>
+            <title><![CDATA[Manager, Data Analytics - FuzeRx]]></title>
+            <description><![CDATA[Job Summary At Fuze Health, we put patients first and tirelessly address the most pressing needs in healthcare.]]></description>
+            <link>https://himalayas.app/companies/fuze-health/jobs/manager-data-analytics-fuzerx</link>
+            <guid isPermaLink="true">https://himalayas.app/companies/fuze-health/jobs/manager-data-analytics-fuzerx</guid>
+            <category><![CDATA[Data-Analytics-Manager]]></category>
+            <category><![CDATA[Analytics-Manager]]></category>
+            <category><![CDATA[Product-Analytics-Manager]]></category>
+            <category><![CDATA[Data-Analyst-Manager]]></category>
+            <category><![CDATA[Business-Analytics-Manager]]></category>
+            <category><![CDATA[BI-and-Analytics-Manager]]></category>
+            <pubDate>Sun, 11 Oct 2026 08:18:27 GMT</pubDate>
+            <media:content url="" medium="image">
+            </media:content>
+            <himalayasJobs:companyName>Fuze Health</himalayasJobs:companyName>
+            <himalayasJobs:companyLogo></himalayasJobs:companyLogo>
+            <himalayasJobs:locationRestriction>United States</himalayasJobs:locationRestriction>
+            <himalayasJobs:timezoneRestriction>-10</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>-9</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>-8</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>-7</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>-6</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>-5</himalayasJobs:timezoneRestriction>
+            <himalayasJobs:timezoneRestriction>14</himalayasJobs:timezoneRestriction>
+            <content:encoded><![CDATA[<div><div><div><div><div><div><div><h3>
+<b>Job Summary</b><br>
+</h3></div></div></div></div></div></div></div>At <a href="https://himalayas.app/companies/fuze-health">Fuze Health</a>, we put patients first and tirelessly address the most pressing needs in healthcare. We empower millions to digitally connect with care providers, essential health resources and needed treatments – and enable care providers, employers, health plans and life sciences companies to meaningfully enhance quality, outcomes and value. We are dedicated to helping our partners evolve and modernize to meet emerging patient and marketplace needs.<br><br><a href="https://himalayas.app/companies/fuze-health">Fuze Health</a>’s foundation is built upon the strategic combination of several proven, technology-powered innovators in the digital health, diagnostics, and pharmacy sectors. Our growing portfolio brings together the capabilities of industry leaders including LetsGetChecked, Truepill, and Alto Pharmacy, to create a distinctive, unified force in healthcare. Together, we have the shared vision, advanced capabilities and talented teams to deliver next-generation solutions that patients and healthcare partners need today and into the future.<h3>
+<br><br><b>Job Description</b><br>
+</h3><p>As a Manager, Data Analytics at <a href="https://himalayas.app/companies/fuze-health">Fuze Health</a>, you will lead metrics strategy and work closely with the Product and Operations team to ensure high-quality, trusted, and timely data drives impactful business decisions, operations, and product launches.</p><p>In this role, you will manage, build, and lead a high-performing team responsible for designing and implementing meaningful metrics to evaluate product launches and support our Operations teams. This role is equal part business and technical leadership, organizational design, and cross-functional partnership, shaping how decision are made across a fast-growing, technology-driven healthcare organization.</p><h3>Key Responsibilities</h3><h3>Leadership &amp; Vision</h3><ul>
+<li><p>Lead, mentor, and grow a team of Product Analysts, fostering a culture of ownership, technical excellence, and continuous improvement.</p></li>
+<li><p>Define and execute the long-term vision for FuzeRx's Product Analytics team, ensuring alignment with company strategy and product roadmaps.</p></li>
+<li><p>Partner with Product, Engineering, Data Science, Finance, and Operations teams to prioritize and deliver high-impact data initiatives.</p></li>
+<li><p>Establish clear career paths, performance standards, and hiring plans to scale the team thoughtfully and sustainably.</p></li>
+<li><p>Build strong stakeholder trust by translating business needs into data insights and scalable data solutions.</p></li>
+</ul><h3>Product Analytics</h3><ul>
+<li><p>Provide close analytics support to evaluate the impact of new product features and enhancements</p></li>
+<li><p>Drive best practices in experiment design and analysis.</p></li>
+<li><p>Communicate insights and new opportunities revealed through data analysis to senior management.</p></li>
+</ul><h3>Analytics Engineering</h3><ul>
+<li><p>Own FuzeRx's data transformation logic by taking raw data inputs and converting them into scalable, reusable data assets that drive business decisions and insights.</p></li>
+<li><p>Participate in evolving FuzeRx’s data platform, defining best practices that shape the long-term analytics ecosystem and establish durable design patterns that ensure long-term scalability and maintainability.</p></li>
+</ul><h3>Business Intelligence</h3><ul>
+<li><p>Surface durable, relevant, and reusable dashboards to monitor the health of various products and operations</p></li>
+<li><p>Establish and enforce best practices for maintaining a navigable and impactful business intelligence platform</p></li>
+</ul><h3>Required Experience &amp; Qualifications:</h3><h3>Minimum Qualifications:</h3><ul>
+<li><p>Bachelor’s degree in Computer Science, Engineering, Mathematics, or related field; advanced degree preferred.</p></li>
+<li><p>5+ years of experience in analytics, data science, or related data insights roles.</p></li>
+<li><p>Strong expertise in analytics engineering and data modeling principles; specifically, experience with DBT (or similar data transformation framework) and Git (or similar version control system)</p></li>
+<li><p>Strong expertise in metrics design and instrumentation</p></li>
+<li><p>Strong expertise in experiment design and evaluation</p></li>
+<li><p>Proven track record working cross-functionally to provide analytics insights to Product and Operations teams</p></li>
+<li><p>Expertise creating assets in Looker or an equivalent business intelligence platform</p></li>
+<li><p>Experience operating in high-growth, fast-paced technology organizations.</p></li>
+<li><p>Strong communication skills with the ability to influence technical and non-technical stakeholders alike.</p></li>
+</ul><h3>Preferred Qualifications: </h3><ul>
+<li><p>1+ years of experience leading high-performing technical teams.</p></li>
+<li><p>Experience building and analyzing data assets in healthcare, pharmacy, fintech, or other regulated industries.</p></li>
+<li><p>Familiarity with HIPAA and healthcare data privacy standards.</p></li>
+</ul><h3>
+<br><br><b>Additional Information</b><br>
+</h3><h3>Additional Physical Job Requirements</h3><p>Physical requirements for this role include the ability to work at a computer terminal with monitor, keyboard and mouse for extended periods of time, stoop, bend, and reach for equipment and supplies, make frequent repetitive motions r

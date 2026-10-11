@@ -1,0 +1,6 @@
+{
+  "url": "https://njp.gov.pk/jobs/live",
+  "ok": false,
+  "status": 0,
+  "note": "Skipped: robots.txt unreachable (fetch failed)"
+}
