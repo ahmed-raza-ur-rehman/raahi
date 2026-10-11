@@ -1,4 +1,4 @@
-import { parseLooseDate, toIsoDateTime } from "../../dates";
+import { parseLooseDate, todayInPakistan, toIsoDateTime } from "../../dates";
 import { cleanTitle } from "../../text";
 import type { RawOpportunity } from "../../types";
 import { cheerio, makeResolver } from "../dom";
@@ -54,9 +54,13 @@ export function parseSpsc(html: string, baseUrl = "https://spsc.gos.pk/"): RawOp
   return [...byUrl.values()];
 }
 
-export const spscAdapter: Adapter = async ({ source, http }) => {
+export const spscAdapter: Adapter = async ({ source, http, now }) => {
   const response = await http.getText(source.endpoint, { respectRobots: source.respectRobots });
-  return parseSpsc(response.text, response.url).slice(0, source.maxItems ?? 30);
+  // Some old advertisements still carry a "Closing dt" label long after that date.
+  const today = todayInPakistan(now);
+  return parseSpsc(response.text, response.url)
+    .filter((item) => !item.deadline || item.deadline >= today)
+    .slice(0, source.maxItems ?? 30);
 };
 
 // ─── Balochistan Public Service Commission ───────────────────────────────────

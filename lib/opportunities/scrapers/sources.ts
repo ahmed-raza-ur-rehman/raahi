@@ -305,7 +305,7 @@ export const SOURCES: SourceDefinition[] = [
     resourceId: "ntslogin",
     attribution: "Listings via ntslogin.pk — an unofficial aggregator, not NTS",
     terms: "Public WordPress REST API / RSS. Title, excerpt and link only; confirm every ad on the department's own site.",
-    params: { maxAgeDays: 30, exclude: "result|roll no|slip|merit list|syllabus|past paper|answer key|admit card|test date|date sheet" },
+    params: { maxAgeDays: 30, include: "jobs?\\b|vacanc|recruit|career|internship|traineeship|scholarship|portal", exclude: "result|roll no|slip|merit list|syllabus|past paper|answer key|admit card|test date|date sheet" },
   },
   {
     id: "schoolsti",

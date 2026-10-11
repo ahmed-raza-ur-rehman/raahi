@@ -26,6 +26,7 @@ const S = {
   chipOverseas: { en: "Jobs abroad", ur: "بیرون ملک نوکریاں", ps: "بهر دندې" },
   chipInternships: { en: "Internships", ur: "انٹرن شپس", ps: "انټرنشپونه" },
   chipFree: { en: "Free courses", ur: "مفت کورسز", ps: "وړیا کورسونه" },
+  chipAdmissions: { en: "Admissions", ur: "داخلے", ps: "داخلې" },
   chipCompetitions: { en: "Competitions", ur: "مقابلے", ps: "سیالۍ" },
   chipSoon: { en: "Closing soon", ur: "جلد بند ہونے والے", ps: "ژر تړل کیدونکي" },
   chipNew: { en: "New this week", ur: "اس ہفتے نئے", ps: "دا اونۍ نوي" },
@@ -217,6 +218,7 @@ export const KIND_LABELS: Record<OpportunityKind, Entry & { emoji: string }> = {
   coupon: { emoji: "🎟️", en: "Free course (coupon)", ur: "مفت کورس (کوپن)", ps: "وړیا کورس (کوپن)" },
   training: { emoji: "🛠️", en: "Training", ur: "تربیت", ps: "روزنه" },
   grant: { emoji: "💰", en: "Grant", ur: "گرانٹ", ps: "ګرانټ" },
+  admission: { emoji: "🏫", en: "Admission", ur: "داخلہ", ps: "داخله" },
   notice: { emoji: "📢", en: "Official notice", ur: "سرکاری نوٹس", ps: "رسمي خبرتیا" },
 };
 

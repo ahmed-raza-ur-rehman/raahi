@@ -228,7 +228,7 @@ export async function executeOpportunityTool(name: string, args: Record<string, 
 // ─── Offline fallback (no API key): decide whether a message is about opportunities ───
 
 const INTENT_PATTERN =
-  /\b(?:scholarships?|fellowships?|internships?|jobs?|vacanc(?:y|ies)|hiring|careers?|hackathons?|competitions?|courses?|coupons?|udemy|coursera|edx|abroad|overseas|visa|emigrat\w*|oep|beoe|be&oe|oec|eps korea|protector|manpower|agent|scam|fraud|fake|ielts|toefl|gre|css|pms|fpsc|ppsc|ajkpsc|kppsc|spsc|nts|mdcat|digiskills|navttc|pseb|njp|nastp|chevening|fulbright|daad|commonwealth|erasmus|naukri|wazifa|sarkari|bahar)\b|اسکالرشپ|سکالرشپ|نوکری|نوکریاں|ملازمت|روزگار|انٹرن|کورس|مقابلہ|بیرون\s*ملک|ویزا|ایجنٹ|فراڈ|دھوکہ|آئیلٹس|پبلک سروس|بھرتی|آسامی|دنده|دندې|بهر/i;
+  /\b(?:admissions?|scholarships?|fellowships?|internships?|jobs?|vacanc(?:y|ies)|hiring|careers?|hackathons?|competitions?|courses?|coupons?|udemy|coursera|edx|abroad|overseas|visa|emigrat\w*|oep|beoe|be&oe|oec|eps korea|protector|manpower|agent|scam|fraud|fake|ielts|toefl|gre|css|pms|fpsc|ppsc|ajkpsc|kppsc|spsc|nts|mdcat|digiskills|navttc|pseb|njp|nastp|chevening|fulbright|daad|commonwealth|erasmus|naukri|wazifa|sarkari|bahar)\b|داخلہ|داخلے|اسکالرشپ|سکالرشپ|نوکری|نوکریاں|ملازمت|روزگار|انٹرن|کورس|مقابلہ|بیرون\s*ملک|ویزا|ایجنٹ|فراڈ|دھوکہ|آئیلٹس|پبلک سروس|بھرتی|آسامی|دنده|دندې|بهر/i;
 
 export function opportunityIntent(message: string): boolean {
   if (INTENT_PATTERN.test(message)) return true;

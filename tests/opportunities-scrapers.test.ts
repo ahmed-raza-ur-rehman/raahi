@@ -459,7 +459,7 @@ test("pipeline: every registered source runs against fixtures; failures are repo
   for (const kind of ["scholarship", "job", "competition", "coupon", "notice", "grant", "fellowship"]) assert.ok(kinds.has(kind as Opportunity["kind"]), `has ${kind}`);
   assert.equal(new Set(snapshot.items.map((entry) => entry.id)).size, snapshot.items.length, "ids are unique");
   assert.ok(snapshot.items.every((entry) => entry.firstSeen === NOW.toISOString()));
-  assert.ok(requested.every((url) => !/\/search|[?&]q=/.test(url)), "never requests ScholarshipTab search pages");
+  assert.ok(requested.filter((url) => url.includes("scholarshiptab.com")).every((url) => !/\/search|[?&]q=/.test(url)), "never requests ScholarshipTab search pages");
 
   // sorted newest-first
   const times = snapshot.items.map((entry) => Date.parse(entry.postedAt ?? entry.firstSeen));

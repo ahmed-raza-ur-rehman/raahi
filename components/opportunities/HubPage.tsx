@@ -27,10 +27,11 @@ interface Filters {
 }
 
 const DEFAULTS: Filters = { q: "", kinds: [], pk: true, remote: false, sort: "relevance", limit: 12 };
-const MAIN_KINDS: OpportunityKind[] = ["scholarship", "fellowship", "internship", "job", "competition", "coupon", "course", "training", "grant"];
+const MAIN_KINDS: OpportunityKind[] = ["scholarship", "fellowship", "admission", "internship", "job", "competition", "coupon", "course", "training", "grant"];
 
-const PRESETS: Array<{ key: "chipScholarships" | "chipGovtJobs" | "chipOverseas" | "chipInternships" | "chipFree" | "chipCompetitions" | "chipSoon" | "chipNew"; emoji: string; filters: Partial<Filters> }> = [
+const PRESETS: Array<{ key: "chipScholarships" | "chipGovtJobs" | "chipOverseas" | "chipInternships" | "chipFree" | "chipCompetitions" | "chipAdmissions" | "chipSoon" | "chipNew"; emoji: string; filters: Partial<Filters> }> = [
   { key: "chipScholarships", emoji: "🎓", filters: { kinds: ["scholarship", "fellowship"] } },
+  { key: "chipAdmissions", emoji: "🏫", filters: { kinds: ["admission"], scope: "pakistan" } },
   { key: "chipGovtJobs", emoji: "🏛️", filters: { kinds: ["job"], scope: "pakistan" } },
   { key: "chipOverseas", emoji: "✈️", filters: { kinds: ["job"], scope: "international" } },
   { key: "chipInternships", emoji: "🧑‍💻", filters: { kinds: ["internship"] } },

@@ -34,6 +34,7 @@ const KIND_CATEGORIES: Partial<Record<OpportunityKind, ResourceCategory[]>> = {
   coupon: ["coupons", "learning"],
   training: ["learning", "skills-pk"],
   grant: ["grants"],
+  admission: ["scholarships-pk", "exam-prep"],
   notice: ["safety", "overseas-employment"],
 };
 

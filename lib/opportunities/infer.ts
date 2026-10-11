@@ -16,6 +16,7 @@ export function inferKind(title: string, text: string, fallback: OpportunityKind
   if (has(t, /\bfellowship\b/)) return "fellowship";
   if (has(t, /\b(scholarship|bursary|stipend|studentship|financial aid|tuition waiver|funded (?:master|phd|ph\.d|msc|degree))\b/)) return "scholarship";
   if (has(t, /\b(grant|seed fund|funding call|call for proposals)\b/)) return "grant";
+  if (has(t, /\b(admissions?|entry test|admission test)\b/)) return "admission";
   if (has(t, /\b(course|certificate|certification|bootcamp|masterclass|tutorial|workshop|training)\b/)) return "course";
   if (has(t, /\b(vacanc|hiring|job|career|position|recruitment|we are looking)\b/)) return "job";
   if (has(all, /\bscholarship\b/) && !has(all, /\b(vacancy|hiring)\b/)) return "scholarship";

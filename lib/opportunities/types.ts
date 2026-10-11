@@ -18,6 +18,7 @@ export const OPPORTUNITY_KINDS = [
   "coupon",
   "training",
   "grant",
+  "admission",
   "notice",
 ] as const;
 export type OpportunityKind = (typeof OPPORTUNITY_KINDS)[number];

@@ -44,6 +44,14 @@ const GOVT_JOB: Template[] = [
   { id: "prepare", daysBefore: 0, en: "Start preparing for the test or interview — practise past-paper style questions.", ur: "ٹیسٹ یا انٹرویو کی تیاری شروع کریں — پرانے پرچوں کی طرز پر مشق کریں۔" },
 ];
 
+const ADMISSION: Template[] = [
+  { id: "read", daysBefore: 21, en: "Read the prospectus or admission notice: eligibility, programmes, merit formula, entry test, seats and fee.", ur: "پراسپیکٹس یا داخلہ نوٹس پڑھیں: اہلیت، پروگرام، میرٹ کا فارمولا، داخلہ ٹیسٹ، نشستیں اور فیس۔" },
+  { id: "test", daysBefore: 18, en: "Check whether an entry test is required (NTS, NET, MDCAT or the university's own) and book or prepare for it.", ur: "دیکھیں کہ داخلہ ٹیسٹ درکار ہے یا نہیں (این ٹی ایس، نیٹ، ایم ڈی کیٹ یا جامعہ کا اپنا) اور اس کی تیاری یا بکنگ کریں۔" },
+  { id: "documents", daysBefore: 12, en: "Prepare attested copies of your certificates and mark sheets, CNIC or B-Form, domicile and photographs.", ur: "اپنے سرٹیفکیٹ اور نمبروں کی فہرست، شناختی کارڈ یا ب فارم، ڈومیسائل اور تصاویر کی تصدیق شدہ نقول تیار کریں۔" },
+  { id: "fee", daysBefore: 7, en: "Pay the form fee only through the bank challan or online channel on the university's own notice.", ur: "فارم کی فیس صرف جامعہ کے اپنے نوٹس میں بتائے گئے بینک چالان یا آن لائن ذریعے سے ادا کریں۔" },
+  { id: "submit", daysBefore: 3, en: "Submit the form and keep the receipt, application number and roll-number slip.", ur: "فارم جمع کرائیں اور رسید، درخواست نمبر اور رول نمبر سلپ محفوظ رکھیں۔" },
+];
+
 const INTERNSHIP: Template[] = [
   { id: "cv", daysBefore: 14, en: "Update your CV and keep it to one page.", ur: "اپنا سی وی اپ ڈیٹ کریں اور ایک صفحے تک رکھیں۔" },
   { id: "letter", daysBefore: 10, en: "Write a short cover letter that matches the role.", ur: "عہدے کے مطابق مختصر کور لیٹر لکھیں۔" },
@@ -73,6 +81,7 @@ const LEARNING: Template[] = [
 function templatesFor(item: Pick<Opportunity, "kind" | "scope" | "tags" | "country">): Template[] {
   const kind: OpportunityKind = item.kind;
   if (kind === "scholarship" || kind === "fellowship" || kind === "grant") return SCHOLARSHIP;
+  if (kind === "admission") return ADMISSION;
   if (kind === "internship") return INTERNSHIP;
   if (kind === "competition") return COMPETITION;
   if (kind === "course" || kind === "coupon" || kind === "training") return LEARNING;
@@ -122,6 +131,15 @@ export function documentChecklist(item: Pick<Opportunity, "kind" | "scope" | "ta
       { en: "Two recommendation letters", ur: "دو سفارشی خطوط" },
       { en: "Statement of purpose / motivation letter", ur: "مقصد کا بیان / تحریک نامہ" },
       { en: "Research proposal (PhD and some master's programmes)", ur: "تحقیقی تجویز (پی ایچ ڈی اور بعض ماسٹرز پروگرام)" },
+    ];
+  }
+  if (item.kind === "admission") {
+    return [
+      ...base.filter((entry) => !/CV/.test(entry.en)),
+      ...academic,
+      { en: "Domicile certificate", ur: "ڈومیسائل سرٹیفکیٹ" },
+      { en: "Entry-test result or roll-number slip, if the university requires one", ur: "داخلہ ٹیسٹ کا نتیجہ یا رول نمبر سلپ، اگر جامعہ مانگے" },
+      { en: "Fee challan or receipt", ur: "فیس چالان یا رسید" },
     ];
   }
   if (item.kind === "job" && item.scope === "pakistan") {

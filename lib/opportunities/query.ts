@@ -28,6 +28,7 @@ const KIND_WORDS: Record<OpportunityKind, string[]> = {
   coupon: ["coupon", "coupons", "udemy", "کوپن", "کوپنز", "یوڈیمی"],
   training: ["training", "workshop", "bootcamp", "tarbiyat", "تربیت", "ٹریننگ", "ورکشاپ", "روزنه"],
   grant: ["grant", "grants", "funding", "گرانٹ", "گرانٹس"],
+  admission: ["admission", "admissions", "entry test", "entrytest", "dakhila", "dakhla", "dakhle", "داخلہ", "داخلے", "داخلوں", "داخله", "داخلې"],
   notice: ["notice", "notices", "alert", "alerts", "blacklist", "blacklisted", "complaint", "complaints", "نوٹس", "نوٹسز", "شکایت", "شکایات"],
 };
 

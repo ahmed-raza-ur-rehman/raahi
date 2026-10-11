@@ -72,17 +72,36 @@ export function parseHimalayas(json: unknown): RawOpportunity[] {
   return items;
 }
 
+/**
+ * Himalayas' own search endpoint filters by country (`country=PK` returns jobs open to Pakistan and worldwide
+ * ones, per its API reference), which is far better than paging the full feed: only a few percent of the newest
+ * jobs there are open to people in Pakistan. If search is unavailable the cursor feed is used instead.
+ */
 export const himalayasAdapter: Adapter = async ({ source, http, log }) => {
   const wanted = source.maxItems ?? 60;
   const kept: RawOpportunity[] = [];
-  let cursor: string | undefined;
-  for (let page = 0; page < 8 && kept.length < wanted; page += 1) {
-    const url = `${source.endpoint}?limit=20${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`;
-    const json = await http.getJson<Json>(url, { respectRobots: source.respectRobots });
-    const batch = parseHimalayas(json);
-    kept.push(...batch.filter((item) => item.openToPakistan !== false));
-    cursor = asString(json.nextCursor);
-    if (!cursor || batch.length === 0) break;
+  const options = { respectRobots: source.respectRobots };
+
+  try {
+    for (let page = 1; page <= 5 && kept.length < wanted; page += 1) {
+      const json = await http.getJson<Json>(`${source.endpoint}/search?country=PK&sort=recent&page=${page}`, options);
+      const batch = parseHimalayas(json);
+      if (batch.length === 0) break;
+      kept.push(...batch.filter((item) => item.openToPakistan !== false));
+    }
+  } catch (error) {
+    log(`search endpoint unavailable (${error instanceof Error ? error.message : "error"}); falling back to the cursor feed`);
+  }
+
+  if (kept.length === 0) {
+    let cursor: string | undefined;
+    for (let page = 0; page < 8 && kept.length < wanted; page += 1) {
+      const json = await http.getJson<Json>(`${source.endpoint}?limit=20${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`, options);
+      const batch = parseHimalayas(json);
+      kept.push(...batch.filter((item) => item.openToPakistan !== false));
+      cursor = asString(json.nextCursor);
+      if (!cursor || batch.length === 0) break;
+    }
   }
   log(`${kept.length} jobs open to Pakistan kept`);
   return kept.slice(0, wanted);

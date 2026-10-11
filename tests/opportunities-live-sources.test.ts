@@ -87,18 +87,32 @@ test("Himalayas: reads the real API shape, including location restrictions, expi
   assert.match(includesPakistan.eligibilityNote ?? "", /Open to applicants in Pakistan/);
 });
 
-test("Himalayas adapter: follows the cursor, keeps only jobs Pakistan-based people can apply for", async () => {
+test("Himalayas adapter: asks the search endpoint for Pakistan-eligible jobs and falls back to the cursor feed", async () => {
   const requested: string[] = [];
   const routes = allSourceRoutes();
   const items = await himalayasAdapter({ ...context("himalayas", routes), http: createFixtureHttp(routes, requested) });
-  assert.equal(items.length, 2, "the Brazil-only job is dropped, the worldwide and the Pakistan-eligible ones stay");
+  assert.equal(items.length, 2, "the Brazil-only job is dropped; the worldwide and the Pakistan-eligible ones stay");
   assert.ok(items.every((item) => item.openToPakistan === true));
-  assert.ok(requested[0].includes("limit=20"));
-  assert.ok(requested.some((url) => url.includes("cursor=")), "pages with the cursor the API returned");
+  assert.match(requested[0], /\/jobs\/api\/search\?country=PK&sort=recent&page=1$/);
+  assert.equal(requested.length, 2, "page 2 came back empty, so the walk stops");
 
-  const onlyRestricted = await himalayasAdapter({ ...context("himalayas"), http: createFixtureHttp({ "https://himalayas.app/jobs/api": fixture("himalayas.sample.json") }) });
-  assert.equal(onlyRestricted.length, 0);
-  assert.ok(himalayasWithOpenJobs().includes("Pakistan"));
+  // Search unavailable → the cursor feed is used instead (it returns the unfiltered feed, restrictions are applied locally).
+  const fallbackRequests: string[] = [];
+  const fallback = await himalayasAdapter({
+    ...context("himalayas"),
+    http: createFixtureHttp(
+      {
+        "https://himalayas.app/jobs/api?limit=20": himalayasWithOpenJobs(),
+        "https://himalayas.app/jobs/api?limit=20&cursor=": '{"jobs":[]}',
+      },
+      fallbackRequests,
+    ),
+  });
+  assert.equal(fallback.length, 2);
+  assert.ok(fallbackRequests.some((url) => url.includes("cursor=")), "pages the feed with the cursor the API returned");
+
+  const onlyRestricted = await himalayasAdapter({ ...context("himalayas"), http: createFixtureHttp({ "https://himalayas.app/jobs/api/search": fixture("himalayas.sample.json"), "https://himalayas.app/jobs/api?limit=20": fixture("himalayas.sample.json") }) });
+  assert.equal(onlyRestricted.length, 0, "location-restricted jobs are never kept");
 });
 
 // ─── Remote OK, Working Nomads, We Work Remotely ─────────────────────────────
@@ -289,4 +303,41 @@ test("terms guard: no JobPosting structured data — Himalayas forbids resubmitt
     .flatMap((dir) => sourceFiles(join(process.cwd(), dir)))
     .filter((file) => /["']@type["']\s*:\s*["']JobPosting["']|schema\.org\/JobPosting/.test(readFileSync(file, "utf8")));
   assert.deepEqual(offenders, []);
+});
+
+// ─── Admissions are their own kind ───────────────────────────────────────────
+
+test("admissions: university admission notices are classified as admissions, not jobs, and get their own plan", async () => {
+  const { items } = normalizeAll(
+    [
+      { title: "Jinnah Medical University IHBM Admissions 2027 – Apply by 31 October", url: "https://example.pk/jmu", postedAt: "2026-10-05T10:00:00Z" },
+      { title: "Shaukat Khanum Hospital Karachi Jobs 2026 – Apply Online", url: "https://example.pk/skm" },
+      { title: "MS/PhD Admissions with a fully funded scholarship", url: "https://example.pk/ms" },
+    ],
+    { ...meta("mauqapakistan"), scope: "pakistan" },
+    NOW,
+  );
+  assert.equal(items[0].kind, "admission");
+  assert.equal(items[0].deadline, "2026-10-31");
+  assert.equal(items[1].kind, "job", "ordinary job posts stay jobs");
+  assert.equal(items[2].kind, "scholarship", "an explicit scholarship in the title still wins");
+
+  const { buildApplicationPlan, documentChecklist } = await import("@/lib/opportunities/plan");
+  const plan = buildApplicationPlan({ kind: "admission", scope: "pakistan", tags: [], deadline: "2026-10-31" }, NOW);
+  assert.ok(plan.length >= 4);
+  assert.ok(plan.some((step) => /entry test/i.test(step.en)));
+  assert.ok(documentChecklist({ kind: "admission", scope: "pakistan", tags: [] }).some((entry) => /Domicile/i.test(entry.en)));
+
+  const { interpretQuery } = await import("@/lib/opportunities/query");
+  assert.deepEqual(interpretQuery("university admissions in lahore").kinds, ["admission"]);
+  assert.deepEqual(interpretQuery("داخلے").kinds, ["admission"]);
+});
+
+test("SPSC adapter: advertisements whose closing date has passed are not listed", async () => {
+  const later = new Date("2026-10-30T06:00:00Z");
+  const items = await context("spsc");
+  const open = await (await import("@/lib/opportunities/scrapers/adapters/pk")).spscAdapter({ ...items, now: NOW });
+  const closed = await (await import("@/lib/opportunities/scrapers/adapters/pk")).spscAdapter({ ...items, now: later });
+  assert.equal(open.length, 1);
+  assert.equal(closed.length, 0, "05/2026 closed on 23 October");
 });

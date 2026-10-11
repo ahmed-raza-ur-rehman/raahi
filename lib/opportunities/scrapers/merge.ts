@@ -14,6 +14,7 @@ const STALE_AFTER_DAYS: Record<OpportunityKind, number> = {
   fellowship: 60,
   grant: 60,
   competition: 14,
+  admission: 45,
   course: 90,
   training: 90,
 };

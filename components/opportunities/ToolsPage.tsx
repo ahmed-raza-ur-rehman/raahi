@@ -161,6 +161,7 @@ function ScamTool({ language }: { language: Language }) {
 
 const INTEREST_OPTIONS: Array<{ id: string; kinds: OpportunityKind[]; emoji: string; label: OpportunityKind }> = [
   { id: "scholarship", kinds: ["scholarship", "fellowship"], emoji: "🎓", label: "scholarship" },
+  { id: "admission", kinds: ["admission"], emoji: "🏫", label: "admission" },
   { id: "job", kinds: ["job"], emoji: "💼", label: "job" },
   { id: "internship", kinds: ["internship"], emoji: "🧑‍💻", label: "internship" },
   { id: "learning", kinds: ["coupon", "course", "training"], emoji: "📚", label: "course" },

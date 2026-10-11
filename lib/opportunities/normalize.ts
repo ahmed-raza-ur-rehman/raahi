@@ -30,7 +30,7 @@ export interface NormalizeResult {
   rejected: Array<{ title: string; reason: string }>;
 }
 
-const DEADLINE_KINDS: ReadonlySet<OpportunityKind> = new Set(["scholarship", "fellowship", "internship", "job", "competition", "grant", "training", "course"]);
+const DEADLINE_KINDS: ReadonlySet<OpportunityKind> = new Set(["scholarship", "fellowship", "internship", "job", "competition", "grant", "admission", "training", "course"]);
 const SUMMARY_LIMIT = 280;
 
 function validIso(date: string | undefined): string | undefined {

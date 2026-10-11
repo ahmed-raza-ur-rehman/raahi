@@ -54,7 +54,11 @@ export function allSourceRoutes(): Record<string, Route> {
     "https://spsc.gos.pk/advertisement.php": fixture("spsc.sample.html"),
     "https://bpsc.gob.pk/BPSC/pages?jobs": fixture("bpsc.sample.html"),
     "https://www.etea.edu.pk/": fixture("etea.sample.html"),
-    "https://himalayas.app/jobs/api": (url) => (new URL(url).searchParams.has("cursor") ? '{"jobs":[]}' : himalayasWithOpenJobs()),
+    "https://himalayas.app/jobs/api": (url) => {
+      const params = new URL(url).searchParams;
+      const page = params.get("page");
+      return params.has("cursor") || (page && page !== "1") ? '{"jobs":[]}' : himalayasWithOpenJobs();
+    },
     "https://remoteok.com/api": fixture("remoteok.sample.json"),
     "https://www.workingnomads.com/api/exposed_jobs/": fixture("workingnomads.sample.json"),
     "https://weworkremotely.com/remote-jobs.rss": fixture("weworkremotely.sample.xml"),

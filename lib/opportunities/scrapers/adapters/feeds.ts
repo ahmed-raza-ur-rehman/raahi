@@ -105,6 +105,7 @@ const KIND_PRIORITY: Array<[RegExp, OpportunityKind]> = [
   [/internship|traineeship/i, "internship"],
   [/fellowship/i, "fellowship"],
   [/scholarship|bursary|financial aid/i, "scholarship"],
+  [/admissions?|entry test/i, "admission"],
   [/competition|contest|hackathon|award|prize|olympiad/i, "competition"],
   [/grant|funding|call for proposals/i, "grant"],
   [/\bjobs?\b|vacanc|career|recruit/i, "job"],
