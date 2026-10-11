@@ -92,6 +92,18 @@ test("search: text relevance finds the right listing in several languages and ra
   assert.equal(searchOpportunities({ q: "zzzzqqqq nothing like this" }, NOW).total, 0);
 });
 
+test("search: browsing without a query returns a mix of kinds and sources, not one portal's jobs", () => {
+  const firstPage = searchOpportunities({ limit: 12 }, NOW).items;
+  const kinds = new Set(firstPage.map((item) => item.kind));
+  assert.ok(kinds.size >= 4, `expected at least four kinds on the first page, got ${[...kinds].join(", ")}`);
+  const njp = firstPage.filter((item) => item.sourceId === "njp").length;
+  assert.ok(njp <= 5, `NJP should not fill the page (${njp} of 12)`);
+  // a text query is still ranked purely by relevance
+  assert.match(searchOpportunities({ q: "financial analyst" }, NOW).items[0].title, /Financial Analyst/);
+  // and a single-kind browse still works
+  assert.ok(searchOpportunities({ kinds: ["competition"], limit: 12 }, NOW).items.every((item) => item.kind === "competition"));
+});
+
 test("search: filters for Pakistan eligibility, deadlines, sources, tags and paging", () => {
   const everything = searchOpportunities({ kinds: ["scholarship"], limit: 100 }, NOW);
   const eligible = searchOpportunities({ kinds: ["scholarship"], openToPakistan: true, limit: 100 }, NOW);

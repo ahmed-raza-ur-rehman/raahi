@@ -7,6 +7,15 @@ import { getDashScopeClient } from "@/lib/ai/client";
 import { ORCHESTRATOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { detectSafetySignals } from "@/lib/safety/detect";
 import {
+  OPPORTUNITY_TOOLS,
+  executeOpportunityTool,
+  isOpportunityTool,
+  opportunityIntent,
+  resourceQueryFor,
+  runOpportunitySearch,
+} from "@/lib/ai/opportunity-tools";
+import { analyzeOffer } from "@/lib/opportunities/scam";
+import {
   sanitizeUserInput,
   maskPii,
   appendDomainSafetyDisclaimer,
@@ -14,7 +23,7 @@ import {
 
 // ─── Tool definitions ──────────────────────────────────────────────────────
 
-export const TOOLS = [
+const CORE_TOOLS = [
   {
     type: "function" as const,
     function: {
@@ -135,6 +144,9 @@ export const TOOLS = [
   },
 ];
 
+/** Citizen-service tools plus the opportunities hub tools (scholarships, jobs, courses, scam checks). */
+export const TOOLS = [...CORE_TOOLS, ...OPPORTUNITY_TOOLS];
+
 // ─── Tool execution handlers ────────────────────────────────────────────────
 
 export async function executeTool(
@@ -142,6 +154,7 @@ export async function executeTool(
   toolArgs: Record<string, unknown>,
   sessionId: string,
 ): Promise<string> {
+  if (isOpportunityTool(toolName)) return executeOpportunityTool(toolName, toolArgs);
   switch (toolName) {
     case "search_knowledge": {
       const query = String(toolArgs.query ?? "");
@@ -384,6 +397,79 @@ export function getOrCreateConversation(sessionId: string, caseId?: string): str
 
 // ─── Main streaming orchestrator ─────────────────────────────────────────────
 
+// ─── Opportunity events + offline fallback ────────────────────────────────
+
+type Lang = "en" | "ur" | "ps";
+const sse = (payload: Record<string, unknown>) => `data: ${JSON.stringify(payload)}\n\n`;
+
+function riskEvent(text: string): string | undefined {
+  const analysis = analyzeOffer({ text });
+  if (analysis.level !== "high" && analysis.level !== "medium") return undefined;
+  return sse({
+    type: "risk_result",
+    result: {
+      level: analysis.level,
+      score: analysis.score,
+      headline: analysis.headline,
+      signals: analysis.signals.slice(0, 4).map((signal) => ({ en: signal.en, ur: signal.ur })),
+      advice: analysis.advice.slice(0, 4),
+    },
+  });
+}
+
+function fallbackText(language: Lang, parts: { services: boolean; opportunities: boolean; resources: boolean; risk: boolean }): string {
+  const lines: string[] = [];
+  if (parts.risk) {
+    lines.push(
+      language === "en"
+        ? "⚠️ **This looks risky.** Do not pay anyone or share OTPs or documents until you verify the offer on the official website. See the warning signs and official links below."
+        : language === "ps"
+        ? "⚠️ **دا خطرناک ښکاري.** مخکې له تایید تر مخه پیسې مه ورکوئ او OTP یا اسناد مه شریکوئ."
+        : "⚠️ **یہ پیشکش خطرناک لگتی ہے۔** سرکاری ویب سائٹ پر تصدیق سے پہلے کسی کو رقم، او ٹی پی یا دستاویزات نہ دیں۔ نیچے انتباہی علامات اور سرکاری لنک دیکھیں۔",
+    );
+  }
+  if (parts.opportunities) {
+    lines.push(
+      language === "en"
+        ? "Here are live listings that match. Deadlines and eligibility can change — confirm each one on its official page before applying."
+        : language === "ps"
+        ? "دلته ورته ژوندۍ لیستونه دي. مخکې له غوښتنې هره یوه په رسمي پاڼه تایید کړئ."
+        : "آپ کی تلاش سے ملتی جلتی تازہ فہرست یہ ہے۔ آخری تاریخ اور اہلیت بدل سکتی ہے — درخواست سے پہلے ہر ایک کو سرکاری صفحے پر تصدیق کریں۔",
+    );
+  }
+  if (parts.resources) {
+    lines.push(
+      language === "en"
+        ? "These official portals and trusted sites are the best places to continue."
+        : language === "ps"
+        ? "دا رسمي پورتالونه او باوري سایټونه د دوام لپاره غوره ځایونه دي."
+        : "یہ سرکاری پورٹلز اور معتبر سائٹس آگے بڑھنے کے لیے بہترین جگہیں ہیں۔",
+    );
+  }
+  if (parts.services) {
+    lines.push(
+      language === "en"
+        ? "These verified services may help. Please confirm details with each official source."
+        : language === "ps"
+        ? "دا تایید شوي خدمتونه مرسته کولای شي. جزئیات له رسمي سرچینې تایید کړئ."
+        : "یہ تصدیق شدہ خدمات آپ کے لیے مددگار ہو سکتی ہیں۔ تفصیلات ہر ذریعے سے ضرور تصدیق کریں۔",
+    );
+  }
+  return lines.join("\n\n");
+}
+
+/** Opportunity cards + directory links + risk warning for a plain message (used when no model is available). */
+async function* opportunityFallback(message: string): AsyncGenerator<string, { opportunities: boolean; resources: boolean; risk: boolean }> {
+  if (!opportunityIntent(message)) return { opportunities: false, resources: false, risk: false };
+  const search = await runOpportunitySearch({ q: message, openToPakistan: true }, 5);
+  const risk = riskEvent(message);
+  const resources = JSON.parse(await executeOpportunityTool("find_resources", { query: resourceQueryFor(message, Boolean(risk)) })) as { results: unknown[] };
+  if (risk) yield risk;
+  if (search.results.length > 0) yield sse({ type: "opportunity_results", results: search.results, generated_at: search.generated_at });
+  if (resources.results.length > 0) yield sse({ type: "resource_results", results: resources.results.slice(0, 4) });
+  return { opportunities: search.results.length > 0, resources: resources.results.length > 0, risk: Boolean(risk) };
+}
+
 export interface OrchestratorOptions {
   message: string;
   conversationId: string;
@@ -417,18 +503,17 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   }
 
   if (!client) {
-    // Fallback to RAG-only if no API key
-    const results = await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
-    if (results.length === 0) {
-      yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔" : "I do not have verified information for this request. Please contact the relevant organization directly." })}\n\n`;
+    // No API key: verified-service RAG plus the deterministic opportunity search, with the same safeguards.
+    const extras = yield* opportunityFallback(effectiveMessage);
+    // A scam warning must stand alone: loosely matched citizen-service cards would only dilute it.
+    const results = extras.risk ? [] : await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
+    if (results.length === 0 && !extras.opportunities && !extras.resources && !extras.risk) {
+      yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔" : language === "ps" ? "د دې غوښتنې لپاره زما سره تایید شوې معلومات نشته. مهرباني وکړئ اړوند ادارې سره مستقیم اړیکه ونیسئ." : "I do not have verified information for this request. Please contact the relevant organization directly." })}\n\n`;
     } else {
       for (const result of results) {
         yield `data: ${JSON.stringify({ type: "service", service: result.service, citation: result.citation })}\n\n`;
       }
-      let contentText =
-        language === "ur"
-          ? "یہ تصدیق شدہ خدمات آپ کے لیے مددگار ہو سکتی ہیں۔ تفصیلات ہر ذریعے سے ضرور تصدیق کریں۔"
-          : "These verified services may help. Please confirm details with each official source.";
+      let contentText = fallbackText((language as Lang) || "ur", { services: results.length > 0, ...extras });
       if (safetyCheck.medical) {
         contentText = appendDomainSafetyDisclaimer(contentText, "health", (language as any) || "ur");
       } else if (safetyCheck.legal) {
@@ -477,6 +562,7 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
     } catch (apiErr) {
       console.warn("Qwen API call failed, falling back to verified RAG services:", apiErr);
       const results = await searchServicesHybrid({ query: message, limit: 5 });
+      yield* opportunityFallback(message);
       if (results.length > 0) {
         yield `data: ${JSON.stringify({ type: "search_results", results: results.map((r) => r.service) })}\n\n`;
         const summaryText =
@@ -613,6 +699,26 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
         } catch {
           // ignore
         }
+      }
+
+      // Structured data for the opportunity cards, directory links and risk banner
+      if (toolCall.function.name === "search_opportunities" || toolCall.function.name === "find_resources") {
+        try {
+          const parsed = JSON.parse(toolResult) as { results?: unknown[]; generated_at?: string };
+          if (parsed.results && parsed.results.length > 0) {
+            yield sse({
+              type: toolCall.function.name === "search_opportunities" ? "opportunity_results" : "resource_results",
+              results: parsed.results.slice(0, 6),
+              generated_at: parsed.generated_at,
+            });
+          }
+        } catch {
+          // ignore
+        }
+      }
+      if (toolCall.function.name === "check_offer_risk") {
+        const risk = riskEvent(String(toolArgs.text ?? ""));
+        if (risk) yield risk;
       }
 
       // Yield search results as structured data for the UI

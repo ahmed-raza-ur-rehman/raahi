@@ -158,6 +158,10 @@ const ANSWER_WEIGHTS: Record<AnswerKey, { weight: number; en: string; ur: string
   verifiedOnOfficialSite: { weight: -30, en: "You verified the agent or organisation on the official website.", ur: "آپ نے ایجنٹ یا ادارے کی سرکاری ویب سائٹ پر تصدیق کر لی ہے۔" },
 };
 
+export const ANSWER_LABELS: Record<AnswerKey, { en: string; ur: string }> = Object.fromEntries(
+  ANSWER_KEYS.map((key) => [key, { en: ANSWER_WEIGHTS[key].en, ur: ANSWER_WEIGHTS[key].ur }]),
+) as Record<AnswerKey, { en: string; ur: string }>;
+
 export interface DetectedOep {
   raw: string;
   number: string;

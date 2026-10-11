@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import Link from "next/link";
 import { MessageBubble } from "@/components/chat/MessageBubble";
+import type { ChatResource, ChatRisk } from "@/components/chat/OpportunityBlocks";
+import type { CompactOpportunity } from "@/lib/ai/opportunity-tools";
 import { VoiceRecorder } from "@/components/chat/VoiceRecorder";
 import { EmergencyBanner } from "@/components/common/EmergencyBanner";
 import FewClickNavigator from "@/components/navigator/FewClickNavigator";
@@ -14,6 +16,9 @@ interface MessageState {
   role: "user" | "assistant";
   content: string;
   services?: any[];
+  opportunities?: CompactOpportunity[];
+  resources?: ChatResource[];
+  risk?: ChatRisk;
   actionItems?: any[];
   activeTool?: string | null;
   streaming?: boolean;
@@ -385,6 +390,34 @@ export default function ChatPage() {
                   )
                 );
               }
+            } else if (parsed.type === "service" && parsed.service) {
+              // The offline (no model) path streams one verified service at a time.
+              const incoming = parsed.service;
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId ? { ...msg, services: [...(msg.services ?? []), incoming], activeTool: null } : msg
+                )
+              );
+            } else if (parsed.type === "opportunity_results" && Array.isArray(parsed.results)) {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, opportunities: [...(msg.opportunities ?? []), ...parsed.results], activeTool: null }
+                    : msg
+                )
+              );
+            } else if (parsed.type === "resource_results" && Array.isArray(parsed.results)) {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, resources: [...(msg.resources ?? []), ...parsed.results], activeTool: null }
+                    : msg
+                )
+              );
+            } else if (parsed.type === "risk_result" && parsed.result) {
+              setMessages((prev) =>
+                prev.map((msg) => (msg.id === assistantMsgId ? { ...msg, risk: parsed.result, activeTool: null } : msg))
+              );
             } else if (parsed.type === "done") {
               currentActiveTool = null;
               setMessages((prev) =>
@@ -611,6 +644,9 @@ export default function ChatPage() {
                 streaming={msg.streaming}
                 activeTool={msg.activeTool}
                 services={msg.services}
+                opportunities={msg.opportunities}
+                resources={msg.resources}
+                risk={msg.risk}
                 actionItems={msg.actionItems}
                 language={language}
                 onAddToCase={handleSaveToCase}

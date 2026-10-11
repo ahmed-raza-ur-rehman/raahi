@@ -5,6 +5,7 @@ import Link from "next/link";
 import FewClickNavigator from "@/components/navigator/FewClickNavigator";
 import PreferencesWorkspace from "@/components/common/PreferencesWorkspace";
 import ServiceDiscoveryWorkbench from "@/components/common/ServiceDiscoveryWorkbench";
+import { t as oppText } from "@/lib/opportunities/i18n";
 
 type Language = "en" | "ur" | "ps";
 
@@ -129,12 +130,19 @@ export default function Home() {
               <p className="text-[11px] text-[var(--muted)] font-medium">
                 {language === "en"
                   ? "Citizen Service Navigator for Pakistan"
-                  : "پاکستان کا سرکاری و عوامی رہنمائی ��ظام"}
+                  : "پاکستان کا سرکاری و عوامی رہنمائی نظام"}
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <Link
+              href="/opportunities"
+              className="rounded-xl border border-[var(--forest)] bg-[var(--forest)] px-2.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--forest-dark)] transition"
+            >
+              🎓 {oppText(language, "navOpportunities")}
+            </Link>
+
             <Link
               href="/programs"
               className="rounded-xl border border-[var(--line)] bg-white px-2.5 py-1.5 text-xs font-bold text-[var(--forest)] hover:bg-[var(--forest-light)] transition hidden sm:inline-block"
@@ -223,6 +231,13 @@ export default function Home() {
             </Link>
 
             <Link
+              href="/opportunities"
+              className="rounded-2xl border-2 border-[var(--forest)] bg-[var(--forest-light)] px-5 py-3.5 text-sm font-bold text-[var(--forest-dark)] hover:bg-white transition"
+            >
+              🎓 {oppText(language, "heroTitle")}
+            </Link>
+
+            <Link
               href="/portal"
               className="rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] px-4 py-3.5 text-xs font-bold text-[var(--muted)] hover:text-[var(--ink)] hover:bg-white transition"
             >
@@ -285,6 +300,33 @@ export default function Home() {
                 <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{copy.agentsText}</p>
               </div>
             </div>
+          </section>
+
+          {/* ─── Opportunities hub: scholarships, jobs, courses, safe routes abroad ─── */}
+          <section aria-labelledby="opportunities-title" className="border-t border-[var(--line)] py-6">
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <h2 id="opportunities-title" className="text-lg font-black text-[var(--ink)]">🎓 {oppText(language, "homeTitle")}</h2>
+                <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--muted)]">{oppText(language, "homeSub")}</p>
+              </div>
+              <Link href="/opportunities" className="btn-secondary !min-h-9 !px-3 !py-1.5 !text-xs">{oppText(language, "homeAll")} →</Link>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
+              {[
+                { href: "/opportunities?kind=scholarship,fellowship", emoji: "🎓", label: oppText(language, "chipScholarships") },
+                { href: "/opportunities?kind=job&scope=pakistan", emoji: "🏛️", label: oppText(language, "chipGovtJobs") },
+                { href: "/opportunities/tools?tool=abroad", emoji: "✈️", label: oppText(language, "chipOverseas") },
+                { href: "/opportunities?kind=coupon,course,training", emoji: "📚", label: oppText(language, "chipFree") },
+              ].map((tile) => (
+                <Link key={tile.href} href={tile.href} className="quick-card flex items-center gap-2 p-3 text-sm font-bold text-[var(--ink)]">
+                  <span className="text-xl" aria-hidden>{tile.emoji}</span>
+                  {tile.label}
+                </Link>
+              ))}
+            </div>
+            <Link href="/opportunities/tools?tool=scam" className="mt-3 flex items-center gap-2 rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] px-4 py-3 text-xs font-bold text-[var(--forest-dark)] hover:bg-white">
+              <span aria-hidden>🛡️</span> {oppText(language, "homeScam")} →
+            </Link>
           </section>
 
           {/* ─── Fast Guided Navigator (Few-Click Path) ─────────────── */}
@@ -401,6 +443,10 @@ export default function Home() {
           <span>·</span>
           <Link href="/programs" className="hover:underline">
             {language === "en" ? "All Services (85)" : "تمام خدمات (85)"}
+          </Link>
+          <span>·</span>
+          <Link href="/opportunities" className="hover:underline">
+            {oppText(language, "navOpportunities")}
           </Link>
           <span>·</span>
           <Link href="/cases" className="hover:underline">

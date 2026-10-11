@@ -234,6 +234,34 @@ function termCoverage(row: Row, terms: string[]): number {
   return covered;
 }
 
+/**
+ * Browsing (no search words) should show a mix, not 9 jobs from one portal. Greedy re-rank of the head of
+ * the list: each pick makes further picks of the same kind or source slightly less attractive.
+ */
+function diversify<T extends { item: OpportunityView; score: number }>(entries: T[], head = 60): T[] {
+  const pool = entries.slice(0, head);
+  const tail = entries.slice(head);
+  const picked: T[] = [];
+  const perKind = new Map<string, number>();
+  const perSource = new Map<string, number>();
+  while (pool.length > 0) {
+    let best = 0;
+    let bestScore = -Infinity;
+    pool.forEach((entry, index) => {
+      const adjusted = entry.score - 0.45 * (perKind.get(entry.item.kind) ?? 0) - 0.25 * (perSource.get(entry.item.sourceId) ?? 0);
+      if (adjusted > bestScore) {
+        bestScore = adjusted;
+        best = index;
+      }
+    });
+    const [chosen] = pool.splice(best, 1);
+    picked.push(chosen);
+    perKind.set(chosen.item.kind, (perKind.get(chosen.item.kind) ?? 0) + 1);
+    perSource.set(chosen.item.sourceId, (perSource.get(chosen.item.sourceId) ?? 0) + 1);
+  }
+  return [...picked, ...tail];
+}
+
 function bump(map: Map<string, number>, key: string | undefined) {
   if (key) map.set(key, (map.get(key) ?? 0) + 1);
 }
@@ -368,9 +396,10 @@ export function searchOpportunities(query: OpportunityQuery = {}, now: Date = cl
     }
     return b.score - a.score;
   });
+  const ordered = sort === "relevance" && terms.length === 0 ? diversify(scored) : scored;
 
   const facets = { kind: new Map<string, number>(), scope: new Map<string, number>(), country: new Map<string, number>(), level: new Map<string, number>(), funding: new Map<string, number>(), source: new Map<string, number>() };
-  for (const { item } of scored) {
+  for (const { item } of ordered) {
     bump(facets.kind, item.kind);
     bump(facets.scope, item.scope);
     bump(facets.country, item.country);
@@ -382,8 +411,8 @@ export function searchOpportunities(query: OpportunityQuery = {}, now: Date = cl
   const limit = Math.min(Math.max(query.limit ?? 24, 1), 100);
   const offset = Math.max(query.offset ?? 0, 0);
   return {
-    total: scored.length,
-    items: scored.slice(offset, offset + limit).map((entry) => entry.item),
+    total: ordered.length,
+    items: ordered.slice(offset, offset + limit).map((entry) => entry.item),
     facets: {
       kind: toFacet(facets.kind),
       scope: toFacet(facets.scope),
