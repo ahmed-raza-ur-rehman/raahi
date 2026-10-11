@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { join } from "node:path";
 
+process.env.OPPORTUNITIES_BUNDLED = "off";
 process.env.RAAHI_DB_PATH = join(process.cwd(), "data", "raahi.opps.test.db");
 
 import { interpretQuery } from "@/lib/opportunities/query";

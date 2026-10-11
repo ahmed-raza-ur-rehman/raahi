@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { CompactOpportunity } from "@/lib/ai/opportunity-tools";
+import type { ChatGuideCard, CompactOpportunity } from "@/lib/ai/opportunity-tools";
 import { KIND_LABELS, pick, t } from "@/lib/opportunities/i18n";
 import type { OpportunityKind } from "@/lib/opportunities/types";
 
@@ -30,6 +30,7 @@ interface Props {
   opportunities?: CompactOpportunity[];
   resources?: ChatResource[];
   risk?: ChatRisk;
+  guides?: ChatGuideCard[];
   language: Language;
 }
 
@@ -44,12 +45,28 @@ function deadlineText(item: CompactOpportunity, language: Language): string {
 }
 
 /** Cards the assistant attaches to a reply: scam warning, live listings, official portals. */
-export function ChatOpportunityBlocks({ opportunities = [], resources = [], risk, language }: Props) {
-  if (opportunities.length === 0 && resources.length === 0 && !risk) return null;
+export function ChatOpportunityBlocks({ opportunities = [], resources = [], risk, guides = [], language }: Props) {
+  if (opportunities.length === 0 && resources.length === 0 && guides.length === 0 && !risk) return null;
   const lang = language === "en" ? "en" : "ur";
 
   return (
     <div className="mt-4 w-full space-y-4 ps-1 sm:ps-4">
+      {guides.length > 0 && (
+        <div>
+          <p className="mb-2 text-xs font-black uppercase tracking-wide text-[var(--muted)]">📘 {lang === "en" ? "Step-by-step guide" : "مرحلہ وار رہنمائی"}</p>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {guides.map((guide) => (
+              <li key={guide.id}>
+                <Link href={guide.url} className="card flex h-full flex-col gap-1.5 p-3.5 transition hover:-translate-y-0.5">
+                  <span className="text-sm font-black text-[var(--forest-dark)]" dir="auto">{guide.emoji} {guide.title[lang]}</span>
+                  <span className="text-xs leading-relaxed text-[var(--ink-soft)]" dir="auto">{guide.summary[lang]}</span>
+                  <span className="mt-auto text-[11px] font-bold text-[var(--forest)]">{guide.steps} {lang === "en" ? "steps" : "مراحل"} · {lang === "en" ? "Open guide" : "رہنمائی کھولیں"} →</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {risk && (
         <div role="alert" className={`rounded-2xl border p-4 ${risk.level === "high" ? "border-[var(--danger)] bg-[var(--danger-bg)]" : "border-[var(--amber)] bg-[var(--amber-bg)]"}`}>
           <p className="text-sm font-black text-[var(--ink)]">🛡️ {risk.headline[lang]} <span className="text-xs font-bold text-[var(--muted)]">({risk.score}/100)</span></p>

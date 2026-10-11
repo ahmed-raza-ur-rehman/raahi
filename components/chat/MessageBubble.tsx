@@ -4,6 +4,7 @@ import React from "react";
 import { ServiceCard } from "./ServiceCard";
 import { ActionPlan, ActionItem } from "./ActionPlan";
 import { CitationChip } from "./CitationChip";
+import type { ChatGuideCard } from "@/lib/ai/opportunity-tools";
 import { ChatOpportunityBlocks, type ChatResource, type ChatRisk } from "./OpportunityBlocks";
 import type { CompactOpportunity } from "@/lib/ai/opportunity-tools";
 
@@ -16,6 +17,7 @@ export interface MessageBubbleProps {
   opportunities?: CompactOpportunity[];
   resources?: ChatResource[];
   risk?: ChatRisk;
+  guides?: ChatGuideCard[];
   actionItems?: ActionItem[];
   citations?: { sourceUrl: string; sourceTitle: string; authorityTier?: number; lastVerified?: string }[];
   language?: "en" | "ur" | "ps";
@@ -84,6 +86,7 @@ export function MessageBubble({
   opportunities = [],
   resources = [],
   risk,
+  guides = [],
   actionItems = [],
   citations = [],
   language = "ur",
@@ -158,6 +161,10 @@ export function MessageBubble({
     find_resources: {
       en: "Finding official portals and trusted sites...",
       ur: "سرکاری پورٹلز اور معتبر سائٹس تلاش کی جا رہی ہیں...",
+    },
+    find_guides: {
+      en: "Finding a step-by-step guide...",
+      ur: "مرحلہ وار رہنمائی تلاش کی جا رہی ہے...",
     },
     check_offer_risk: {
       en: "Checking the offer for warning signs...",
@@ -272,7 +279,7 @@ export function MessageBubble({
       </div>
 
       {/* Opportunities, official portals and scam warnings */}
-      <ChatOpportunityBlocks opportunities={opportunities} resources={resources} risk={risk} language={language} />
+      <ChatOpportunityBlocks opportunities={opportunities} resources={resources} risk={risk} guides={guides} language={language} />
 
       {/* Attached Services Cards */}
       {services.length > 0 && (

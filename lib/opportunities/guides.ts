@@ -138,12 +138,20 @@ export interface GuideQuery {
   limit?: number;
 }
 
+/** A match strong enough to put in front of someone who did not ask for a guide: a title or keyword hit. */
+export const STRONG_MATCH = 5;
+
 /** Guides matching the question, best first. With no question, every guide in curated order. */
 export function searchGuides(query: GuideQuery = {}): Guide[] {
+  return searchGuidesScored(query).map((entry) => entry.guide);
+}
+
+/** Like `searchGuides`, with the relevance score (title 6, keyword 5, summary 3, step title 2, body 1 per matched word). */
+export function searchGuidesScored(query: GuideQuery = {}): Array<{ guide: Guide; score: number }> {
   const pool = query.category ? GUIDES.filter((guide) => guide.category === query.category) : GUIDES;
   const tokens = [...new Set(tokenize(query.q ?? ""))];
   const limit = query.limit ?? pool.length;
-  if (tokens.length === 0) return pool.slice(0, limit);
+  if (tokens.length === 0) return pool.slice(0, limit).map((guide) => ({ guide, score: 0 }));
 
   const scored: Array<{ guide: Guide; score: number; order: number }> = [];
   pool.forEach((guide, order) => {
@@ -163,7 +171,7 @@ export function searchGuides(query: GuideQuery = {}): Guide[] {
   return scored
     .sort((a, b) => b.score - a.score || a.order - b.order)
     .slice(0, limit)
-    .map((entry) => entry.guide);
+    .map(({ guide, score }) => ({ guide, score }));
 }
 
 /** Compact form for lists, the API and the assistant. */

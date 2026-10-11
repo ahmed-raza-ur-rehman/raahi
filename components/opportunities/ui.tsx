@@ -6,7 +6,8 @@ import type { Language } from "@/lib/types";
 import { ECOSYSTEM, appUrl } from "@/lib/opportunities/ecosystem";
 import { KIND_LABELS, t } from "@/lib/opportunities/i18n";
 import type { OpportunityKind } from "@/lib/opportunities/types";
-import { TONE_CLASS, dirOf, type Tone } from "./format";
+import type { DirectoryItem } from "@/lib/opportunities/directory";
+import { TONE_CLASS, dirOf, formatDate, type Tone } from "./format";
 
 export function Chip({ children, tone = "none", title }: { children: ReactNode; tone?: Tone; title?: string }) {
   return (
@@ -14,6 +15,17 @@ export function Chip({ children, tone = "none", title }: { children: ReactNode; 
       {children}
     </span>
   );
+}
+
+export const AUTHORITY_KEY = { 1: "authority1", 2: "authority2", 3: "authority3", 4: "authority4" } as const;
+
+export function LinkStatus({ item, language }: { item: DirectoryItem; language: Language }) {
+  if (item.health?.verdict === "broken") return <Chip tone="urgent" title={`HTTP ${item.health.status || "—"}`}>⚠️ {t(language, "linkBroken")}</Chip>;
+  if (item.health?.verdict === "blocked") return <Chip tone="rolling">{t(language, "linkBlocked")}</Chip>;
+  if (item.health?.verdict === "unreachable") return <Chip tone="none" title="No answer from our servers — several Pakistani government sites do this to overseas networks. The link itself is probably fine.">{t(language, "linkUnreachable")}</Chip>;
+  const confirmed = item.health?.verdict === "ok" ? item.health.checkedAt : item.checked;
+  if (confirmed) return <Chip tone="ok" title={confirmed}>✓ {t(language, "linkChecked")} · {formatDate(confirmed, language)}</Chip>;
+  return <Chip tone="none">{t(language, "linkUnchecked")}</Chip>;
 }
 
 /** Inline SVG so the icon never depends on a device's symbol fonts. */
@@ -88,8 +100,9 @@ export function EcosystemStrip({ language, medium = "opportunities" }: { languag
   );
 }
 
-const NAV: Array<{ id: "opportunities" | "resources" | "tools" | "status"; href: string; key: "navOpportunities" | "navResources" | "navTools" | "navStatus" }> = [
+const NAV: Array<{ id: "opportunities" | "guides" | "resources" | "tools" | "status"; href: string; key: "navOpportunities" | "navGuides" | "navResources" | "navTools" | "navStatus" }> = [
   { id: "opportunities", href: "/opportunities", key: "navOpportunities" },
+  { id: "guides", href: "/opportunities/guides", key: "navGuides" },
   { id: "resources", href: "/opportunities/resources", key: "navResources" },
   { id: "tools", href: "/opportunities/tools", key: "navTools" },
   { id: "status", href: "/opportunities/status", key: "navStatus" },

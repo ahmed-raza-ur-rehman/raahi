@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import Link from "next/link";
 import { MessageBubble } from "@/components/chat/MessageBubble";
+import type { ChatGuideCard } from "@/lib/ai/opportunity-tools";
 import type { ChatResource, ChatRisk } from "@/components/chat/OpportunityBlocks";
 import type { CompactOpportunity } from "@/lib/ai/opportunity-tools";
 import { VoiceRecorder } from "@/components/chat/VoiceRecorder";
@@ -19,6 +20,7 @@ interface MessageState {
   opportunities?: CompactOpportunity[];
   resources?: ChatResource[];
   risk?: ChatRisk;
+  guides?: ChatGuideCard[];
   actionItems?: any[];
   activeTool?: string | null;
   streaming?: boolean;
@@ -414,6 +416,12 @@ export default function ChatPage() {
                     : msg
                 )
               );
+            } else if (parsed.type === "guide_results" && Array.isArray(parsed.results)) {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId ? { ...msg, guides: [...(msg.guides ?? []), ...parsed.results], activeTool: null } : msg
+                )
+              );
             } else if (parsed.type === "risk_result" && parsed.result) {
               setMessages((prev) =>
                 prev.map((msg) => (msg.id === assistantMsgId ? { ...msg, risk: parsed.result, activeTool: null } : msg))
@@ -647,6 +655,7 @@ export default function ChatPage() {
                 opportunities={msg.opportunities}
                 resources={msg.resources}
                 risk={msg.risk}
+                guides={msg.guides}
                 actionItems={msg.actionItems}
                 language={language}
                 onAddToCase={handleSaveToCase}

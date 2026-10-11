@@ -8,6 +8,7 @@ import { OpportunityCard } from "./OpportunityCard";
 import { formatDate, timeAgoLabel } from "./format";
 import { useLanguage } from "./useLanguage";
 import { useSaved } from "./useSaved";
+import { AlertsBar } from "./AlertsBar";
 import { EcosystemStrip, Shell, StarIcon } from "./ui";
 
 interface Filters {
@@ -247,6 +248,19 @@ export default function HubPage({ initialQuery = "" }: { initialQuery?: string }
           );
         })}
       </div>
+
+      <AlertsBar
+        language={language}
+        query={query}
+        isDefault={isDefault(filters)}
+        suggestedName={[filters.q.trim(), ...filters.kinds.map((kind) => pick(language, KIND_LABELS[kind])), filters.country ? countryLabel(language, filters.country) : undefined, filters.scope ? t(language, filters.scope === "pakistan" ? "scopePakistan" : "scopeAbroad") : undefined].filter(Boolean).join(" · ").slice(0, 60)}
+        onApply={(saved) => {
+          const next = fromParams(new URLSearchParams(saved));
+          setInput(next.q);
+          setFilters(next);
+          setShowSaved(false);
+        }}
+      />
 
       {showMore && (
         <div className="card mt-3 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">

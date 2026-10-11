@@ -54,6 +54,15 @@ export function linkHealthCheckedAt(): string | null {
   return (linkHealth as { checkedAt: string | null }).checkedAt;
 }
 
+/** Directory entries by id (in the order asked), with their link-health result. Unknown ids are skipped. */
+export function getResources(ids: readonly string[]): DirectoryItem[] {
+  const byId = new Map(resources.map((resource) => [resource.id, resource]));
+  return ids
+    .map((id) => byId.get(id))
+    .filter((resource): resource is Resource => Boolean(resource))
+    .map((resource) => ({ ...resource, health: health[resource.id] }));
+}
+
 export function searchResources(query: DirectoryQuery = {}): { total: number; items: DirectoryItem[]; categories: FacetCount[] } {
   const parsed = interpretQuery(query.q ?? "");
   const wantedCategories = new Set<ResourceCategory>(query.category ? [query.category] : (parsed.kinds ?? []).flatMap((kind) => KIND_CATEGORIES[kind] ?? []));

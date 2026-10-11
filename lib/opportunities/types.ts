@@ -218,6 +218,8 @@ export interface OpportunityQuery {
   deadlineWithinDays?: number;
   /** Only items first seen within N days. */
   newWithinDays?: number;
+  /** Only items RAAHI first saw after this instant (ISO date-time) — "new since my last visit". */
+  since?: string;
   sourceId?: string;
   tag?: string;
   language?: string;

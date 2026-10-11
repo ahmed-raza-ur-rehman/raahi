@@ -9,6 +9,7 @@ import { detectSafetySignals } from "@/lib/safety/detect";
 import {
   OPPORTUNITY_TOOLS,
   executeOpportunityTool,
+  guideForMessage,
   isOpportunityTool,
   opportunityIntent,
   resourceQueryFor,
@@ -460,6 +461,9 @@ function fallbackText(language: Lang, parts: { services: boolean; opportunities:
 
 /** Opportunity cards + directory links + risk warning for a plain message (used when no model is available). */
 async function* opportunityFallback(message: string): AsyncGenerator<string, { opportunities: boolean; resources: boolean; risk: boolean }> {
+  // A "how do I…" question gets the matching step-by-step guide, even when no listing keyword is present.
+  const guides = guideForMessage(message);
+  if (guides.length > 0) yield sse({ type: "guide_results", results: guides });
   if (!opportunityIntent(message)) return { opportunities: false, resources: false, risk: false };
   const search = await runOpportunitySearch({ q: message, openToPakistan: true }, 5);
   const risk = riskEvent(message);
@@ -719,6 +723,14 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
       if (toolCall.function.name === "check_offer_risk") {
         const risk = riskEvent(String(toolArgs.text ?? ""));
         if (risk) yield risk;
+      }
+      if (toolCall.function.name === "find_guides") {
+        try {
+          const parsed = JSON.parse(toolResult) as { ui_cards?: unknown[] };
+          if (parsed.ui_cards && parsed.ui_cards.length > 0) yield sse({ type: "guide_results", results: parsed.ui_cards.slice(0, 3) });
+        } catch {
+          // ignore
+        }
       }
 
       // Yield search results as structured data for the UI

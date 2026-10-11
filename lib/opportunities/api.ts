@@ -51,7 +51,15 @@ const flag = (value: string | null): boolean | undefined => {
   return undefined;
 };
 
-/** Parse `?q=&kind=job,scholarship&scope=&country=&level=&funding=&pk=1&remote=1&within=14&new=3&source=&tag=&lang=&closed=1&sort=&limit=&offset=`. */
+/** An ISO instant that is not in the future, or undefined. */
+function parseSince(value: string | null, now: number = Date.now()): string | undefined {
+  if (!value) return undefined;
+  const time = Date.parse(value);
+  if (!Number.isFinite(time) || time > now + 86_400_000) return undefined;
+  return new Date(time).toISOString();
+}
+
+/** Parse `?q=&kind=job,scholarship&scope=&country=&level=&funding=&pk=1&remote=1&within=14&new=3&since=2026-10-01T00:00:00Z&source=&tag=&lang=&closed=1&sort=&limit=&offset=`. */
 export function parseOpportunityQuery(params: URLSearchParams): OpportunityQuery {
   const kinds = [...params.getAll("kind"), ...params.getAll("kinds")]
     .flatMap((value) => value.split(","))
@@ -69,6 +77,7 @@ export function parseOpportunityQuery(params: URLSearchParams): OpportunityQuery
     remote: flag(params.get("remote")),
     deadlineWithinDays: positiveInt(params.get("within"), 365),
     newWithinDays: positiveInt(params.get("new"), 90),
+    since: parseSince(params.get("since")),
     sourceId: params.get("source")?.slice(0, 60) || undefined,
     tag: params.get("tag")?.slice(0, 40) || undefined,
     language: params.get("lang")?.slice(0, 30) || undefined,

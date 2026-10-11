@@ -2,13 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { join } from "node:path";
 
+process.env.OPPORTUNITIES_BUNDLED = "off";
 process.env.RAAHI_DB_PATH = join(process.cwd(), "data", "raahi.opps-chat.test.db");
 delete process.env.DASHSCOPE_API_KEY;
 process.env.OPPORTUNITIES_SNAPSHOT_URL = "off";
 
 import { TOOLS, executeTool, getOrCreateConversation, runOrchestrator } from "@/lib/ai/orchestrator";
 import { ORCHESTRATOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
-import { opportunityIntent, type OpportunityToolResult } from "@/lib/ai/opportunity-tools";
+import { guideForMessage, opportunityIntent, type OpportunityToolResult } from "@/lib/ai/opportunity-tools";
 import { seedDatabase } from "@/lib/db/seed";
 import { setClock } from "@/lib/opportunities/clock";
 import { searchResources } from "@/lib/opportunities/directory";
@@ -43,9 +44,9 @@ test("setup: seed the citizen-service catalog and load opportunities", async () 
   assert.ok(searchOpportunities({}, NOW).total > 40, "seedDatabase() leaves the opportunity tables alone");
 });
 
-test("the assistant exposes the three opportunity tools next to the four citizen-service tools", () => {
+test("the assistant exposes the four opportunity tools next to the four citizen-service tools", () => {
   const names = TOOLS.map((tool) => tool.function.name);
-  assert.deepEqual(names, ["search_knowledge", "check_eligibility", "create_case", "extract_profile", "search_opportunities", "find_resources", "check_offer_risk"]);
+  assert.deepEqual(names, ["search_knowledge", "check_eligibility", "create_case", "extract_profile", "search_opportunities", "find_resources", "check_offer_risk", "find_guides"]);
   for (const tool of TOOLS) assert.ok(tool.function.description.length > 40);
   assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /NEVER invent a deadline/);
   assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /BE&OE list of licensed OEPs/);
@@ -149,3 +150,59 @@ test("emergencies still short-circuit before any opportunity logic", async () =>
   assert.equal(events[0].emergency, true);
   assert.deepEqual(events.map((e) => e.type), ["content", "done"]);
 });
+
+// ─── Step-by-step guides in the assistant ────────────────────────────────────
+
+test("find_guides returns the steps, the official links and a guide page — and admits when nothing matches", async () => {
+  const result = JSON.parse(await executeTool("find_guides", { query: "apostille kaise" }, "s")) as {
+    found: boolean;
+    results: Array<{ id: string; guide_url: string; steps: Array<{ title: string; detail: string }>; official_links: Array<{ name: string; url: string }>; last_reviewed: string; based_on?: string[] }>;
+    ui_cards: Array<{ id: string; url: string; title: { en: string; ur: string } }>;
+    note: string;
+  };
+  assert.equal(result.found, true);
+  assert.equal(result.results[0].id, "documents-attestation");
+  assert.equal(result.results[0].guide_url, "/opportunities/guides/documents-attestation");
+  assert.ok(result.results[0].steps.length >= 5);
+  assert.match(result.results[0].steps.map((step) => step.detail).join(" "), /apostille\.mofa\.gov\.pk/);
+  assert.ok(result.results[0].official_links.some((link) => link.url.includes("mofa.gov.pk")));
+  assert.match(result.results[0].last_reviewed, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(result.results[0].based_on?.some((url) => url.includes("mofa.gov.pk")));
+  assert.equal(result.ui_cards[0].url, "/opportunities/guides/documents-attestation");
+  assert.match(result.note, /Do not add figures/);
+
+  const nothing = JSON.parse(await executeTool("find_guides", { query: "xqzvbn plmokn" }, "s")) as { found: boolean; results: unknown[]; note: string };
+  assert.equal(nothing.found, false);
+  assert.equal(nothing.results.length, 0);
+  assert.match(nothing.note, /do not guess/i);
+  assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /find_guides/);
+  assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /Never add fees, age limits, quotas or dates that the guide does not contain/);
+});
+
+test("guideForMessage offers a guide for how-to questions and clear topics, not for unrelated messages", () => {
+  const first = (message: string) => guideForMessage(message)[0]?.id;
+  assert.equal(first("fsc ke baad kya karein"), "after-matric-intermediate");
+  assert.equal(first("apostille kaise karwayen"), "documents-attestation");
+  assert.equal(first("how do I verify an OEP licence before paying an agent"), "work-abroad-safely");
+  assert.equal(first("میں سرکاری نوکری کے لیے درخواست کیسے دوں"), "apply-government-job");
+  assert.equal(first("css"), undefined, "a bare topic word is a search, not a how-to question");
+  assert.deepEqual(guideForMessage("my CNIC was lost, what is the procedure"), [], "citizen-service questions stay with the service catalog");
+  assert.deepEqual(guideForMessage("hello, how are you"), []);
+  assert.deepEqual(guideForMessage("شناختی کارڈ کھو گیا ہے"), []);
+});
+
+test("offline: a how-to question gets a guide card (plus listings and portals when relevant); a CNIC question does not", async () => {
+  const events = await ask("how do I apply for a government job");
+  const guides = events.find((event) => event.type === "guide_results") as { results: Array<{ id: string; url: string; steps: number }> } | undefined;
+  assert.ok(guides, "a guide_results event is sent");
+  assert.equal(guides.results[0].id, "apply-government-job");
+  assert.equal(guides.results[0].url, "/opportunities/guides/apply-government-job");
+  assert.ok(events.some((event) => event.type === "opportunity_results"), "live listings still come with it");
+
+  const urdu = await ask("apostille kaise karein");
+  assert.ok(urdu.some((event) => event.type === "guide_results"));
+
+  const cnic = await ask("my CNIC was lost, what is the procedure");
+  assert.ok(!cnic.some((event) => event.type === "guide_results"), "no guide card for a citizen-service question");
+});
+

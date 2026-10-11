@@ -4,6 +4,7 @@ import type { AddressInfo } from "node:net";
 import test from "node:test";
 import { join } from "node:path";
 
+process.env.OPPORTUNITIES_BUNDLED = "off";
 process.env.RAAHI_DB_PATH = join(process.cwd(), "data", "raahi.opps-api.test.db");
 process.env.OPPORTUNITIES_SNAPSHOT_URL = "off";
 

@@ -78,8 +78,10 @@ export function loadSnapshotIntoDb(snapshot: Snapshot, now: Date = clockNow()): 
  * Cheap to call on every request: it only reloads when the snapshot is newer than what is loaded.
  */
 export function ensureOpportunitiesReady(snapshot?: Snapshot, now: Date = clockNow()): void {
-  const candidate = snapshot ?? bundledSnapshot();
   const loadedAt = getMeta("snapshot_generated_at");
+  // `OPPORTUNITIES_BUNDLED=off` (tests, offline experiments): once something is loaded, never swap in the bundled copy.
+  if (!snapshot && loadedAt && process.env.OPPORTUNITIES_BUNDLED === "off") return;
+  const candidate = snapshot ?? bundledSnapshot();
   if (!loadedAt || Date.parse(candidate.generatedAt) > Date.parse(loadedAt)) {
     loadSnapshotIntoDb(candidate, now);
   }
@@ -331,6 +333,10 @@ export function searchOpportunities(query: OpportunityQuery = {}, now: Date = cl
   if (deadlineWithinDays !== undefined) {
     where.push("deadline IS NOT NULL AND deadline >= ? AND deadline <= ?");
     params.push(today, addDays(today, deadlineWithinDays));
+  }
+  if (query.since) {
+    where.push("first_seen > ?");
+    params.push(query.since);
   }
   if (query.newWithinDays !== undefined) {
     where.push("first_seen >= ?");

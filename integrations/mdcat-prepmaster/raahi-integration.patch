@@ -1,0 +1,101 @@
+diff --git a/css/style.css b/css/style.css
+index fb458b0..982a13c 100644
+--- a/css/style.css
++++ b/css/style.css
+@@ -2029,3 +2029,7 @@ button:disabled { cursor: not-allowed; opacity: .5; transform: none !important;
+ .eyebrow{display:block;color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}.momentum-copy h2{font-family:'Outfit',sans-serif;font-size:19px;line-height:1.2;margin-bottom:5px}.momentum-copy p{color:var(--text2);font-size:12px;margin:0}.momentum-stats{display:grid;grid-template-columns:repeat(3,minmax(68px,1fr));gap:10px}.momentum-stats div{padding-left:12px;border-left:1px solid var(--border2)}.momentum-stats strong,.momentum-stats span{display:block}.momentum-stats strong{font-family:'Outfit',sans-serif;font-size:19px}.momentum-stats span{color:var(--text3);font-size:10px;margin-top:2px}.nav-menu-btn{display:none;width:auto;padding:0 10px;border-radius:9px;font-size:11px}:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+ @media(max-width:720px){.nav{padding:0 12px}.nav-sub{display:none}.nav-menu-btn{display:grid}.nav-links{display:none;position:absolute;top:calc(var(--nav-h) - 1px);right:12px;min-width:170px;padding:8px;flex-direction:column;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;box-shadow:0 16px 32px rgba(0,0,0,.3)}.nav-links.open{display:flex}.nav-link{text-align:left;padding:10px 12px}.user-nav-name{display:none}.nav-end{margin-left:auto}.hero-actions .btn{width:100%}.stats-strip{grid-template-columns:repeat(2,1fr)}.momentum-card{grid-template-columns:1fr;gap:16px;padding:18px}.momentum-card .btn{width:100%}.config-card{padding:16px}.chip{padding:8px 12px;font-size:12px}}
+ @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
++
++/* RAAHI opportunities block on the home view */
++.raahi-live { margin-top: 32px; margin-bottom: 8px; }
++.raahi-live raahi-opportunities { margin: 12px 0; }
+diff --git a/index.html b/index.html
+index e7a63bb..2310eaf 100644
+--- a/index.html
++++ b/index.html
+@@ -165,6 +165,15 @@
+       </div>
+     </section>
+ 
++    <!-- Live scholarships, admissions and internships in Pakistan from RAAHI. The widget is fetched only when this block scrolls into view while online (see js/raahi-live.js). -->
++    <section class="container raahi-live" id="raahi-live" aria-labelledby="raahi-live-title">
++      <div class="section-header">
++        <h2 class="section-title" id="raahi-live-title">Admissions, scholarships &amp; internships in Pakistan</h2>
++        <a class="btn btn-ghost btn-sm" href="https://raahi-phi.vercel.app/opportunities/guides/mdcat-roadmap?utm_source=mdcat-prepmaster&amp;utm_medium=link" target="_blank" rel="noopener">MDCAT roadmap guide ↗</a>
++      </div>
++      <div data-raahi-slot><a class="btn btn-secondary" href="https://raahi-phi.vercel.app/opportunities?kind=scholarship,admission,internship&amp;scope=pakistan&amp;utm_source=mdcat-prepmaster&amp;utm_medium=link" target="_blank" rel="noopener">Open RAAHI opportunities ↗</a></div>
++    </section>
++
+     <!-- Mini Leaderboard Preview -->
+     <section class="leaderboard-preview container">
+       <div class="section-header">
+@@ -891,5 +900,6 @@
+   <script src="data/questions.js"></script>
+   <script src="js/app.js" type="module"></script>
+   <script src="js/productivity.js" type="module"></script>
++  <script src="js/raahi-live.js" defer></script>
+ </body>
+ </html>
+diff --git a/js/raahi-live.js b/js/raahi-live.js
+new file mode 100644
+index 0000000..a9e1da0
+--- /dev/null
++++ b/js/raahi-live.js
+@@ -0,0 +1,56 @@
++/*
++ * Live scholarships, admissions and internships in Pakistan from RAAHI (https://raahi-phi.vercel.app) on the home view.
++ *
++ * The block contacts raahi-phi.vercel.app only when it scrolls into view while the device is online. Nothing about
++ * your tests or account is sent. If the request fails, the plain "Open RAAHI opportunities" link stays in place.
++ * The widget follows this app's light/dark theme (the data-theme attribute on <html>).
++ */
++(function () {
++  'use strict';
++  var section = document.getElementById('raahi-live');
++  if (!section) return;
++  var RAAHI = 'https://raahi-phi.vercel.app';
++  var started = false;
++  var widget = null;
++
++  function theme() {
++    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
++  }
++
++  function mount() {
++    var slot = section.querySelector('[data-raahi-slot]');
++    if (!slot || !customElements.get('raahi-opportunities')) return;
++    widget = document.createElement('raahi-opportunities');
++    widget.setAttribute('kind', 'scholarship,admission,internship');
++    widget.setAttribute('scope', 'pakistan');
++    widget.setAttribute('limit', '5');
++    widget.setAttribute('theme', theme());
++    widget.setAttribute('heading', 'Live from RAAHI');
++    slot.replaceChildren(widget);
++    new MutationObserver(function () { if (widget) widget.setAttribute('theme', theme()); })
++      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
++  }
++
++  function load() {
++    if (started || !navigator.onLine) return;
++    started = true;
++    var script = document.createElement('script');
++    script.src = RAAHI + '/embed/raahi-opportunities.js';
++    script.async = true;
++    script.onload = mount;
++    script.onerror = function () { started = false; };
++    document.head.appendChild(script);
++  }
++
++  if ('IntersectionObserver' in window) {
++    new IntersectionObserver(function (entries, observer) {
++      if (entries.some(function (entry) { return entry.isIntersecting; })) {
++        observer.disconnect();
++        load();
++      }
++    }, { rootMargin: '200px' }).observe(section);
++  } else {
++    load();
++  }
++  window.addEventListener('online', load);
++})();
