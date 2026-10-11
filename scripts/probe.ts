@@ -21,7 +21,8 @@ import { isAllowed, parseRobots } from "../lib/opportunities/scrapers/robots";
 import { runScrapers } from "../lib/opportunities/scrapers/run";
 import { readSnapshotFile, writeSnapshotFile } from "../lib/opportunities/snapshot";
 
-const OUT = ".probe";
+const OUT = process.env.PROBE_OUT ?? ".probe";
+const STEPS = new Set((process.env.PROBE_STEPS ?? "scrape,pages,apis,discovery,links").split(","));
 
 type Group = "pk-official" | "pk-aggregator" | "global-blog" | "global-board";
 interface Site {
@@ -34,81 +35,22 @@ interface Site {
 const site = (group: Group, base: string, keepHtml = false): Site => ({ group, base, keepHtml });
 
 const SITES: Site[] = [
-  // Pakistan: official / government
-  site("pk-official", "https://njp.gov.pk", true),
-  site("pk-official", "https://jobs.punjab.gov.pk", true),
-  site("pk-official", "https://www.fpsc.gov.pk", true),
-  site("pk-official", "https://www.ppsc.gop.pk", true),
-  site("pk-official", "https://spsc.gos.pk", true),
-  site("pk-official", "https://www.kppsc.gov.pk", true),
-  site("pk-official", "https://bpsc.gob.pk", true),
-  site("pk-official", "https://www.ajkpsc.gov.pk", true),
-  site("pk-official", "https://www.gbpsc.gov.pk", true),
-  site("pk-official", "https://www.etea.edu.pk", true),
-  site("pk-official", "https://www.nts.org.pk", true),
-  site("pk-official", "https://www.pts.org.pk", true),
-  site("pk-official", "https://www.ots.org.pk", true),
-  site("pk-official", "https://applicant.nastphr.pk", true),
-  site("pk-official", "https://nastp.gov.pk", true),
-  site("pk-official", "https://careers.nadra.gov.pk", true),
-  site("pk-official", "https://jobs.pitb.gov.pk", true),
-  site("pk-official", "https://cmitinterns.punjab.gov.pk", true),
-  site("pk-official", "https://jobs.oec.gov.pk", true),
-  site("pk-official", "https://oec.gov.pk", true),
-  site("pk-official", "https://beoe.gov.pk", true),
-  site("pk-official", "https://www.hec.gov.pk", true),
-  site("pk-official", "https://scholarship.hec.gov.pk", true),
-  site("pk-official", "https://www.peef.org.pk", true),
-  site("pk-official", "https://usefpakistan.org", true),
-  site("pk-official", "https://pmyp.gov.pk", true),
-  site("pk-official", "https://www.pseb.org.pk", true),
-  site("pk-official", "https://ignite.org.pk", true),
-  site("pk-official", "https://www.digiskills.pk", true),
-  site("pk-official", "https://www.navttc.gov.pk", true),
-  site("pk-official", "https://www.opf.org.pk", true),
-  site("pk-official", "https://www.pass.gov.pk", true),
-  site("pk-official", "https://joinpakarmy.gov.pk", true),
-  site("pk-official", "https://joinpaf.gov.pk", true),
-  site("pk-official", "https://joinpaknavy.gov.pk", true),
-  site("pk-official", "https://www.punjab.gov.pk", true),
-  // Pakistan: community aggregators (verify-before-acting sources)
-  site("pk-aggregator", "https://pakgovernment.pk", true),
-  site("pk-aggregator", "https://jobistan.com.pk", true),
-  site("pk-aggregator", "https://www.mauqapakistan.com", true),
-  site("pk-aggregator", "https://dailypakjob.org", true),
-  site("pk-aggregator", "https://jobshah.com", true),
-  site("pk-aggregator", "https://rozgarverse.com", true),
-  site("pk-aggregator", "https://www.jobz.pk", true),
-  site("pk-aggregator", "https://paperpk.com", true),
-  site("pk-aggregator", "https://gopunjab.pk", true),
-  site("pk-aggregator", "https://schoolsti.org.pk"),
-  site("pk-aggregator", "https://ntslogin.pk"),
-  site("pk-aggregator", "https://internpools.com"),
-  // Global opportunity blogs
-  site("global-blog", "https://www.scholars4dev.com"),
-  site("global-blog", "https://opportunitydesk.org"),
-  site("global-blog", "https://scholarship-positions.com"),
-  site("global-blog", "https://www.fundsforngos.org"),
-  site("global-blog", "https://www.scholarshiptab.com", true),
-  site("global-blog", "https://www.youthop.com"),
-  site("global-blog", "https://opportunitiescorners.info"),
-  site("global-blog", "https://www.scholarshipsads.com"),
-  site("global-blog", "https://afterschoolafrica.com"),
-  site("global-blog", "https://www.scholarshiproar.com"),
-  site("global-blog", "https://www.scholarshipairline.com"),
-  site("global-blog", "https://www.opportunitiesforafricans.com"),
-  site("global-blog", "https://www.internationalscholarships.com"),
-  site("global-blog", "https://unjobs.org"),
-  site("global-blog", "https://reliefweb.int"),
-  site("global-blog", "https://www.impactpool.org"),
-  site("global-blog", "https://jobs.undp.org"),
-  site("global-blog", "https://mlh.io"),
-  // Boards / coupons
-  site("global-board", "https://www.tutorialbar.com"),
-  site("global-board", "https://www.discudemy.com"),
-  site("global-board", "https://udemyfreebies.com"),
-  site("global-board", "https://jobspresso.co"),
-  site("global-board", "https://remote.co"),
+  // Round 2: more Pakistani aggregators and scholarship/internship portals
+  site("pk-aggregator", "https://pakkijobs.pk", true),
+  site("pk-aggregator", "https://jobs.com.pk", true),
+  site("pk-aggregator", "https://www.pakadmissions.com", true),
+  site("pk-aggregator", "https://www.pakistanjobsbank.com", true),
+  site("pk-aggregator", "https://jobexplain.com"),
+  site("pk-aggregator", "https://generalknowledge.online"),
+  site("pk-aggregator", "https://theneutral.pk"),
+  site("pk-aggregator", "https://www.pitb.gov.pk"),
+  site("pk-official", "https://ehsaas.hec.gov.pk", true),
+  site("pk-official", "https://www.pof.gov.pk", true),
+  site("pk-official", "https://www.pac.org.pk", true),
+  site("pk-official", "https://www.nust.edu.pk"),
+  site("global-blog", "https://www.youthop.com", true),
+  site("global-blog", "https://www.fellowshipsandgrants.org"),
+  site("global-blog", "https://www.opportunitiesforyouth.org"),
 ];
 
 interface ApiTarget {
@@ -133,12 +75,12 @@ const API_TARGETS: ApiTarget[] = [
 
 /** Listing / detail pages whose real HTML is needed to write or fix a parser. */
 const PAGES: Array<{ id: string; url: string; follow?: RegExp }> = [
-  { id: "njp-live", url: "https://njp.gov.pk/jobs/live", follow: /\/jobs\/\d+/ },
-  { id: "beoe-news", url: "https://beoe.gov.pk/news-updates", follow: /\/news-updates\/\d+/ },
-  { id: "beoe-complaints", url: "https://beoe.gov.pk/complaints" },
-  { id: "scholarshiptab", url: "https://www.scholarshiptab.com/", follow: /\/scholarships\/[^/]+\/?$/ },
-  { id: "oec-jobs", url: "https://jobs.oec.gov.pk/home/index.html" },
-  { id: "oec-eps", url: "https://oec.gov.pk/eps" },
+  { id: "kppsc-advertisement", url: "https://www.kppsc.gov.pk/advertisement" },
+  { id: "bpsc-jobs", url: "https://bpsc.gob.pk/BPSC/pages?jobs" },
+  { id: "pts-projects", url: "https://www.pts.org.pk/Projects/" },
+  { id: "spsc-advertisements", url: "https://spsc.gos.pk/advertisement.php" },
+  { id: "mlh-events", url: "https://mlh.io/seasons/2026/events" },
+  { id: "etea-home", url: "https://www.etea.edu.pk/" },
 ];
 
 const sleepless = createHttpClient({ timeoutMs: 15_000, retries: 0, hostDelayMs: 1_000 });
@@ -401,6 +343,7 @@ async function main() {
   mkdirSync(OUT, { recursive: true });
   console.log(`Probe started ${new Date().toISOString()} as ${USER_AGENT}`);
   for (const [name, step] of [["scrape", stepScrape], ["pages", stepPages], ["apis", stepApis], ["discovery", stepDiscovery], ["links", stepLinks]] as const) {
+    if (!STEPS.has(name)) continue;
     try {
       await step();
     } catch (error) {

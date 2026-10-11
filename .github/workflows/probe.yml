@@ -32,6 +32,9 @@ jobs:
         run: npm ci
 
       - name: Probe
+        env:
+          PROBE_OUT: .probe/r2
+          PROBE_STEPS: pages,discovery
         run: |
           set -o pipefail
           npx tsx scripts/probe.ts 2>&1 | tee probe.log
@@ -50,7 +53,7 @@ jobs:
         if: always()
         run: |
           mkdir -p .probe
-          cp probe.log .probe/probe.log || true
+          mkdir -p .probe/r2 && cp probe.log .probe/r2/probe.log || true
           git config user.name "raahi-bot"
           git config user.email "raahi-bot@users.noreply.github.com"
           git add -f .probe
