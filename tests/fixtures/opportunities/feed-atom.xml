@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Atom demo</title>
+<entry><title>Summer Internship Program 2027</title><link rel="self" href="https://demo.example/self"/><link rel="alternate" href="https://demo.example/internship-2027"/>
+<published>2026-10-08T10:00:00Z</published><summary>Applications close on 15 January 2027.</summary><category term="Internships"/></entry></feed>

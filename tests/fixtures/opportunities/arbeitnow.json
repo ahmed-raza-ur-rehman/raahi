@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "slug": "solutions-architect-munich-353219",
+      "company_name": "databricks",
+      "title": "Solutions Architect",
+      "description": "<p>At Databricks, our core principles are at the heart of everything we do.</p><ul><li>Form successful relationships with clients</li></ul>",
+      "remote": false,
+      "url": "https://www.arbeitnow.com/jobs/companies/databricks/solutions-architect-munich-353219",
+      "tags": [
+        "Field Engineering - Other"
+      ],
+      "job_types": [],
+      "location": "Munich",
+      "created_at": 1791687313
+    },
+    {
+      "slug": "bank-analytics-manager-berlin-berlin-489588",
+      "company_name": "raisin",
+      "title": "Bank Analytics Manager (m/f/d) (fixture)",
+      "description": "<div><p>Raisin is the world’s leading platform for savings and investment products.</p></div>",
+      "remote": true,
+      "url": "https://www.arbeitnow.com/jobs/companies/raisin/bank-analytics-manager-berlin-berlin-489588",
+      "tags": [
+        "Finance"
+      ],
+      "job_types": [
+        "full time"
+      ],
+      "location": "Berlin",
+      "created_at": 1791600000
+    },
+    {
+      "slug": "backend-developer-berlin-999",
+      "company_name": "Example GmbH",
+      "title": "Backend Developer (fixture)",
+      "description": "<p>We offer visa sponsorship and a relocation package for international candidates.</p>",
+      "remote": false,
+      "url": "https://www.arbeitnow.com/jobs/companies/example/backend-developer-berlin-999",
+      "tags": [
+        "Software Development"
+      ],
+      "job_types": [
+        "full time"
+      ],
+      "location": "Berlin",
+      "created_at": 1791650000
+    }
+  ]
+}

@@ -11,10 +11,15 @@
     "seed": "tsx scripts/seed.ts",
     "embed": "tsx scripts/embed.ts",
     "test": "tsx --test tests/**/*.test.ts",
-    "verify": "npm run typecheck && npm run test && npm run build"
+    "verify": "npm run typecheck && npm run test && npm run build",
+    "scrape": "tsx scripts/scrape.ts",
+    "bootstrap-snapshot": "tsx scripts/bootstrap-snapshot.ts",
+    "check-links": "tsx scripts/check-links.ts"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
+    "cheerio": "^1.2.0",
+    "domhandler": "^5.0.3",
     "drizzle-orm": "^0.45.2",
     "next": "16.3.4",
     "openai": "^7.9.0",

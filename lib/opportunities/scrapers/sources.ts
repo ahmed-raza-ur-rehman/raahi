@@ -1,0 +1,260 @@
+import type { SourceDefinition } from "./types";
+
+/**
+ * Registry of live sources. Adding a source = adding one entry (and, for a new site layout, one
+ * adapter). Rules we hold ourselves to:
+ *  - only documented public APIs may set `respectRobots: false`;
+ *  - every item links back to the original page and names the source;
+ *  - `minIntervalMinutes` honours each provider's published rate guidance;
+ *  - if a provider's terms forbid redistribution, it does not belong here.
+ *
+ * Verified against live responses on 2026-10-11: scholars4dev, opportunitydesk, remotive, jobicy,
+ * arbeitnow, devpost, realdiscount. The HTML sources (njp, beoe-notices, scholarshiptab) were written
+ * from the rendered pages and are marked `experimental`; the scheduled run reports whether they parse.
+ */
+export const SOURCES: SourceDefinition[] = [
+  // ── Pakistan: official ────────────────────────────────────────────────────
+  {
+    id: "njp",
+    name: "National Job Portal (NJP)",
+    homepage: "https://njp.gov.pk/",
+    adapter: "njp",
+    endpoint: "https://njp.gov.pk/jobs/live",
+    defaultKind: "job",
+    scope: "pakistan",
+    authority: 1,
+    minIntervalMinutes: 120,
+    maxItems: 120,
+    enabled: true,
+    experimental: true,
+    resourceId: "njp",
+    attribution: "Government of Pakistan — National Job Portal (njp.gov.pk)",
+    terms: "Public job postings; every item links to the original NJP page where applications are made.",
+    params: { maxPages: 8, fallbackUrl: "https://njp.gov.pk/" },
+  },
+  {
+    id: "beoe-notices",
+    name: "BE&OE regulator notices",
+    homepage: "https://beoe.gov.pk/",
+    adapter: "beoe-notices",
+    endpoint: "https://beoe.gov.pk/news-updates",
+    defaultKind: "notice",
+    scope: "pakistan",
+    authority: 1,
+    minIntervalMinutes: 180,
+    maxItems: 60,
+    enabled: true,
+    experimental: true,
+    resourceId: "beoe",
+    attribution: "Bureau of Emigration & Overseas Employment, Government of Pakistan (beoe.gov.pk)",
+    terms: "Titles and dates of public regulatory notices only; the full text stays on beoe.gov.pk.",
+    params: { extraUrl: "https://beoe.gov.pk/" },
+  },
+
+  // ── International scholarships & opportunities ───────────────────────────
+  {
+    id: "scholarshiptab",
+    name: "ScholarshipTab",
+    homepage: "https://www.scholarshiptab.com/",
+    adapter: "scholarshiptab",
+    endpoint: "https://www.scholarshiptab.com/",
+    defaultKind: "scholarship",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 360,
+    maxItems: 80,
+    enabled: true,
+    experimental: true,
+    resourceId: "scholarshiptab",
+    attribution: "Listings via ScholarshipTab (scholarshiptab.com)",
+    terms: "robots.txt allows the home page (it disallows /search and query strings, which we never request). Title, deadline and link only; full details stay on their site.",
+  },
+  {
+    id: "scholars4dev",
+    name: "Scholars4Dev",
+    homepage: "https://www.scholars4dev.com/",
+    adapter: "wordpress",
+    endpoint: "https://www.scholars4dev.com",
+    defaultKind: "scholarship",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 360,
+    maxItems: 40,
+    enabled: true,
+    resourceId: "scholars4dev",
+    attribution: "Listings via Scholars4Dev (scholars4dev.com)",
+    terms: "Public WordPress REST API / RSS (syndication endpoints). Excerpt and link only.",
+  },
+  {
+    id: "opportunitydesk",
+    name: "Opportunity Desk",
+    homepage: "https://opportunitydesk.org/",
+    adapter: "wordpress",
+    endpoint: "https://opportunitydesk.org",
+    defaultKind: "scholarship",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 360,
+    maxItems: 40,
+    enabled: true,
+    resourceId: "opportunitydesk",
+    attribution: "Listings via Opportunity Desk (opportunitydesk.org)",
+    terms: "Public WordPress REST API / RSS (syndication endpoints). Excerpt and link only.",
+  },
+  {
+    id: "scholarship-positions",
+    name: "Scholarship Positions",
+    homepage: "https://scholarship-positions.com/",
+    adapter: "wordpress",
+    endpoint: "https://scholarship-positions.com",
+    defaultKind: "scholarship",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 360,
+    maxItems: 30,
+    enabled: true,
+    experimental: true,
+    resourceId: "scholarship-positions",
+    attribution: "Listings via Scholarship Positions (scholarship-positions.com)",
+    terms: "Public WordPress REST API / RSS (syndication endpoints). Excerpt and link only.",
+  },
+  {
+    id: "fundsforngos",
+    name: "Funds for NGOs",
+    homepage: "https://www.fundsforngos.org/",
+    adapter: "wordpress",
+    endpoint: "https://www.fundsforngos.org",
+    defaultKind: "grant",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 360,
+    maxItems: 30,
+    enabled: true,
+    experimental: true,
+    resourceId: "fundsforngos",
+    attribution: "Listings via Funds for NGOs (fundsforngos.org)",
+    terms: "Public WordPress REST API / RSS (syndication endpoints). Excerpt and link only.",
+  },
+
+  // ── Jobs: remote / international ─────────────────────────────────────────
+  {
+    id: "remotive",
+    name: "Remotive",
+    homepage: "https://remotive.com/",
+    adapter: "remotive",
+    endpoint: "https://remotive.com/api/remote-jobs",
+    defaultKind: "job",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 360,
+    respectRobots: false,
+    maxItems: 60,
+    enabled: true,
+    resourceId: "remotive",
+    attribution: "Jobs via Remotive (remotive.com)",
+    terms: "Documented public API. Remotive requires a link back to the Remotive listing and naming Remotive as the source, and asks for at most 4 requests per day (our minimum interval is 6 h).",
+  },
+  {
+    id: "jobicy",
+    name: "Jobicy",
+    homepage: "https://jobicy.com/",
+    adapter: "jobicy",
+    endpoint: "https://jobicy.com/api/v2/remote-jobs",
+    defaultKind: "job",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 360,
+    respectRobots: false,
+    maxItems: 50,
+    enabled: true,
+    resourceId: "jobicy",
+    attribution: "Jobs via Jobicy (jobicy.com)",
+    terms: "Documented public API. Jobicy requires a clear credit with a direct link and that apply buttons go to the original job URL.",
+  },
+  {
+    id: "arbeitnow",
+    name: "Arbeitnow",
+    homepage: "https://www.arbeitnow.com/",
+    adapter: "arbeitnow",
+    endpoint: "https://www.arbeitnow.com/api/job-board-api",
+    defaultKind: "job",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 360,
+    respectRobots: false,
+    maxItems: 60,
+    enabled: true,
+    resourceId: "arbeitnow",
+    attribution: "Jobs via Arbeitnow (arbeitnow.com)",
+    terms: "Documented free job-board API. Items link to the original Arbeitnow listing.",
+  },
+
+  // ── Competitions ─────────────────────────────────────────────────────────
+  {
+    id: "devpost",
+    name: "Devpost hackathons",
+    homepage: "https://devpost.com/hackathons",
+    adapter: "devpost",
+    endpoint: "https://devpost.com/api/hackathons",
+    defaultKind: "competition",
+    scope: "international",
+    authority: 3,
+    minIntervalMinutes: 360,
+    maxItems: 40,
+    enabled: true,
+    resourceId: "devpost",
+    attribution: "Hackathons via Devpost (devpost.com)",
+    terms: "Public listing endpoint; robots.txt is honoured. Title, dates, prize and link only.",
+    params: { pages: 3 },
+  },
+  {
+    id: "codeforces",
+    name: "Codeforces contests",
+    homepage: "https://codeforces.com/contests",
+    adapter: "codeforces",
+    endpoint: "https://codeforces.com/api/contest.list",
+    defaultKind: "competition",
+    scope: "international",
+    authority: 3,
+    minIntervalMinutes: 360,
+    respectRobots: false,
+    maxItems: 15,
+    enabled: true,
+    resourceId: "codeforces",
+    attribution: "Contests via Codeforces (codeforces.com)",
+    terms: "Official documented Codeforces API (one request per run, well inside the published limits).",
+  },
+
+  // ── Learning: free Udemy coupons ─────────────────────────────────────────
+  {
+    id: "realdiscount",
+    name: "Real.Discount (Udemy coupons)",
+    homepage: "https://www.real.discount/",
+    adapter: "realdiscount",
+    endpoint: "https://cdn.real.discount/api/courses",
+    defaultKind: "coupon",
+    scope: "international",
+    authority: 4,
+    minIntervalMinutes: 120,
+    maxItems: 150,
+    enabled: true,
+    resourceId: "real-discount",
+    retainHours: 0,
+    attribution: "Coupons via Real.Discount (real.discount)",
+    terms: "Lists coupon links the aggregator publishes. RAAHI never logs in to Udemy or enrols for anyone. Coupons are limited and can expire at any time.",
+  },
+];
+
+const byId = new Map(SOURCES.map((source) => [source.id, source]));
+
+export function getSource(id: string): SourceDefinition | undefined {
+  return byId.get(id);
+}
+
+export function authorityOf(sourceId: string): number {
+  return byId.get(sourceId)?.authority ?? 4;
+}
+
+export function retainHoursBySource(): Map<string, number | undefined> {
+  return new Map(SOURCES.map((source) => [source.id, source.retainHours]));
+}
