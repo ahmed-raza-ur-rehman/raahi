@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { HttpError, type HttpClient } from "@/lib/opportunities/scrapers/http";
+import { SOURCES } from "@/lib/opportunities/scrapers/sources";
+import type { SourceDefinition } from "@/lib/opportunities/scrapers/types";
 
 const FIXTURES = join(process.cwd(), "tests", "fixtures", "opportunities");
 
@@ -48,5 +50,38 @@ export function allSourceRoutes(): Record<string, Route> {
     "https://devpost.com/api/hackathons": (url) => (new URL(url).searchParams.get("page") === "1" ? fixture("devpost.json") : '{"hackathons":[]}'),
     "https://codeforces.com/api/contest.list": fixture("codeforces.json"),
     "https://cdn.real.discount/api/courses": fixture("real-discount.json"),
+    // Excerpts of the real pages and responses captured from GitHub's runners on 2026-10-11 (see fixtures/README.md).
+    "https://spsc.gos.pk/advertisement.php": fixture("spsc.sample.html"),
+    "https://bpsc.gob.pk/BPSC/pages?jobs": fixture("bpsc.sample.html"),
+    "https://www.etea.edu.pk/": fixture("etea.sample.html"),
+    "https://himalayas.app/jobs/api": (url) => (new URL(url).searchParams.has("cursor") ? '{"jobs":[]}' : himalayasWithOpenJobs()),
+    "https://remoteok.com/api": fixture("remoteok.sample.json"),
+    "https://www.workingnomads.com/api/exposed_jobs/": fixture("workingnomads.sample.json"),
+    "https://weworkremotely.com/remote-jobs.rss": fixture("weworkremotely.sample.xml"),
+    "https://ctftime.org/api/v1/events/": fixture("ctftime.sample.json"),
+    "https://ntslogin.pk/wp-json/wp/v2/posts": fixture("wp-ntslogin.json"),
+    "https://schoolsti.org.pk/wp-json/wp/v2/posts": fixture("wp-schoolsti.json"),
+    "https://www.mauqapakistan.com/feeds/posts/default": fixture("atom-mauqapakistan.xml"),
   };
+}
+
+/**
+ * The registry as it would behave on a network where every site answers: sources switched off only because they
+ * block GitHub's servers are enabled, so their parsers keep being exercised against fixtures. Pair it with
+ * `region: "pk"` in `runScrapers` to include the sources that need a Pakistani connection.
+ */
+export function fixtureSources(): SourceDefinition[] {
+  return SOURCES.map((source) => (source.disabledReason ? { ...source, enabled: true } : source));
+}
+
+/**
+ * The real Himalayas sample has three location-restricted jobs (Brazil, United States, United States), all of which
+ * the adapter rightly drops. For pipeline tests, two of them are re-labelled as worldwide / Pakistan-eligible; every
+ * other field is the real response.
+ */
+export function himalayasWithOpenJobs(): string {
+  const sample = JSON.parse(fixture("himalayas.sample.json")) as { jobs: Array<{ locationRestrictions: string[] }> };
+  sample.jobs[1].locationRestrictions = [];
+  sample.jobs[2].locationRestrictions = ["Pakistan", "India"];
+  return JSON.stringify(sample);
 }

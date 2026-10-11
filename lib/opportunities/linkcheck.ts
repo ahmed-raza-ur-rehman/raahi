@@ -2,9 +2,11 @@ import { USER_AGENT } from "./scrapers/http";
 import type { LinkHealthEntry, Resource } from "./types";
 
 /**
- * Link-health checker for the directory. A site that refuses bots (403/429) is reported as "blocked", not
- * "broken": we only call a link broken when the page is gone (404/410), the server errors (5xx) or the
- * host cannot be reached. Run weekly by the scheduled workflow; results are merged into /api/resources.
+ * Link-health checker for the directory. A site that refuses bots (403/429) is "blocked", and a site that does
+ * not answer at all (timeout, TLS or DNS failure) is "unreachable": the first live run from GitHub's servers
+ * showed that many .gov.pk sites do exactly that to non-Pakistani networks while working fine in Pakistan, so
+ * neither is called broken. Only a page that is gone (404/410) or a server error (5xx) is "broken".
+ * Run weekly by the scheduled workflow; results are merged into /api/resources.
  */
 
 export interface LinkCheckOptions {
@@ -16,7 +18,7 @@ export interface LinkCheckOptions {
   sleep?: (ms: number) => Promise<void>;
 }
 
-const BLOCKED = new Set([401, 403, 406, 429, 451, 999]);
+const BLOCKED = new Set([401, 403, 406, 412, 429, 451, 999]);
 
 export function classify(status: number): LinkHealthEntry["verdict"] {
   if (status >= 200 && status < 400) return "ok";
@@ -41,7 +43,7 @@ export async function checkLink(url: string, options: LinkCheckOptions = {}): Pr
     const verdict = classify(response.status);
     return { ok: verdict === "ok", status: response.status, verdict, finalUrl: response.url && response.url !== url ? response.url : undefined, checkedAt };
   } catch {
-    return { ok: false, status: 0, verdict: "broken", checkedAt };
+    return { ok: false, status: 0, verdict: "unreachable", checkedAt };
   }
 }
 

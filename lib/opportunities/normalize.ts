@@ -68,7 +68,9 @@ export function normalizeOpportunity(raw: RawOpportunity, source: SourceMeta, no
   let deadlineText = raw.deadlineText?.slice(0, 120);
   let rolling = raw.rolling;
   if (!deadline && DEADLINE_KINDS.has(kind)) {
-    const extracted = extractDeadline(text);
+    // A year-less date ("Apply by 1 October") belongs to the year the item was posted in, or the coming one.
+    const reference = (toIsoDateTime(raw.postedAt) ?? now.toISOString()).slice(0, 10);
+    const extracted = extractDeadline(text, { reference });
     deadline = extracted.date;
     deadlineText ??= extracted.text;
     rolling ??= extracted.rolling;

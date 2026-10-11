@@ -12,7 +12,15 @@ export type AdapterId =
   | "arbeitnow"
   | "devpost"
   | "codeforces"
-  | "realdiscount";
+  | "realdiscount"
+  | "spsc"
+  | "bpsc"
+  | "etea"
+  | "himalayas"
+  | "remoteok"
+  | "workingnomads"
+  | "weworkremotely"
+  | "ctftime";
 
 export interface SourceDefinition {
   id: string;
@@ -31,6 +39,14 @@ export interface SourceDefinition {
   respectRobots?: boolean;
   maxItems?: number;
   enabled: boolean;
+  /** Why a source is switched off (shown on the status page instead of a silent gap). */
+  disabledReason?: string;
+  /**
+   * Set when the site cannot be reached from GitHub's servers (it times out or refuses datacenter traffic) and
+   * needs a connection inside that country. Such a source is skipped unless the run is told it is on that
+   * network (`--region pk` / `RAAHI_REGION=pk`) or the source is named explicitly with `--only`.
+   */
+  network?: "pk";
   /**
    * True when the parser was written from the rendered page rather than a documented API.
    * These are the first to check if a run reports `empty` or `error`.

@@ -21,7 +21,7 @@ import { runScrapers } from "@/lib/opportunities/scrapers/run";
 import { SOURCES } from "@/lib/opportunities/scrapers/sources";
 import { parseSnapshot, serializeSnapshot } from "@/lib/opportunities/snapshot";
 import type { Opportunity } from "@/lib/opportunities/types";
-import { allSourceRoutes, createFixtureHttp, fixture } from "./helpers/fixture-http";
+import { allSourceRoutes, createFixtureHttp, fixture, fixtureSources } from "./helpers/fixture-http";
 
 const NOW = new Date("2026-10-11T06:00:00Z");
 const meta = (id: string, scope: SourceMeta["scope"] = "international", defaultKind: SourceMeta["defaultKind"] = "scholarship"): SourceMeta => ({ id, name: id, homepage: `https://${id}.example/`, defaultKind, scope });
@@ -444,16 +444,15 @@ test("merge: keeps firstSeen, keeps a failed source's items, drops what a health
 
 test("pipeline: every registered source runs against fixtures; failures are reported, not fatal", async () => {
   const requested: string[] = [];
-  const snapshot = await runScrapers({ http: createFixtureHttp(allSourceRoutes(), requested), now: NOW, force: true, concurrency: 4 });
+  const snapshot = await runScrapers({ sources: fixtureSources(), region: "pk", http: createFixtureHttp(allSourceRoutes(), requested), now: NOW, force: true, concurrency: 4 });
 
   const status = Object.fromEntries(snapshot.sources.map((report) => [report.sourceId, report.status]));
   assert.equal(snapshot.sources.length, SOURCES.length);
-  for (const id of ["njp", "beoe-notices", "scholarshiptab", "scholars4dev", "opportunitydesk", "remotive", "jobicy", "arbeitnow", "devpost", "codeforces", "realdiscount"]) {
+  for (const id of ["njp", "beoe-notices", "scholarshiptab", "scholars4dev", "opportunitydesk", "remotive", "jobicy", "arbeitnow", "devpost", "codeforces", "realdiscount", "spsc", "bpsc", "etea", "himalayas", "remoteok", "workingnomads", "weworkremotely", "ctftime", "ntslogin", "schoolsti", "mauqapakistan"]) {
     assert.equal(status[id], "ok", `${id} should parse its fixture`);
   }
-  // These two have no fixture route → the fake network 404s on both REST and RSS: reported as errors.
-  assert.equal(status["scholarship-positions"], "error");
-  assert.equal(status["fundsforngos"], "error");
+  // These have no fixture route → the fake network 404s on both REST and RSS: reported as errors, never fatal.
+  for (const id of ["fundsforngos", "opportunitiescorners", "scholarshiproar", "opportunitiesforyouth"]) assert.equal(status[id], "error", id);
   assert.match(snapshot.sources.find((r) => r.sourceId === "fundsforngos")?.error ?? "", /404/);
 
   const kinds = new Set(snapshot.items.map((entry) => entry.kind));
@@ -516,7 +515,7 @@ test("pipeline: the same scholarship from two sources collapses and credits both
   const snapshot = await runScrapers({
     now: NOW,
     force: true,
-    sources: SOURCES.filter((s) => ["scholarshiptab", "scholars4dev"].includes(s.id)),
+    sources: fixtureSources().filter((s) => ["scholarshiptab", "scholars4dev"].includes(s.id)),
     http: createFixtureHttp({
       "https://www.scholarshiptab.com/": `<ul><li><h2><a href="/scholarships/ens-international-selection-scholarships-2027">ENS International Selection Scholarships 2027</a></h2><p>Master’s degree in Paris, France.</p><span>Deadline: December 15, 2026</span><span>Posted: October 6, 2026</span></li></ul>`,
       "https://www.scholars4dev.com/wp-json/wp/v2/posts": fixture("wp-scholars4dev.json"),

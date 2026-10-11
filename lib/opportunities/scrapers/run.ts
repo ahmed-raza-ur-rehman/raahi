@@ -21,6 +21,8 @@ export interface RunOptions {
   sourceTimeoutMs?: number;
   adapters?: Partial<Record<AdapterId, Adapter>>;
   env?: Record<string, string | undefined>;
+  /** The network this run is on (`pk` = a connection inside Pakistan). Defaults to `RAAHI_REGION`. */
+  region?: string;
   onProgress?: (line: string) => void;
 }
 
@@ -66,6 +68,7 @@ export async function runScrapers(options: RunOptions = {}): Promise<Snapshot> {
   const http = options.http ?? createHttpClient();
   const env = options.env ?? process.env;
   const log = options.onProgress ?? (() => undefined);
+  const region = options.region ?? env.RAAHI_REGION;
   const adapters = { ...ADAPTERS, ...options.adapters };
   const previousReports = new Map((previous?.sources ?? []).map((report) => [report.sourceId, report]));
   const previousCounts = new Map<string, number>();
@@ -79,7 +82,14 @@ export async function runScrapers(options: RunOptions = {}): Promise<Snapshot> {
     const before = previousReports.get(source.id);
 
     if (!source.enabled) {
-      return { report: { ...base, status: "skipped", items: 0, durationMs: 0, note: "Disabled in the source registry", lastSuccessAt: before?.lastSuccessAt }, items: [], usable: false };
+      return { report: { ...base, status: "skipped", items: 0, durationMs: 0, note: source.disabledReason ?? "Disabled in the source registry", lastSuccessAt: before?.lastSuccessAt }, items: [], usable: false };
+    }
+    if (source.network && source.network !== region && !options.only?.includes(source.id)) {
+      return {
+        report: { ...base, status: "skipped", items: 0, durationMs: 0, note: "Needs a connection inside Pakistan (the site does not answer GitHub's servers). Run `npm run scrape:pk` from a Pakistani network.", lastSuccessAt: before?.lastSuccessAt },
+        items: [],
+        usable: false,
+      };
     }
     const missingEnv = (source.requiresEnv ?? []).filter((name) => !env[name]);
     if (missingEnv.length > 0) {

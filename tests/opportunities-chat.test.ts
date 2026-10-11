@@ -14,7 +14,7 @@ import { setClock } from "@/lib/opportunities/clock";
 import { searchResources } from "@/lib/opportunities/directory";
 import { runScrapers } from "@/lib/opportunities/scrapers/run";
 import { loadSnapshotIntoDb, searchOpportunities } from "@/lib/opportunities/store";
-import { allSourceRoutes, createFixtureHttp } from "./helpers/fixture-http";
+import { allSourceRoutes, createFixtureHttp, fixtureSources } from "./helpers/fixture-http";
 
 const NOW = new Date("2026-10-11T06:00:00Z");
 setClock(() => NOW);
@@ -35,7 +35,7 @@ async function ask(message: string, language = "en"): Promise<SseEvent[]> {
 
 test("setup: seed the citizen-service catalog and load opportunities", async () => {
   seedDatabase();
-  const snapshot = await runScrapers({ http: createFixtureHttp(allSourceRoutes()), now: NOW, force: true });
+  const snapshot = await runScrapers({ sources: fixtureSources(), region: "pk", http: createFixtureHttp(allSourceRoutes()), now: NOW, force: true });
   loadSnapshotIntoDb(snapshot, NOW);
   assert.ok(searchOpportunities({}, NOW).total > 40);
   // Re-seeding the catalog must never wipe scraped opportunities.

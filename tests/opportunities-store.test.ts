@@ -18,13 +18,13 @@ import {
   searchOpportunities,
 } from "@/lib/opportunities/store";
 import type { Snapshot } from "@/lib/opportunities/types";
-import { allSourceRoutes, createFixtureHttp } from "./helpers/fixture-http";
+import { allSourceRoutes, createFixtureHttp, fixtureSources } from "./helpers/fixture-http";
 
 const NOW = new Date("2026-10-11T06:00:00Z");
 let snapshot: Snapshot;
 
 test("setup: scrape fixtures and load them into SQLite", async () => {
-  snapshot = await runScrapers({ http: createFixtureHttp(allSourceRoutes()), now: NOW, force: true });
+  snapshot = await runScrapers({ sources: fixtureSources(), region: "pk", http: createFixtureHttp(allSourceRoutes()), now: NOW, force: true });
   const { loaded } = loadSnapshotIntoDb(snapshot, NOW);
   assert.equal(loaded, snapshot.items.length);
   assert.ok(loaded > 40);

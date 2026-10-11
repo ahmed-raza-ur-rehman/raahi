@@ -169,8 +169,12 @@ export interface LinkHealthEntry {
   ok: boolean;
   /** HTTP status, or 0 for network failure. */
   status: number;
-  /** "blocked" = the site refused our bot (403/429); not evidence the link is broken. */
-  verdict: "ok" | "blocked" | "broken";
+  /**
+   * "blocked" = the site refused our bot (403/429…); "unreachable" = no answer at all from our servers (timeout,
+   * TLS or DNS failure — many .gov.pk sites do this to non-Pakistani networks). Neither is evidence that the link
+   * is dead; only "broken" (404/410/5xx) is.
+   */
+  verdict: "ok" | "blocked" | "unreachable" | "broken";
   finalUrl?: string;
   checkedAt: string;
 }

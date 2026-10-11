@@ -5,6 +5,7 @@
  *   npm run scrape -- --force          # ignore minimum intervals
  *   npm run scrape -- --only njp,remotive
  *   npm run scrape -- --dry            # fetch and report, do not write the snapshot
+ *   npm run scrape:pk                  # from a connection inside Pakistan: NJP and BE&OE (they refuse GitHub's servers)
  *
  * Exit code is non-zero only when *every* attempted source failed (a single broken site must not
  * block the others). In GitHub Actions, failing sources are surfaced as workflow annotations.
@@ -13,12 +14,13 @@ import { runScrapers } from "../lib/opportunities/scrapers/run";
 import { SNAPSHOT_PATH, readSnapshotFile, writeSnapshotFile } from "../lib/opportunities/snapshot";
 
 function parseArgs(argv: string[]) {
-  const args = { force: false, dry: false, only: undefined as string[] | undefined, out: SNAPSHOT_PATH };
+  const args = { force: false, dry: false, only: undefined as string[] | undefined, region: undefined as string | undefined, out: SNAPSHOT_PATH };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--force") args.force = true;
     else if (arg === "--dry") args.dry = true;
     else if (arg === "--only") args.only = (argv[(index += 1)] ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+    else if (arg === "--region") args.region = argv[(index += 1)];
     else if (arg === "--out") args.out = argv[(index += 1)] ?? args.out;
   }
   return args;
@@ -32,6 +34,7 @@ async function main() {
   const snapshot = await runScrapers({
     previous,
     only: args.only,
+    region: args.region,
     force: args.force,
     onProgress: (line) => console.log(line),
   });

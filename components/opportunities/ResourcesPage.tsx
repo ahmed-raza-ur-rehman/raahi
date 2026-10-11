@@ -22,6 +22,7 @@ const AUTHORITY_KEY = { 1: "authority1", 2: "authority2", 3: "authority3", 4: "a
 function LinkStatus({ item, language }: { item: DirectoryItem; language: Language }) {
   if (item.health?.verdict === "broken") return <Chip tone="urgent" title={`HTTP ${item.health.status || "—"}`}>⚠️ {t(language, "linkBroken")}</Chip>;
   if (item.health?.verdict === "blocked") return <Chip tone="rolling">{t(language, "linkBlocked")}</Chip>;
+  if (item.health?.verdict === "unreachable") return <Chip tone="none" title="No answer from our servers — several Pakistani government sites do this to overseas networks. The link itself is probably fine.">{t(language, "linkUnreachable")}</Chip>;
   const confirmed = item.health?.verdict === "ok" ? item.health.checkedAt : item.checked;
   if (confirmed) return <Chip tone="ok" title={confirmed}>✓ {t(language, "linkChecked")} · {formatDate(confirmed, language)}</Chip>;
   return <Chip tone="none">{t(language, "linkUnchecked")}</Chip>;

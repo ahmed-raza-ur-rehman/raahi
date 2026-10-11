@@ -24,7 +24,7 @@ import { runScrapers } from "@/lib/opportunities/scrapers/run";
 import { loadSnapshotIntoDb } from "@/lib/opportunities/store";
 import type { OpportunityView } from "@/lib/opportunities/types";
 import { resources } from "@/data/opportunities/resources";
-import { allSourceRoutes, createFixtureHttp } from "./helpers/fixture-http";
+import { allSourceRoutes, createFixtureHttp, fixtureSources } from "./helpers/fixture-http";
 
 const NOW = new Date("2026-10-11T06:00:00Z");
 setClock(() => NOW);
@@ -33,7 +33,7 @@ const post = (path: string, body: unknown) => new Request(`http://localhost${pat
 const ctx = (id: string) => ({ params: Promise.resolve({ id }) });
 
 test("setup: load a scraped snapshot", async () => {
-  const snapshot = await runScrapers({ http: createFixtureHttp(allSourceRoutes()), now: NOW, force: true });
+  const snapshot = await runScrapers({ sources: fixtureSources(), region: "pk", http: createFixtureHttp(allSourceRoutes()), now: NOW, force: true });
   loadSnapshotIntoDb(snapshot, NOW);
 });
 
@@ -246,7 +246,7 @@ test("link checker: ok / redirect / blocked / broken are told apart, HEAD falls 
     assert.equal(await verdict("/missing"), "broken");
     assert.equal(await verdict("/error"), "broken");
     assert.equal((await checkLink(`${base}/moved`, { now: NOW })).finalUrl, `${base}/ok`);
-    assert.deepEqual(await checkLink("http://127.0.0.1:1/unreachable", { now: NOW, timeoutMs: 500 }), { ok: false, status: 0, verdict: "broken", checkedAt: NOW.toISOString() });
+    assert.deepEqual(await checkLink("http://127.0.0.1:1/unreachable", { now: NOW, timeoutMs: 500 }), { ok: false, status: 0, verdict: "unreachable", checkedAt: NOW.toISOString() });
 
     const results = await checkResources(
       [

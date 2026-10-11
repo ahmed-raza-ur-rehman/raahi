@@ -3,7 +3,7 @@ import { cleanTitle } from "../../text";
 import type { OpportunityKind, RawOpportunity } from "../../types";
 import { cheerio } from "../dom";
 import { RobotsDisallowedError } from "../http";
-import type { Adapter } from "../types";
+import type { Adapter, SourceDefinition } from "../types";
 
 // ─── RSS / Atom ───────────────────────────────────────────────────────────────
 
@@ -13,7 +13,11 @@ export interface FeedItem {
   summary: string;
   published?: string;
   categories: string[];
+  /** Non-standard child elements of an RSS item (e.g. We Work Remotely's `<region>`), keyed by lower-case tag name. */
+  fields: Record<string, string>;
 }
+
+const STANDARD_ITEM_TAGS = new Set(["title", "link", "guid", "description", "pubdate", "category", "content:encoded", "dc:date", "dc:creator", "author", "comments", "enclosure", "source", "slash:comments", "wfw:commentrss"]);
 
 /** Parse RSS 2.0 or Atom into a flat list. Tolerates CDATA, namespaces and missing fields. */
 export function parseFeed(xml: string): FeedItem[] {
@@ -31,6 +35,13 @@ export function parseFeed(xml: string): FeedItem[] {
       summary: item.children("description").first().text() || item.children("content\\:encoded").first().text(),
       published: item.children("pubDate").first().text() || item.children("dc\\:date").first().text() || undefined,
       categories: item.children("category").map((__, c) => $(c).text().trim()).get().filter(Boolean),
+      fields: Object.fromEntries(
+        item
+          .children()
+          .toArray()
+          .map((child) => [(child as unknown as { name: string }).name.toLowerCase(), $(child).text().trim()] as const)
+          .filter(([name, value]) => !STANDARD_ITEM_TAGS.has(name) && value.length > 0 && value.length < 300),
+      ),
     });
   });
 
@@ -46,6 +57,7 @@ export function parseFeed(xml: string): FeedItem[] {
       summary: entry.children("summary").first().text() || entry.children("content").first().text(),
       published: entry.children("published").first().text() || entry.children("updated").first().text() || undefined,
       categories: entry.children("category").map((__, c) => $(c).attr("term") ?? $(c).text()).get().filter(Boolean),
+      fields: {},
     });
   });
 
@@ -63,9 +75,28 @@ function feedItemToRaw(item: FeedItem): RawOpportunity {
   };
 }
 
-export const rssAdapter: Adapter = async ({ source, http }) => {
+/**
+ * Optional per-source filters, set through `params` in the registry (all case-insensitive, all optional):
+ *  - `include`: regular expression a post's title or categories must match (e.g. keep only job posts);
+ *  - `exclude`: regular expression that rejects a post (results, syllabi, roll-number slips …);
+ *  - `maxAgeDays`: ignore posts older than this — aggregator feeds are full of old, already-closed ads.
+ */
+export function filterFeedItems(items: RawOpportunity[], params: SourceDefinition["params"], now: Date): RawOpportunity[] {
+  const include = params?.include ? new RegExp(String(params.include), "i") : undefined;
+  const exclude = params?.exclude ? new RegExp(String(params.exclude), "i") : undefined;
+  const maxAgeMs = Number(params?.maxAgeDays ?? 0) * 86_400_000;
+  return items.filter((item) => {
+    const haystack = `${item.title} ${(item.tags ?? []).join(" ")}`;
+    if (include && !include.test(haystack)) return false;
+    if (exclude && exclude.test(haystack)) return false;
+    if (maxAgeMs > 0 && item.postedAt && now.getTime() - Date.parse(item.postedAt) > maxAgeMs) return false;
+    return true;
+  });
+}
+
+export const rssAdapter: Adapter = async ({ source, http, now }) => {
   const response = await http.getText(source.endpoint, { accept: "application/rss+xml,application/atom+xml,application/xml;q=0.9,*/*;q=0.5", respectRobots: source.respectRobots });
-  return parseFeed(response.text).slice(0, source.maxItems ?? 60).map(feedItemToRaw);
+  return filterFeedItems(parseFeed(response.text).map(feedItemToRaw), source.params, now).slice(0, source.maxItems ?? 60);
 };
 
 // ─── WordPress REST API ───────────────────────────────────────────────────────
@@ -143,7 +174,7 @@ async function loadCategoryNames(
   return names;
 }
 
-export const wordpressAdapter: Adapter = async ({ source, http, log }) => {
+export const wordpressAdapter: Adapter = async ({ source, http, log, now }) => {
   const base = source.endpoint.replace(/\/+$/, "");
   const perPage = Math.min(Math.max(source.maxItems ?? 40, 1), 100);
   const options = { respectRobots: source.respectRobots };
@@ -155,7 +186,7 @@ export const wordpressAdapter: Adapter = async ({ source, http, log }) => {
     );
     const ids = [...new Set((Array.isArray(posts) ? (posts as WpPost[]) : []).flatMap((post) => post.categories ?? []))];
     const names = ids.length > 0 ? await loadCategoryNames(base, ids, (url) => http.getJson<unknown>(url, options)) : new Map();
-    const parsed = parseWordPressPosts(posts, names);
+    const parsed = filterFeedItems(parseWordPressPosts(posts, names), source.params, now);
     if (parsed.length > 0) return parsed;
     log("WordPress REST API returned no posts; trying the RSS feed");
   } catch (error) {
@@ -164,5 +195,5 @@ export const wordpressAdapter: Adapter = async ({ source, http, log }) => {
   }
 
   const feed = await http.getText(`${base}/feed/`, { accept: "application/rss+xml,application/xml;q=0.9,*/*;q=0.5", respectRobots: source.respectRobots });
-  return parseFeed(feed.text).slice(0, perPage).map(feedItemToRaw);
+  return filterFeedItems(parseFeed(feed.text).map(feedItemToRaw), source.params, now).slice(0, perPage);
 };

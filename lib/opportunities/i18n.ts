@@ -118,6 +118,7 @@ const S = {
   linkChecked: { en: "Link confirmed", ur: "لنک کی تصدیق", ps: "لینک تایید شو" },
   linkUnchecked: { en: "Not yet confirmed", ur: "ابھی تصدیق نہیں", ps: "تر اوسه نه دی تایید" },
   linkBlocked: { en: "Site blocks bots", ur: "سائٹ بوٹس کو روکتی ہے", ps: "سایټ بوټونه بندوي" },
+  linkUnreachable: { en: "Couldn't check from our servers", ur: "ہمارے سرور سے جانچ نہیں ہو سکی", ps: "زموږ له سرورونو ونه کتل شو" },
   linkBroken: { en: "Link may be broken", ur: "لنک خراب ہو سکتا ہے", ps: "لینک ممکن خراب وي" },
   authority1: { en: "Government / regulator", ur: "حکومت / ریگولیٹر", ps: "حکومت / تنظیم کوونکی" },
   authority2: { en: "University / institution", ur: "یونیورسٹی / ادارہ", ps: "پوهنتون / ادارې" },

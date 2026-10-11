@@ -46,7 +46,19 @@ interface DateMatch {
   iso: string;
 }
 
-function findDates(text: string): DateMatch[] {
+/** The year a month/day most plausibly refers to, given when the text was written (tolerating slightly past dates). */
+function inferYear(month: number, day: number, reference: string): number | undefined {
+  const referenceYear = Number(reference.slice(0, 4));
+  const referenceTime = Date.parse(`${reference.slice(0, 10)}T00:00:00Z`);
+  if (!Number.isFinite(referenceYear) || Number.isNaN(referenceTime)) return undefined;
+  for (const year of [referenceYear, referenceYear + 1]) {
+    const iso = toIsoDate(year, month, day);
+    if (iso && Date.parse(`${iso}T00:00:00Z`) >= referenceTime - 21 * DAY_MS) return year;
+  }
+  return undefined;
+}
+
+function findDates(text: string, reference?: string): DateMatch[] {
   const matches: DateMatch[] = [];
 
   const push = (m: RegExpExecArray, iso: string | undefined) => {
@@ -67,12 +79,32 @@ function findDates(text: string): DateMatch[] {
   for (const m of text.matchAll(monthFirst)) {
     push(m as RegExpExecArray, toIsoDate(Number(m[3]), monthNumber(m[1]) ?? 0, Number(m[2])));
   }
-  // 14/11/2026 or 14.11.2026 — South Asian day-first unless the second part cannot be a month.
-  for (const m of text.matchAll(/\b(\d{1,2})[/.](\d{1,2})[/.](\d{4})\b/g)) {
+  // 14/11/2026, 14.11.2026 or 14-11-2026 — South Asian day-first unless the second part cannot be a month.
+  for (const m of text.matchAll(/\b(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})\b/g)) {
     const a = Number(m[1]);
     const b = Number(m[2]);
     const [day, month] = a > 12 ? [a, b] : b > 12 ? [b, a] : [a, b];
     push(m as RegExpExecArray, toIsoDate(Number(m[3]), month, day));
+  }
+  // 23.10.26 — two-digit years as used on Pakistani government sites (day first, 2000s).
+  for (const m of text.matchAll(/(?<![\d/.-])(\d{1,2})[/.-](\d{1,2})[/.-](\d{2})(?![\d/.-]?\d)/g)) {
+    push(m as RegExpExecArray, toIsoDate(2000 + Number(m[3]), Number(m[2]), Number(m[1])));
+  }
+
+  // "Apply by 1 October" / "Deadline: October 16" — no year written, so it is inferred from `reference`.
+  if (reference) {
+    const dayFirstNoYear = new RegExp(`\\b(\\d{1,2})${ORDINAL}[\\s\\-/]+(?:of\\s+)?${MONTH_PATTERN}\\b(?!\\.?,?\\s*\\d{2,4})`, "gi");
+    for (const m of text.matchAll(dayFirstNoYear)) {
+      const month = monthNumber(m[2]) ?? 0;
+      const year = inferYear(month, Number(m[1]), reference);
+      push(m as RegExpExecArray, year ? toIsoDate(year, month, Number(m[1])) : undefined);
+    }
+    const monthFirstNoYear = new RegExp(`\\b${MONTH_PATTERN}\\.?\\s+(\\d{1,2})${ORDINAL}\\b(?!,?\\s*\\d{2,4}|:\\d)`, "gi");
+    for (const m of text.matchAll(monthFirstNoYear)) {
+      const month = monthNumber(m[1]) ?? 0;
+      const year = inferYear(month, Number(m[2]), reference);
+      push(m as RegExpExecArray, year ? toIsoDate(year, month, Number(m[2])) : undefined);
+    }
   }
 
   // De-duplicate overlapping matches (e.g. the same text caught by two patterns).
@@ -87,8 +119,8 @@ function findDates(text: string): DateMatch[] {
 }
 
 /** First calendar date mentioned in `text`, as ISO `YYYY-MM-DD`. */
-export function parseLooseDate(text: string): string | undefined {
-  return findDates(text)[0]?.iso;
+export function parseLooseDate(text: string, reference?: string): string | undefined {
+  return findDates(text, reference)[0]?.iso;
 }
 
 const DEADLINE_KEYWORDS = new RegExp(
@@ -96,6 +128,7 @@ const DEADLINE_KEYWORDS = new RegExp(
     "submission deadline",
     "application deadline",
     "closing date",
+    "closing dt",
     "deadline",
     "last date(?: to apply| of application| for submission)?",
     "last day(?: to apply)?",
@@ -124,12 +157,12 @@ export interface ExtractedDeadline {
  * Find an application deadline in free text ("Deadline is 15 December 2026",
  * "Last date to apply: 22 June 2026", "Available Till Oct 25, 2026").
  */
-export function extractDeadline(text: string): ExtractedDeadline {
+export function extractDeadline(text: string, options: { reference?: string } = {}): ExtractedDeadline {
   const rolling = ROLLING.test(text) || undefined;
   for (const keyword of text.matchAll(DEADLINE_KEYWORDS)) {
     const start = keyword.index ?? 0;
     const window = text.slice(start, start + keyword[0].length + 70);
-    const date = parseLooseDate(window.slice(keyword[0].length));
+    const date = parseLooseDate(window.slice(keyword[0].length), options.reference);
     if (date) {
       return { date, text: window.replace(/\s+/g, " ").trim().slice(0, 120), rolling };
     }
