@@ -5,6 +5,7 @@ import type { Language } from "@/lib/types";
 import { FUNDING_LABELS, LEVEL_LABELS, countryLabel, pick, t } from "@/lib/opportunities/i18n";
 import type { OpportunityView } from "@/lib/opportunities/types";
 import { deadlineInfo } from "./format";
+import { ShareButton } from "./ShareButton";
 import { Chip, KindBadge, StarIcon } from "./ui";
 
 interface Props {
@@ -69,6 +70,7 @@ export function OpportunityCard({ item, language, saved, onToggleSave }: Props) 
           >
             <StarIcon filled={saved} />
           </button>
+          <ShareButton item={item} language={language} compact />
           <Link href={`/opportunities/${item.id}`} className="btn-secondary !min-h-9 !px-3 !py-1.5 !text-xs">{t(language, "details")}</Link>
           <a href={item.url} target="_blank" rel="noopener noreferrer" className="btn-primary !min-h-9 !px-3 !py-1.5 !text-xs">{t(language, "openSource")} ↗</a>
         </div>

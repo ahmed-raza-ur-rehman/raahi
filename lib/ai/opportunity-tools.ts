@@ -1,6 +1,7 @@
 import { getResources, searchResources } from "@/lib/opportunities/directory";
 import { appUrl, recommendPrep } from "@/lib/opportunities/ecosystem";
-import { STRONG_MATCH, searchGuidesScored, type Guide } from "@/lib/opportunities/guides";
+import { searchFlagshipsScored, summarizeFlagship, type PlannerEntry } from "@/lib/opportunities/flagships";
+import { STRONG_MATCH, searchGuidesScored, tokenize, type Guide } from "@/lib/opportunities/guides";
 import { interpretQuery } from "@/lib/opportunities/query";
 import { analyzeOffer } from "@/lib/opportunities/scam";
 import { getStatus, prepareOpportunities, searchOpportunities } from "@/lib/opportunities/store";
@@ -20,7 +21,7 @@ import {
  * assistant can cite instead of inventing.
  */
 
-export const OPPORTUNITY_TOOL_NAMES = ["search_opportunities", "find_resources", "check_offer_risk", "find_guides"] as const;
+export const OPPORTUNITY_TOOL_NAMES = ["search_opportunities", "find_resources", "check_offer_risk", "find_guides", "find_programmes"] as const;
 
 export interface OpportunityToolDefinition {
   type: "function";
@@ -93,6 +94,23 @@ OPPORTUNITY_TOOLS.push({
       type: "object",
       properties: { query: { type: "string", description: "The question or topic in the user's own words (any language), e.g. 'apostille kaise' or 'fsc ke baad kya karein'." } },
       required: ["query"],
+    },
+  },
+});
+
+OPPORTUNITY_TOOLS.push({
+  type: "function" as const,
+  function: {
+    name: "find_programmes",
+    description:
+      "Look up RAAHI's yearly planner for recurring scholarships, exams and programmes — Chevening, Commonwealth, Fulbright, DAAD, Stipendium Hungaricum, Türkiye Bursları, Chinese Government (CSC), MEXT, GKS, Erasmus Mundus, Aga Khan, World Bank, HEC HAT, CSS/FPSC, KPPSC PMS, MDCAT, ECAT, Google Summer of Code, Outreachy, NASA Space Apps and more. Use it for 'when does X open or close', 'is X open now', 'what should I prepare for X', 'what opens this month' or 'what should I start preparing'. It returns the usual months, the latest confirmed dates (each marked official or reported, with the day it was checked), how a person in Pakistan actually applies, and a preparation checklist.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "The programme or topic in the user's own words (any language), e.g. 'chevening' or 'fulbright kab khulta hai'. Leave empty to list what matters now." },
+        kind: { type: "string", enum: [...OPPORTUNITY_KINDS], description: "Optional: scholarship, job (exams such as CSS), admission (entry tests), internship, competition …" },
+        only_now: { type: "boolean", description: "True to keep only programmes that are open, opening soon, or whose preparation window has started." },
+      },
     },
   },
 });
@@ -186,6 +204,42 @@ function guideForModel(guide: Guide) {
   };
 }
 
+export interface ChatProgrammeCard {
+  id: string;
+  title: { en: string; ur: string };
+  provider: string;
+  phase: string;
+  days_left?: number;
+  days_to_open?: number;
+  opens?: string;
+  closes?: string;
+  confidence?: "official" | "reported";
+  usual: { en: string; ur: string };
+  url: string;
+}
+
+export function compactProgramme(entry: PlannerEntry): ChatProgrammeCard {
+  const { flagship, status } = entry;
+  return {
+    id: flagship.id,
+    title: { en: flagship.title.en, ur: flagship.title.ur },
+    provider: flagship.provider,
+    phase: status.phase,
+    days_left: status.daysLeft,
+    days_to_open: status.daysToOpen,
+    opens: flagship.cycle?.opens,
+    closes: flagship.cycle?.closes,
+    confidence: flagship.cycle?.confidence,
+    usual: { en: flagship.windowNote.en, ur: flagship.windowNote.ur },
+    url: `/opportunities/calendar#${flagship.id}`,
+  };
+}
+
+function programmeForModel(entry: PlannerEntry) {
+  const summary = summarizeFlagship(entry, "en");
+  return { ...summary, planner_url: `/opportunities/calendar#${entry.flagship.id}` };
+}
+
 const oneOf = <T extends string>(allowed: readonly T[], value: unknown): T | undefined => (typeof value === "string" && (allowed as readonly string[]).includes(value) ? (value as T) : undefined);
 
 export interface OpportunityToolResult {
@@ -267,6 +321,25 @@ export async function executeOpportunityTool(name: string, args: Record<string, 
       });
     }
 
+    case "find_programmes": {
+      const kind = oneOf(OPPORTUNITY_KINDS, args.kind);
+      const query = typeof args.query === "string" ? args.query.slice(0, 200) : undefined;
+      let entries = searchFlagshipsScored({ q: query, kind, limit: 12 }).map((scored) => scored.entry);
+      if (args.only_now === true) {
+        entries = entries.filter(({ status }) => ["closing-soon", "open", "typically-open", "upcoming"].includes(status.phase) || status.prepareNow);
+      }
+      entries = entries.slice(0, 4);
+      return JSON.stringify({
+        found: entries.length > 0,
+        results: entries.map(programmeForModel),
+        ui_cards: entries.slice(0, 3).map(compactProgramme),
+        note:
+          entries.length === 0
+            ? "No programme in the yearly planner matched. Try find_resources for official portals or search_opportunities for live listings, and do not guess dates."
+            : "Give the dates exactly as returned and say whether each is 'official' or 'reported' and when it was checked; for 'reported' dates tell the user to confirm on the official site. If a call is closed, say so and give the usual opening month instead of inventing a new date. Give the planner_url and the official link.",
+      });
+    }
+
     case "check_offer_risk": {
       const text = typeof args.text === "string" ? args.text : "";
       const analysis = analyzeOffer({ text });
@@ -300,6 +373,34 @@ export function guideForMessage(message: string): ChatGuideCard[] {
   if (strong.length === 0) return [];
   if (HOWTO_PATTERN.test(message) || strong[0].score >= STRONG_MATCH + 4) return strong.map(({ guide }) => compactGuide(guide));
   return [];
+}
+
+/**
+ * Timing and preparation words in English, Roman Urdu and Urdu: "when does it open", "kab khulta hai", "last date",
+ * "kya tayari karein". A message that names a programme AND asks about timing gets the planner card.
+ */
+const TIMING_PATTERN = /\b(?:when|opens?|opening|clos(?:e|es|ing)|deadlines?|last date|dates?|schedule|calendar|timeline|prepare|preparation|next|this month|kab|khulta|khulti|khulte|band|aakhri|akhri|tareekh|tayari)\b|کب|کھل|بند|تاریخ|آخری|تیاری|شیڈول/i;
+
+/**
+ * Planner cards for a message that names a programme (and asks when/how to prepare, or is just the name).
+ * "Names" means a word that belongs to exactly one programme's title — "chevening", "fulbright", "css", "mdcat" —
+ * not words shared by many ("scholarship", "uk", "test"), so ordinary searches are left to the listings.
+ */
+export function programmesForMessage(message: string): ChatProgrammeCard[] {
+  const text = message.slice(0, 300);
+  const tokens = tokenize(text);
+  if (tokens.length === 0) return [];
+  const all = searchFlagshipsScored({ q: text });
+  const sharedBy = new Map<string, number>();
+  for (const scored of all) for (const token of scored.nameTokens) sharedBy.set(token, (sharedBy.get(token) ?? 0) + 1);
+  const specific = all.filter((scored) => scored.nameTokens.some((token) => sharedBy.get(token) === 1));
+  if (specific.length === 0) return [];
+  const best = specific[0].score;
+  const chosen = specific.filter((scored) => scored.score === best).slice(0, 2);
+  // "chevening", "chevening vs fulbright", "scholarship in germany": every word is accounted for by the programmes' names.
+  const covered = new Set(chosen.flatMap((scored) => scored.nameTokens));
+  const justTheName = tokens.length <= 3 && tokens.every((token) => covered.has(token));
+  return TIMING_PATTERN.test(text) || justTheName ? chosen.map((scored) => compactProgramme(scored.entry)) : [];
 }
 
 export function opportunityIntent(message: string): boolean {

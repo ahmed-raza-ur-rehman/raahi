@@ -12,6 +12,7 @@ import {
   guideForMessage,
   isOpportunityTool,
   opportunityIntent,
+  programmesForMessage,
   resourceQueryFor,
   runOpportunitySearch,
 } from "@/lib/ai/opportunity-tools";
@@ -418,8 +419,17 @@ function riskEvent(text: string): string | undefined {
   });
 }
 
-function fallbackText(language: Lang, parts: { services: boolean; opportunities: boolean; resources: boolean; risk: boolean }): string {
+function fallbackText(language: Lang, parts: { services: boolean; opportunities: boolean; resources: boolean; risk: boolean; cards?: boolean }): string {
   const lines: string[] = [];
+  if (parts.cards && !parts.risk) {
+    lines.push(
+      language === "en"
+        ? "I found a step-by-step guide or yearly-planner entry for this — see the card below. Dates and rules change: confirm them on the official page it links to before you act."
+        : language === "ps"
+        ? "ما د دې لپاره لارښود یا د کلني پلان کارت وموند — لاندې یې وګورئ. نیټې او اصول بدلیږي: مخکې له عمل په رسمي پاڼه یې تایید کړئ."
+        : "اس کے لیے مجھے مرحلہ وار رہنمائی یا سالانہ منصوبہ ساز کا اندراج ملا ہے — نیچے کارڈ دیکھیں۔ تاریخیں اور اصول بدلتے رہتے ہیں: عمل سے پہلے اس میں دیے گئے سرکاری صفحے پر تصدیق کریں۔",
+    );
+  }
   if (parts.risk) {
     lines.push(
       language === "en"
@@ -460,18 +470,22 @@ function fallbackText(language: Lang, parts: { services: boolean; opportunities:
 }
 
 /** Opportunity cards + directory links + risk warning for a plain message (used when no model is available). */
-async function* opportunityFallback(message: string): AsyncGenerator<string, { opportunities: boolean; resources: boolean; risk: boolean }> {
+async function* opportunityFallback(message: string): AsyncGenerator<string, { opportunities: boolean; resources: boolean; risk: boolean; cards: boolean }> {
+  // A message that names a yearly programme and asks about timing gets its planner entry (usual months, latest dates).
+  const programmes = programmesForMessage(message);
+  if (programmes.length > 0) yield sse({ type: "programme_results", results: programmes });
   // A "how do I…" question gets the matching step-by-step guide, even when no listing keyword is present.
   const guides = guideForMessage(message);
   if (guides.length > 0) yield sse({ type: "guide_results", results: guides });
-  if (!opportunityIntent(message)) return { opportunities: false, resources: false, risk: false };
+  const cards = programmes.length > 0 || guides.length > 0;
+  if (!opportunityIntent(message)) return { opportunities: false, resources: false, risk: false, cards };
   const search = await runOpportunitySearch({ q: message, openToPakistan: true }, 5);
   const risk = riskEvent(message);
   const resources = JSON.parse(await executeOpportunityTool("find_resources", { query: resourceQueryFor(message, Boolean(risk)) })) as { results: unknown[] };
   if (risk) yield risk;
   if (search.results.length > 0) yield sse({ type: "opportunity_results", results: search.results, generated_at: search.generated_at });
   if (resources.results.length > 0) yield sse({ type: "resource_results", results: resources.results.slice(0, 4) });
-  return { opportunities: search.results.length > 0, resources: resources.results.length > 0, risk: Boolean(risk) };
+  return { opportunities: search.results.length > 0, resources: resources.results.length > 0, risk: Boolean(risk), cards };
 }
 
 export interface OrchestratorOptions {
@@ -511,7 +525,7 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
     const extras = yield* opportunityFallback(effectiveMessage);
     // A scam warning must stand alone: loosely matched citizen-service cards would only dilute it.
     const results = extras.risk ? [] : await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
-    if (results.length === 0 && !extras.opportunities && !extras.resources && !extras.risk) {
+    if (results.length === 0 && !extras.opportunities && !extras.resources && !extras.risk && !extras.cards) {
       yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔" : language === "ps" ? "د دې غوښتنې لپاره زما سره تایید شوې معلومات نشته. مهرباني وکړئ اړوند ادارې سره مستقیم اړیکه ونیسئ." : "I do not have verified information for this request. Please contact the relevant organization directly." })}\n\n`;
     } else {
       for (const result of results) {
@@ -728,6 +742,14 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
         try {
           const parsed = JSON.parse(toolResult) as { ui_cards?: unknown[] };
           if (parsed.ui_cards && parsed.ui_cards.length > 0) yield sse({ type: "guide_results", results: parsed.ui_cards.slice(0, 3) });
+        } catch {
+          // ignore
+        }
+      }
+      if (toolCall.function.name === "find_programmes") {
+        try {
+          const parsed = JSON.parse(toolResult) as { ui_cards?: unknown[] };
+          if (parsed.ui_cards && parsed.ui_cards.length > 0) yield sse({ type: "programme_results", results: parsed.ui_cards.slice(0, 3) });
         } catch {
           // ignore
         }

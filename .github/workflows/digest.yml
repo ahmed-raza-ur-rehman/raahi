@@ -1,0 +1,43 @@
+name: Daily digest
+
+# Posts "what to look at today" to a Telegram channel — only if the owner switches it on:
+#   1. create a bot with @BotFather and add it as an admin of the channel;
+#   2. add repository secrets TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID (and, optionally, the variable SITE_URL);
+#   3. set the repository variable DIGEST_ENABLED to "true".
+# Without all of that the job is skipped, and nothing is ever posted anywhere.
+on:
+  schedule:
+    - cron: "45 3 * * *" # 08:45 in Pakistan, a few hours after the 00:17 UTC refresh
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    if: ${{ vars.DIGEST_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build and post the digest
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+            npm run digest -- --telegram
+          else
+            echo "Telegram secrets are not set: printing the digest only."
+            npm run digest
+          fi

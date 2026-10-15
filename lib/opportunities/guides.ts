@@ -81,6 +81,7 @@ export function getGuide(id: string): Guide | undefined {
 // Words that carry no topic: English question words and the Roman-Urdu / Urdu equivalents.
 const STOPWORDS = new Set([
   "how", "to", "the", "a", "an", "for", "in", "on", "of", "and", "or", "my", "i", "me", "do", "can", "what", "is", "are", "get", "with", "from", "about", "guide", "help", "need", "want",
+  "when", "does", "did", "which", "should", "tell", "last", "date", "dates", "deadline", "deadlines", "opens", "close", "closes", "closing", "open", "vs", "versus", "compare", "between", "kab", "khulta", "khulti", "khulte", "band", "hota", "hoti", "tareekh", "aakhri", "akhri",
   "kaise", "kese", "kaisay", "kya", "ke", "ka", "ki", "ko", "mein", "main", "me", "hai", "hain", "karein", "karen", "karna", "kare", "kar", "se", "par", "pe", "aur", "ya", "liye", "lie", "mujhe", "hum", "apna",
   "کیسے", "کیا", "کے", "کی", "کا", "کو", "میں", "ہے", "ہیں", "کریں", "کرنا", "سے", "پر", "اور", "یا", "لیے", "مجھے", "ہم", "اپنا",
 ]);

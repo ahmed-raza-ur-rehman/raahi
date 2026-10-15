@@ -9,7 +9,7 @@ process.env.OPPORTUNITIES_SNAPSHOT_URL = "off";
 
 import { TOOLS, executeTool, getOrCreateConversation, runOrchestrator } from "@/lib/ai/orchestrator";
 import { ORCHESTRATOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
-import { guideForMessage, opportunityIntent, type OpportunityToolResult } from "@/lib/ai/opportunity-tools";
+import { guideForMessage, opportunityIntent, programmesForMessage, type OpportunityToolResult } from "@/lib/ai/opportunity-tools";
 import { seedDatabase } from "@/lib/db/seed";
 import { setClock } from "@/lib/opportunities/clock";
 import { searchResources } from "@/lib/opportunities/directory";
@@ -44,9 +44,9 @@ test("setup: seed the citizen-service catalog and load opportunities", async () 
   assert.ok(searchOpportunities({}, NOW).total > 40, "seedDatabase() leaves the opportunity tables alone");
 });
 
-test("the assistant exposes the four opportunity tools next to the four citizen-service tools", () => {
+test("the assistant exposes the five opportunity tools next to the four citizen-service tools", () => {
   const names = TOOLS.map((tool) => tool.function.name);
-  assert.deepEqual(names, ["search_knowledge", "check_eligibility", "create_case", "extract_profile", "search_opportunities", "find_resources", "check_offer_risk", "find_guides"]);
+  assert.deepEqual(names, ["search_knowledge", "check_eligibility", "create_case", "extract_profile", "search_opportunities", "find_resources", "check_offer_risk", "find_guides", "find_programmes"]);
   for (const tool of TOOLS) assert.ok(tool.function.description.length > 40);
   assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /NEVER invent a deadline/);
   assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /BE&OE list of licensed OEPs/);
@@ -204,5 +204,89 @@ test("offline: a how-to question gets a guide card (plus listings and portals wh
 
   const cnic = await ask("my CNIC was lost, what is the procedure");
   assert.ok(!cnic.some((event) => event.type === "guide_results"), "no guide card for a citizen-service question");
+});
+
+// ─── Yearly planner (find_programmes) ────────────────────────────────────────
+
+test("find_programmes returns the dates with how sure we are, the route for Pakistan, and a planner link", async () => {
+  const result = JSON.parse(await executeTool("find_programmes", { query: "chevening" }, "s")) as {
+    found: boolean;
+    results: Array<{ id: string; phase: string; routeNote: string; usualWindow: string; prepare: string[]; planner_url: string; official: string; cycle?: { confidence: string; checked: string; closes: string } }>;
+    ui_cards: Array<{ id: string; url: string }>;
+    note: string;
+  };
+  assert.equal(result.found, true);
+  assert.equal(result.results[0].id, "chevening");
+  assert.equal(result.results[0].phase, "closed", "Chevening closed on 6 October; today is 11 October in this test");
+  assert.equal(result.results[0].cycle?.confidence, "reported");
+  assert.equal(result.results[0].cycle?.checked, "2026-10-15");
+  assert.equal(result.results[0].cycle?.closes, "2026-10-06");
+  assert.match(result.results[0].usualWindow, /early August/);
+  assert.equal(result.results[0].planner_url, "/opportunities/calendar#chevening");
+  assert.match(result.results[0].official, /^https:\/\/www\.chevening\.org/);
+  assert.ok(result.results[0].prepare.length >= 3);
+  assert.equal(result.ui_cards[0].url, "/opportunities/calendar#chevening");
+  assert.match(result.note, /official' or 'reported'/);
+  assert.match(result.note, /never invent|instead of inventing/i);
+
+  const hec = JSON.parse(await executeTool("find_programmes", { query: "commonwealth" }, "s")) as { results: Array<{ routeNote: string; phase: string; daysLeft: number }> };
+  assert.match(hec.results[0].routeNote, /BOTH the HEC scholarship portal/, "the step people miss is stated");
+  assert.equal(hec.results[0].phase, "closing-soon");
+  assert.equal(hec.results[0].daysLeft, 9);
+
+  const none = JSON.parse(await executeTool("find_programmes", { query: "zzzz qqqq" }, "s")) as { found: boolean; results: unknown[]; note: string };
+  assert.equal(none.found, false);
+  assert.equal(none.results.length, 0);
+  assert.match(none.note, /do not guess dates/);
+});
+
+test("find_programmes with only_now keeps what is open, opening soon, or worth preparing for", async () => {
+  const result = JSON.parse(await executeTool("find_programmes", { only_now: true }, "s")) as { results: Array<{ id: string; phase: string; prepareNow: boolean }> };
+  assert.ok(result.results.length > 0 && result.results.length <= 4);
+  assert.equal(result.results[0].id, "commonwealth-masters-phd", "the call closing soonest comes first");
+  assert.ok(result.results.every((entry) => ["closing-soon", "open", "typically-open", "upcoming"].includes(entry.phase) || entry.prepareNow));
+});
+
+test("programmesForMessage offers a card for a named programme with a timing question, or just its name — not for generic talk", () => {
+  const ids = (message: string) => programmesForMessage(message).map((card) => card.id);
+  assert.deepEqual(ids("when does chevening open"), ["chevening"]);
+  assert.deepEqual(ids("chevening"), ["chevening"]);
+  assert.deepEqual(ids("fulbright kab khulta hai"), ["fulbright-pakistan"]);
+  assert.ok(ids("css exam kab hai").includes("css-fpsc"));
+  assert.ok(ids("what is the last date for the commonwealth scholarship").includes("commonwealth-masters-phd"));
+  assert.deepEqual(ids("jobs in uk"), [], "a country word alone is not a programme");
+  assert.deepEqual(ids("scholarship in germany"), ["daad-germany"], "only one programme is named for Germany, so its planner entry is offered");
+  assert.deepEqual(ids("scholarship in uk"), [], "three programmes are named for the UK: that is a search, not a programme");
+  assert.deepEqual(ids("when does it open"), [], "timing words alone name nothing");
+  assert.deepEqual(ids("chevening vs fulbright").sort(), ["chevening", "fulbright-pakistan"], "two named programmes, both offered");
+  assert.deepEqual(ids("how do I get a CNIC"), []);
+  assert.deepEqual(ids("tell me about free python courses please and also some coupons"), []);
+});
+
+test("offline: naming a programme gets its planner card and a neutral line — not 'no verified information'", async () => {
+  const events = await ask("chevening");
+  const card = events.find((event) => event.type === "programme_results");
+  assert.ok(card, "a programme card is streamed");
+  const results = card.results as Array<{ id: string; phase: string; closes?: string; confidence?: string; url: string }>;
+  assert.equal(results[0].id, "chevening");
+  assert.equal(results[0].closes, "2026-10-06");
+  assert.equal(results[0].confidence, "reported");
+  const text = events.filter((event) => event.type === "content").map((event) => String(event.content)).join(" ");
+  assert.match(text, /yearly-planner entry/);
+  assert.ok(!/don't have verified information|No verified/i.test(text));
+});
+
+test("offline: a timing question about a scholarship shows the planner card next to live listings", async () => {
+  const events = await ask("when does the commonwealth scholarship close?");
+  const card = events.find((event) => event.type === "programme_results");
+  assert.ok(card);
+  assert.equal((card.results as Array<{ id: string }>)[0].id, "commonwealth-masters-phd");
+  assert.equal((card.results as Array<{ phase: string }>)[0].phase, "closing-soon");
+  assert.ok(events.some((event) => event.type === "opportunity_results"), "live listings are still offered");
+});
+
+test("offline: unrelated questions get no planner card", async () => {
+  const events = await ask("how do I renew my CNIC?");
+  assert.ok(!events.some((event) => event.type === "programme_results"));
 });
 

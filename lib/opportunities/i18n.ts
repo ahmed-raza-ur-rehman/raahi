@@ -240,6 +240,7 @@ const S = {
   didYouMeanInstead: { en: "No results for", ur: "ان کا کوئی نتیجہ نہیں ملا", ps: "د دې هیڅ پایله ونه موندل شوه" },
   toolAge: { en: "Age calculator", ur: "عمر کا حساب", ps: "د عمر محاسبه" },
   toolCv: { en: "CV builder", ur: "سی وی بنائیں", ps: "سي وي جوړول" },
+  share: { en: "Share", ur: "شیئر کریں", ps: "شریک کړئ" },
   navCalendar: { en: "Calendar", ur: "کیلنڈر", ps: "کیلنډر" },
   calTitle: { en: "Year planner & deadlines", ur: "سالانہ منصوبہ اور آخری تاریخیں", ps: "کلنی پلان او وروستۍ نیټې" },
   calSub: { en: "Scholarships, exams and programmes that come round every year: when they usually open, how to apply from Pakistan, and what to prepare — plus every dated listing closing in the next 60 days.", ur: "ہر سال آنے والی اسکالرشپس، امتحانات اور پروگرام: وہ عموماً کب کھلتے ہیں، پاکستان سے اپلائی کیسے کریں اور کیا تیار کریں — اور اگلے 60 دنوں میں بند ہونے والی ہر تاریخ والی فہرست۔", ps: "هر کال راتلونکي سکالرشپونه، ازموینې او پروګرامونه: عموماً کله پرانیستل کیږي، له پاکستانه څنګه غوښتنه وکړئ او څه چمتو کړئ — او په راتلونکو ۶۰ ورځو کې تړل کیدونکې لیکنې." },

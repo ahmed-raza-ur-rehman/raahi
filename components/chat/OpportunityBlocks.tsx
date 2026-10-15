@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ChatGuideCard, CompactOpportunity } from "@/lib/ai/opportunity-tools";
+import type { ChatGuideCard, ChatProgrammeCard, CompactOpportunity } from "@/lib/ai/opportunity-tools";
 import { KIND_LABELS, pick, t } from "@/lib/opportunities/i18n";
 import type { OpportunityKind } from "@/lib/opportunities/types";
 
@@ -31,8 +31,18 @@ interface Props {
   resources?: ChatResource[];
   risk?: ChatRisk;
   guides?: ChatGuideCard[];
+  programmes?: ChatProgrammeCard[];
   language: Language;
 }
+
+const PHASE_TEXT: Record<string, { en: string; ur: string }> = {
+  "closing-soon": { en: "Closing soon", ur: "جلد بند ہو رہا ہے" },
+  open: { en: "Open", ur: "کھلا ہے" },
+  "typically-open": { en: "Usually open this month", ur: "عموماً اس مہینے کھلا ہوتا ہے" },
+  upcoming: { en: "Opens soon", ur: "جلد کھلے گا" },
+  closed: { en: "Closed for this round", ur: "اس دور کے لیے بند" },
+  "off-season": { en: "Not open now", ur: "ابھی کھلا نہیں" },
+};
 
 function deadlineText(item: CompactOpportunity, language: Language): string {
   if (item.kind === "coupon") return t(language, "couponWarn").split(".")[0];
@@ -45,12 +55,39 @@ function deadlineText(item: CompactOpportunity, language: Language): string {
 }
 
 /** Cards the assistant attaches to a reply: scam warning, live listings, official portals. */
-export function ChatOpportunityBlocks({ opportunities = [], resources = [], risk, guides = [], language }: Props) {
-  if (opportunities.length === 0 && resources.length === 0 && guides.length === 0 && !risk) return null;
+export function ChatOpportunityBlocks({ opportunities = [], resources = [], risk, guides = [], programmes = [], language }: Props) {
+  if (opportunities.length === 0 && resources.length === 0 && guides.length === 0 && programmes.length === 0 && !risk) return null;
   const lang = language === "en" ? "en" : "ur";
 
   return (
     <div className="mt-4 w-full space-y-4 ps-1 sm:ps-4">
+      {programmes.length > 0 && (
+        <div>
+          <p className="mb-2 text-xs font-black uppercase tracking-wide text-[var(--muted)]">📅 {lang === "en" ? "Yearly planner" : "سالانہ منصوبہ ساز"}</p>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {programmes.map((programme) => (
+              <li key={programme.id}>
+                <Link href={programme.url} className="card flex h-full flex-col gap-1.5 p-3.5 transition hover:-translate-y-0.5">
+                  <span className="text-sm font-black text-[var(--forest-dark)]" dir="auto">{programme.title[lang]}</span>
+                  <span className="text-[11px] font-bold text-[var(--forest)]">
+                    {PHASE_TEXT[programme.phase]?.[lang] ?? programme.phase}
+                    {programme.days_left !== undefined ? ` · ${programme.days_left} ${lang === "en" ? "days left" : "دن باقی"}` : ""}
+                    {programme.days_to_open !== undefined ? ` · ${lang === "en" ? "opens in" : "کھلنے میں"} ${programme.days_to_open} ${lang === "en" ? "days" : "دن"}` : ""}
+                  </span>
+                  {programme.closes && (
+                    <span className="text-xs text-[var(--ink-soft)]">
+                      {lang === "en" ? "Latest call" : "تازہ ترین کال"}: {programme.opens ? `${programme.opens} → ` : ""}{programme.closes}
+                      {programme.confidence && <> · <span className={programme.confidence === "official" ? "font-bold text-[var(--success)]" : "font-bold text-[var(--amber)]"}>{programme.confidence === "official" ? (lang === "en" ? "official" : "سرکاری") : (lang === "en" ? "reported — confirm on the official site" : "رپورٹ شدہ — سرکاری سائٹ پر تصدیق کریں")}</span></>}
+                    </span>
+                  )}
+                  <span className="text-xs leading-relaxed text-[var(--ink-soft)]" dir="auto">{programme.usual[lang]}</span>
+                  <span className="mt-auto text-[11px] font-bold text-[var(--forest)]">{lang === "en" ? "How to apply from Pakistan" : "پاکستان سے اپلائی کیسے کریں"} →</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {guides.length > 0 && (
         <div>
           <p className="mb-2 text-xs font-black uppercase tracking-wide text-[var(--muted)]">📘 {lang === "en" ? "Step-by-step guide" : "مرحلہ وار رہنمائی"}</p>

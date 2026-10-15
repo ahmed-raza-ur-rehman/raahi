@@ -70,6 +70,8 @@ const FREE_WORDS = new Set(["free", "gratis", "mufat", "مفت", "فری", "وړ
 const STOPWORDS = new Set([
   "a", "an", "the", "for", "in", "on", "at", "of", "to", "and", "or", "with", "me", "my", "i", "am", "is", "are", "any", "there", "find", "show",
   "need", "want", "looking", "please", "best", "latest", "new", "available", "open", "apply", "get", "some", "all", "from", "about", "can", "do",
+  // question and timing words: "when does the Commonwealth scholarship close?" is a search for the Commonwealth scholarship
+  "when", "does", "did", "which", "should", "tell", "last", "date", "dates", "deadline", "deadlines", "opens", "close", "closes", "closing", "what", "how", "kab", "khulta", "khulti", "khulte", "band", "hota", "hoti", "tareekh", "aakhri", "akhri",
   "ke", "ki", "ka", "mein", "main", "mujhe", "chahiye", "hai", "hain", "kya", "koi", "aur", "ya", "se", "par", "wale", "wali",
   "اور", "کے", "کی", "کا", "میں", "کو", "سے", "پر", "ہے", "ہیں", "چاہیے", "چاہئیں", "مجھے", "براہ", "مہربانی", "دکھائیں", "بتائیں", "کوئی", "یا", "لیے", "کیلئے", "کےلئے",
   "ما", "ته", "په", "او", "د", "دی", "ده", "غواړم",

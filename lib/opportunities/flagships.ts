@@ -133,8 +133,9 @@ export interface FlagshipQuery {
 function haystack(flagship: Flagship): Array<{ weight: number; words: string[] }> {
   const both = (value: LText) => `${value.en} ${value.ur}`;
   return [
-    { weight: 6, words: tokenize(`${both(flagship.title)} ${flagship.provider} ${flagship.id.replace(/-/g, " ")}`) },
+    { weight: 6, words: tokenize(`${both(flagship.title)} ${flagship.id.replace(/-/g, " ")}`) },
     { weight: 5, words: flagship.tags.flatMap(tokenize) },
+    { weight: 4, words: tokenize(flagship.provider) },
     { weight: 3, words: tokenize(`${both(flagship.summary)} ${both(flagship.where)}`) },
     { weight: 1, words: tokenize(`${both(flagship.routeNote)} ${both(flagship.windowNote)}`) },
   ];
@@ -150,8 +151,18 @@ const haystackFor = (flagship: Flagship) => {
   return value;
 };
 
-/** Matching programmes with their status. With no question, most urgent first (the planner order). */
-export function searchFlagships(query: FlagshipQuery = {}, now: Date = clockNow()): PlannerEntry[] {
+export interface ScoredFlagship {
+  entry: PlannerEntry;
+  /** Name word 6, tag 5, provider 4, summary 3, route and window text 1 — per matched word, summed. */
+  score: number;
+  matched: number;
+  total: number;
+  /** The query words that matched the programme's own name (title or id) — what makes a match specific. */
+  nameTokens: string[];
+}
+
+/** Like `searchFlagships`, with relevance (see `ScoredFlagship`). With no question: planner order, score 0. */
+export function searchFlagshipsScored(query: FlagshipQuery = {}, now: Date = clockNow()): ScoredFlagship[] {
   const planner = buildPlanner(FLAGSHIPS, now);
   const ordered = [...planner.act, ...planner.soon, ...planner.prepare, ...planner.later];
   const pool = ordered.filter(({ flagship }) => {
@@ -163,12 +174,13 @@ export function searchFlagships(query: FlagshipQuery = {}, now: Date = clockNow(
   });
   const limit = query.limit ?? pool.length;
   const tokens = [...new Set(tokenize(query.q ?? ""))];
-  if (tokens.length === 0) return pool.slice(0, limit);
+  if (tokens.length === 0) return pool.slice(0, limit).map((entry) => ({ entry, score: 0, matched: 0, total: 0, nameTokens: [] }));
 
-  const scored: Array<{ entry: PlannerEntry; score: number; order: number }> = [];
+  const scored: Array<ScoredFlagship & { order: number }> = [];
   pool.forEach((entry, order) => {
     let score = 0;
     let matched = 0;
+    const nameTokens: string[] = [];
     for (const token of tokens) {
       let best = 0;
       for (const { weight, words } of haystackFor(entry.flagship)) {
@@ -176,14 +188,20 @@ export function searchFlagships(query: FlagshipQuery = {}, now: Date = clockNow(
         if (hit) best = Math.max(best, weight);
       }
       if (best > 0) matched += 1;
+      if (best >= 6) nameTokens.push(token);
       score += best;
     }
-    if (matched >= Math.min(Math.ceil(tokens.length / 2), 2)) scored.push({ entry, score, order });
+    if (matched >= Math.min(Math.ceil(tokens.length / 2), 2)) scored.push({ entry, score, matched, total: tokens.length, nameTokens, order });
   });
   return scored
     .sort((a, b) => b.score - a.score || a.order - b.order)
     .slice(0, limit)
-    .map(({ entry }) => entry);
+    .map(({ entry, score, matched, total, nameTokens }) => ({ entry, score, matched, total, nameTokens }));
+}
+
+/** Matching programmes with their status. With no question, most urgent first (the planner order). */
+export function searchFlagships(query: FlagshipQuery = {}, now: Date = clockNow()): PlannerEntry[] {
+  return searchFlagshipsScored(query, now).map((scored) => scored.entry);
 }
 
 /** Compact form for the API and the assistant. */
