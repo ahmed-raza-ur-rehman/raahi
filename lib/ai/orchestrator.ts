@@ -470,7 +470,7 @@ function fallbackText(language: Lang, parts: { services: boolean; opportunities:
 }
 
 /** Opportunity cards + directory links + risk warning for a plain message (used when no model is available). */
-async function* opportunityFallback(message: string): AsyncGenerator<string, { opportunities: boolean; resources: boolean; risk: boolean; cards: boolean }> {
+async function* opportunityFallback(message: string): AsyncGenerator<string, { opportunities: boolean; resources: boolean; risk: boolean; cards: boolean; programmes: boolean }> {
   // A message that names a yearly programme and asks about timing gets its planner entry (usual months, latest dates).
   const programmes = programmesForMessage(message);
   if (programmes.length > 0) yield sse({ type: "programme_results", results: programmes });
@@ -478,14 +478,14 @@ async function* opportunityFallback(message: string): AsyncGenerator<string, { o
   const guides = guideForMessage(message);
   if (guides.length > 0) yield sse({ type: "guide_results", results: guides });
   const cards = programmes.length > 0 || guides.length > 0;
-  if (!opportunityIntent(message)) return { opportunities: false, resources: false, risk: false, cards };
+  if (!opportunityIntent(message)) return { opportunities: false, resources: false, risk: false, cards, programmes: programmes.length > 0 };
   const search = await runOpportunitySearch({ q: message, openToPakistan: true }, 5);
   const risk = riskEvent(message);
   const resources = JSON.parse(await executeOpportunityTool("find_resources", { query: resourceQueryFor(message, Boolean(risk)) })) as { results: unknown[] };
   if (risk) yield risk;
   if (search.results.length > 0) yield sse({ type: "opportunity_results", results: search.results, generated_at: search.generated_at });
   if (resources.results.length > 0) yield sse({ type: "resource_results", results: resources.results.slice(0, 4) });
-  return { opportunities: search.results.length > 0, resources: resources.results.length > 0, risk: Boolean(risk), cards };
+  return { opportunities: search.results.length > 0, resources: resources.results.length > 0, risk: Boolean(risk), cards, programmes: programmes.length > 0 };
 }
 
 export interface OrchestratorOptions {
@@ -523,8 +523,9 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   if (!client) {
     // No API key: verified-service RAG plus the deterministic opportunity search, with the same safeguards.
     const extras = yield* opportunityFallback(effectiveMessage);
-    // A scam warning must stand alone: loosely matched citizen-service cards would only dilute it.
-    const results = extras.risk ? [] : await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
+    // A scam warning must stand alone, and so must the answer about a named programme ("when does Chevening open?"):
+    // loosely matched citizen-service cards (domicile, CNIC, Benazir …) would only dilute it.
+    const results = extras.risk || extras.programmes ? [] : await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
     if (results.length === 0 && !extras.opportunities && !extras.resources && !extras.risk && !extras.cards) {
       yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔" : language === "ps" ? "د دې غوښتنې لپاره زما سره تایید شوې معلومات نشته. مهرباني وکړئ اړوند ادارې سره مستقیم اړیکه ونیسئ." : "I do not have verified information for this request. Please contact the relevant organization directly." })}\n\n`;
     } else {

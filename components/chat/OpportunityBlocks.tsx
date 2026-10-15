@@ -76,7 +76,7 @@ export function ChatOpportunityBlocks({ opportunities = [], resources = [], risk
                   </span>
                   {programme.closes && (
                     <span className="text-xs text-[var(--ink-soft)]">
-                      {lang === "en" ? "Latest call" : "تازہ ترین کال"}: {programme.opens ? `${programme.opens} → ` : ""}{programme.closes}
+                      {lang === "en" ? "Latest call" : "تازہ ترین کال"}: {programme.opens ? `${programme.opens} – ` : ""}{programme.closes}
                       {programme.confidence && <> · <span className={programme.confidence === "official" ? "font-bold text-[var(--success)]" : "font-bold text-[var(--amber)]"}>{programme.confidence === "official" ? (lang === "en" ? "official" : "سرکاری") : (lang === "en" ? "reported — confirm on the official site" : "رپورٹ شدہ — سرکاری سائٹ پر تصدیق کریں")}</span></>}
                     </span>
                   )}

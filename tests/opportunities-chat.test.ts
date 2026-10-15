@@ -274,6 +274,7 @@ test("offline: naming a programme gets its planner card and a neutral line — n
   const text = events.filter((event) => event.type === "content").map((event) => String(event.content)).join(" ");
   assert.match(text, /yearly-planner entry/);
   assert.ok(!/don't have verified information|No verified/i.test(text));
+  assert.ok(!events.some((event) => event.type === "service"), "no loosely matched citizen-service cards next to the answer");
 });
 
 test("offline: a timing question about a scholarship shows the planner card next to live listings", async () => {

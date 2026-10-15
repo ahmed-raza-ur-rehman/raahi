@@ -18,6 +18,8 @@ export type AdapterId =
   | "etea"
   | "fpsc"
   | "pts"
+  | "pakistanjobsbank"
+  | "gopunjab"
   | "himalayas"
   | "remoteok"
   | "workingnomads"

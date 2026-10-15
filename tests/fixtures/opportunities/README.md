@@ -17,3 +17,7 @@ adapter reads, so a parser change that breaks them is a real regression.
 real-shaped notice titled `(fixture)`). `pts-projects.sample.json` is PTS's real `/Projects/getProjects/` response plus one
 synthetic open project, also titled `(fixture)`, because every real project was finished and carried a placeholder date.
 
+`pakistanjobsbank.sample.html` and `gopunjab.sample.html` are the real markup of those two boards' pages (the table of the first nine
+advertisements plus the day-page links; the "Latest Punjab Govt Jobs" cards), unedited apart from trimming. `pakistanjobsbank.day.sample.html`
+is a one-row page in the same real format, titled `(fixture)`, standing in for a day page.
+
