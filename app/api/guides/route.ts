@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { jsonResponse, optionsResponse } from "@/lib/opportunities/api";
 import { CATEGORY_TITLES, GUIDE_CATEGORIES, listGuides, searchGuides, summarizeGuide, type GuideCategory } from "@/lib/opportunities/guides";
 import type { Language } from "@/lib/types";
@@ -6,7 +7,7 @@ import type { Language } from "@/lib/types";
  * GET /api/guides?q=&category=&lang=en|ur|ps&limit= — step-by-step guides (summaries; fetch one by id for the steps).
  * `q` understands English, Roman Urdu and Urdu ("fsc ke baad kya karein", "apostille", "جعلی ویزا").
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const category = params.get("category");
   const lang = params.get("lang");
@@ -31,3 +32,6 @@ export async function GET(request: Request) {
 export function OPTIONS() {
   return optionsResponse();
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const GET = guardLegacy(handleGET, { name: "guidesLegacy", csrf: false, limits: [{ policy: "read", by: "ip" }] });

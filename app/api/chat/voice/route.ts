@@ -1,78 +1,67 @@
 import { NextResponse } from "next/server";
 import { getDashScopeClient, isDashScopeConfigured } from "@/lib/ai/client";
+import { guardLegacy, type LegacyLimit } from "@/lib/platform/legacy";
+import { getLogger } from "@/lib/platform/log";
 
-export async function POST(request: Request) {
-  try {
-    const contentType = request.headers.get("content-type") || "";
-    let language = "ur";
-    let audioBuffer: Buffer | null = null;
+const MAX_AUDIO_BYTES = 5 * 1024 * 1024;
+const LANGUAGES = ["en", "ur", "ps"] as const;
+type VoiceLanguage = (typeof LANGUAGES)[number];
 
-    if (contentType.includes("multipart/form-data")) {
-      const formData = await request.formData();
-      const file = formData.get("audio") as File | null;
-      language = (formData.get("language") as string) || "ur";
-      if (file) {
-        const bytes = await file.arrayBuffer();
-        audioBuffer = Buffer.from(bytes);
-      }
-    } else {
-      const body = await request.json().catch(() => ({}));
-      language = body.language || "ur";
-      if (body.audioBase64) {
-        audioBuffer = Buffer.from(body.audioBase64, "base64");
-      }
-    }
+const limits: LegacyLimit[] = [
+  { policy: "ocr", by: "session" },
+  { policy: "ocr", by: "ip" },
+];
 
-    if (!audioBuffer || audioBuffer.length === 0) {
-      return NextResponse.json(
-        { error: "No audio data provided." },
-        { status: 400 }
-      );
-    }
+const language = (value: unknown): VoiceLanguage => (LANGUAGES as readonly unknown[]).includes(value) ? (value as VoiceLanguage) : "ur";
 
-    // Try DashScope audio transcription if configured
-    if (isDashScopeConfigured()) {
-      try {
-        const client = getDashScopeClient();
-        if (client) {
-          // DashScope supports audio transcriptions via OpenAI compatibility or Qwen-Audio
-          const fileObj = new File([new Uint8Array(audioBuffer)], "audio.wav", { type: "audio/wav" });
-          const response = await client.audio.transcriptions.create({
-            file: fileObj,
-            model: "sensevoice-v1",
-            language: language === "en" ? "en" : language === "ps" ? "ps" : "ur",
-          });
-
-          if (response?.text) {
-            return NextResponse.json({
-              text: response.text,
-              language,
-              provider: "dashscope",
-            });
-          }
+/**
+ * Speech to text. It never invents a transcript: if no transcription provider is configured, or the provider fails,
+ * the caller gets an honest error and the UI asks the person to type instead. (An earlier version returned a canned
+ * sentence as if the person had said it.)
+ */
+export const POST = guardLegacy(
+  async (request) => {
+    let lang: VoiceLanguage = "ur";
+    let audio: Buffer | undefined;
+    try {
+      if ((request.headers.get("content-type") || "").includes("multipart/form-data")) {
+        const form = await request.formData();
+        lang = language(form.get("language"));
+        const file = form.get("audio");
+        if (file instanceof File) {
+          if (file.size > MAX_AUDIO_BYTES) return NextResponse.json({ error: "That recording is too long." }, { status: 413 });
+          audio = Buffer.from(await file.arrayBuffer());
         }
-      } catch (err) {
-        console.warn("DashScope transcription attempt failed, returning voice fallback", err);
+      } else {
+        const body = (await request.json().catch(() => ({}))) as { language?: unknown; audioBase64?: unknown };
+        lang = language(body.language);
+        if (typeof body.audioBase64 === "string") {
+          if (body.audioBase64.length > Math.ceil((MAX_AUDIO_BYTES * 4) / 3) + 4) return NextResponse.json({ error: "That recording is too long." }, { status: 413 });
+          audio = Buffer.from(body.audioBase64, "base64");
+        }
       }
+    } catch {
+      return NextResponse.json({ error: "The recording could not be read." }, { status: 400 });
     }
 
-    // High quality voice fallback for testing / browsers without live cloud STT
-    const samplePhrases: Record<string, string> = {
-      ur: "مجھے اپنے بیٹے کے اسکول کے لیے راشن اور اسکالرشپ کی ضرورت ہے",
-      ps: "زه د خپل زوی د ښوونځي لپاره مرستې او بورس ته اړتیا لرم",
-      en: "I need help finding financial assistance for education and healthcare",
-    };
+    if (!audio || audio.length === 0) return NextResponse.json({ error: "No audio data provided." }, { status: 400 });
 
-    return NextResponse.json({
-      text: samplePhrases[language] || samplePhrases.ur,
-      language,
-      provider: "simulated_speech",
-      note: "Voice captured. You can edit this transcription before searching.",
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Voice processing failed." },
-      { status: 500 }
-    );
-  }
-}
+    const client = isDashScopeConfigured() ? getDashScopeClient() : undefined;
+    if (!client) {
+      return NextResponse.json({ error: "Voice input is not available right now. Please type your question.", code: "not_configured" }, { status: 503 });
+    }
+
+    try {
+      const response = await client.audio.transcriptions.create({
+        file: new File([new Uint8Array(audio)], "audio.wav", { type: "audio/wav" }),
+        model: "sensevoice-v1",
+        language: lang,
+      });
+      if (response?.text) return NextResponse.json({ text: response.text, language: lang, provider: "dashscope" });
+    } catch (error) {
+      getLogger().warn("voice transcription failed", { error });
+    }
+    return NextResponse.json({ error: "We could not understand that recording. Please try again or type your question." }, { status: 502 });
+  },
+  { name: "voice", limits, maxBodyBytes: 6_500_000 },
+);

@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { z } from "zod";
 import { errorResponse, jsonResponse } from "@/lib/opportunities/api";
 import { ANSWER_KEYS, analyzeOffer, type AnswerKey } from "@/lib/opportunities/scam";
@@ -11,7 +12,7 @@ const bodySchema = z.object({
  * POST { text?, answers? } → red-flag analysis. The text is analysed in memory and never stored or logged,
  * because messages from agents often contain phone numbers and CNIC details.
  */
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   let body: unknown;
   try {
     body = await request.json();
@@ -24,3 +25,6 @@ export async function POST(request: Request) {
   if (!text?.trim() && !(answers && Object.values(answers).some(Boolean))) return errorResponse("Paste the offer text or tick at least one checklist item.");
   return jsonResponse(analyzeOffer({ text, answers }));
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const POST = guardLegacy(handlePOST, { name: "scamCheckLegacy", csrf: false, limits: [{ policy: "tools", by: "ip" }], maxBodyBytes: 32 * 1024 });

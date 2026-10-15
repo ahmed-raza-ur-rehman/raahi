@@ -1,10 +1,11 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { jsonResponse, optionsResponse } from "@/lib/opportunities/api";
 import { linkHealthCheckedAt } from "@/lib/opportunities/directory";
 import { SOURCES } from "@/lib/opportunities/scrapers/sources";
 import { getStatus, prepareOpportunities } from "@/lib/opportunities/store";
 
 /** How fresh is the data, which sources worked on the last run, and what terms each source is used under. */
-export async function GET() {
+async function handleGET() {
   await prepareOpportunities();
   const status = getStatus();
   return jsonResponse(
@@ -31,3 +32,6 @@ export async function GET() {
 export function OPTIONS() {
   return optionsResponse();
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const GET = guardLegacy(handleGET, { name: "statusLegacy", csrf: false, limits: [{ policy: "read", by: "ip" }] });

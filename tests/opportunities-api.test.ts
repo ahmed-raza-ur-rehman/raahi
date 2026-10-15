@@ -155,7 +155,7 @@ test("POST /api/opportunities/scam-check analyses text and checklist, and refuse
 });
 
 test("GET /api/opportunities/status exposes freshness and the source registry with each source's terms", async () => {
-  const body = (await (await statusGET()).json()) as { total: number; stale: boolean; sources: Array<{ sourceId: string; status: string }>; registry: Array<{ id: string; attribution: string; terms?: string }>; remoteRefresh: boolean };
+  const body = (await (await statusGET(new Request("http://localhost/api/opportunities/status"))).json()) as { total: number; stale: boolean; sources: Array<{ sourceId: string; status: string }>; registry: Array<{ id: string; attribution: string; terms?: string }>; remoteRefresh: boolean };
   assert.ok(body.total > 40);
   assert.equal(body.stale, false);
   assert.equal(body.remoteRefresh, false);
@@ -187,7 +187,7 @@ test("GET /api/resources searches the directory in several languages and honours
 });
 
 test("GET /api/ecosystem lists the three sibling apps with tagged launch links", async () => {
-  const body = (await (await ecosystemGET()).json()) as { apps: Array<{ id: string; launchUrl: string; routes?: Array<{ url: string }> }>; feeds: Record<string, string> };
+  const body = (await (await ecosystemGET(new Request("http://localhost/api/ecosystem"))).json()) as { apps: Array<{ id: string; launchUrl: string; routes?: Array<{ url: string }> }>; feeds: Record<string, string> };
   assert.deepEqual(body.apps.map((app) => app.id), ["neuroprep", "mdcat-prepmaster", "cognitive-fitness"]);
   assert.ok(body.apps.every((app) => app.launchUrl.includes("utm_source=raahi")));
   assert.ok(body.apps[2].routes?.some((route) => route.url.startsWith("https://cognitive-fitness-blond.vercel.app/journeys")));

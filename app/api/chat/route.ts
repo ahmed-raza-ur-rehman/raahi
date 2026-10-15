@@ -4,19 +4,36 @@ import { ensureDatabaseSeeded } from "@/lib/db/seed";
 import { detectLanguage } from "@/lib/ai/language";
 import { detectSafetySignals } from "@/lib/safety/detect";
 import { getOrCreateConversation, runOrchestrator } from "@/lib/ai/orchestrator";
+import { findCase } from "@/lib/db/repositories/cases";
+import { ownedConversationId } from "@/lib/db/repositories/conversations";
+import { guardLegacy, type LegacyLimit } from "@/lib/platform/legacy";
+import { getLogger } from "@/lib/platform/log";
 import type { Language } from "@/lib/types";
+import { getSessionId } from "@/lib/web/session";
 
 const schema = z.object({
   message: z.string().trim().min(1).max(3000),
-  conversationId: z.string().optional(),
-  sessionId: z.string().optional(),
-  caseId: z.string().optional(),
+  // Accepted for compatibility with older clients, but never trusted: see `handle`.
+  conversationId: z.string().max(80).optional(),
+  sessionId: z.string().max(120).optional(),
+  caseId: z.string().max(80).optional(),
   language: z.enum(["en", "ur", "ps"]).optional(),
-  profile: z.record(z.string(), z.unknown()).default({}),
+  profile: z.record(z.string().max(60), z.unknown()).default({}),
   stream: z.boolean().default(true),
 });
 
-export async function POST(request: Request) {
+const limits: LegacyLimit[] = [
+  { policy: "chatSession", by: "session" },
+  { policy: "chat", by: "ip" },
+];
+
+/**
+ * The assistant. It calls a paid model, so it is rate limited per session and per address and capped in size.
+ * The session cookie is the only identity: a session id, conversation id or case id in the body is honoured only
+ * if it already belongs to the cookie's session, otherwise a fresh conversation is started. That closes the
+ * hole where a guessable id let one visitor read or write another visitor's conversation or case.
+ */
+async function handle(request: Request) {
   const body = await request.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
@@ -27,15 +44,15 @@ export async function POST(request: Request) {
 
   const {
     message,
-    conversationId: providedConvId,
-    sessionId: providedSessionId,
-    caseId,
+    conversationId: requestedConversationId,
+    caseId: requestedCaseId,
     language: requestedLanguage,
     stream,
   } = parsed.data;
 
-  const sessionId = providedSessionId || `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  const conversationId = providedConvId || getOrCreateConversation(sessionId, caseId);
+  const sessionId = await getSessionId();
+  const caseId = requestedCaseId && findCase(requestedCaseId, sessionId) ? requestedCaseId : undefined;
+  const conversationId = ownedConversationId(requestedConversationId, sessionId) ?? getOrCreateConversation(sessionId, caseId);
   const detected = detectLanguage(message, requestedLanguage);
   const language: Language = requestedLanguage ?? detected;
 
@@ -57,7 +74,7 @@ export async function POST(request: Request) {
           // Send metadata first
           controller.enqueue(
             encoder.encode(
-              `data: ${JSON.stringify({ type: "meta", conversationId, sessionId, language })}\n\n`
+              `data: ${JSON.stringify({ type: "meta", conversationId, language })}\n\n`
             )
           );
 
@@ -66,9 +83,10 @@ export async function POST(request: Request) {
           }
           controller.close();
         } catch (err) {
-          const errorMsg = err instanceof Error ? err.message : "Internal streaming error";
+          // The cause stays in the server log; the client only learns that this answer failed.
+          getLogger().error("assistant stream failed", { error: err });
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: "error", error: errorMsg })}\n\n`)
+            encoder.encode(`data: ${JSON.stringify({ type: "error", error: "Something went wrong while answering. Please try again." })}\n\n`)
           );
           controller.close();
         }
@@ -81,7 +99,6 @@ export async function POST(request: Request) {
         "Cache-Control": "no-cache, no-transform",
         Connection: "keep-alive",
         "X-Conversation-Id": conversationId,
-        "X-Session-Id": sessionId,
       },
     });
   }
@@ -122,7 +139,6 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     conversationId,
-    sessionId,
     language,
     emergency: safety.emergency,
     medical: safety.medical,
@@ -131,4 +147,6 @@ export async function POST(request: Request) {
     results: searchResults,
     relevantServiceIds,
   });
-}
+}
+
+export const POST = guardLegacy(handle, { name: "chat", limits, maxBodyBytes: 16 * 1024 });

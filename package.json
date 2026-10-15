@@ -23,9 +23,12 @@
     "contract:write": "tsx scripts/contract-fixtures.ts",
     "contract:check": "tsx scripts/contract-fixtures.ts --check",
     "test:platform": "tsx --test \"tests/platform/*.test.ts\"",
-    "test:api": "tsx --test \"tests/api/*.test.ts\""
+    "test:api": "tsx --test \"tests/api/*.test.ts\"",
+    "smoke": "tsx scripts/smoke.ts"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/noto-naskh-arabic": "^5.3.0",
     "better-sqlite3": "^13.0.3",
     "cheerio": "^1.2.0",
     "domhandler": "^5.0.3",

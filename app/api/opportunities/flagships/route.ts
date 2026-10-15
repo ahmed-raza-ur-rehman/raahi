@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { jsonResponse, optionsResponse } from "@/lib/opportunities/api";
 import { buildPlanner, searchFlagships, summarizeFlagship, type FlagshipRoute } from "@/lib/opportunities/flagships";
 import { FUNDING_TYPES, LEVELS, OPPORTUNITY_KINDS, type Funding, type Level, type OpportunityKind } from "@/lib/opportunities/types";
@@ -13,7 +14,7 @@ const oneOf = <T extends string>(allowed: readonly T[], value: string | null): T
  * Pakistan, what to prepare, and the dates of the latest call we could confirm (each marked `official` or `reported`).
  * `phase` is computed for today in Pakistan. Results come most-urgent first; `q` understands English, Roman Urdu and Urdu.
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const lang = params.get("lang");
   const language: Language = lang === "ur" || lang === "ps" ? lang : "en";
@@ -42,3 +43,6 @@ export async function GET(request: Request) {
 export function OPTIONS() {
   return optionsResponse();
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const GET = guardLegacy(handleGET, { name: "flagshipsLegacy", csrf: false, limits: [{ policy: "read", by: "ip" }] });

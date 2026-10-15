@@ -1,4 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
+import { guardLegacy } from "@/lib/platform/legacy";
 import { errorResponse, jsonResponse } from "@/lib/opportunities/api";
 import { runScrapers } from "@/lib/opportunities/scrapers/run";
 import { SNAPSHOT_PATH, readSnapshotFile, writeSnapshotFile } from "@/lib/opportunities/snapshot";
@@ -41,5 +42,6 @@ async function handle(request: Request) {
   return jsonResponse({ generatedAt: snapshot.generatedAt, items: snapshot.items.length, persisted, sources: snapshot.sources.map((s) => ({ id: s.sourceId, status: s.status, items: s.items, error: s.error })) }, { cors: false });
 }
 
-export const GET = handle;
-export const POST = handle;
+const guarded = guardLegacy(handle, { name: "refreshLegacy", csrf: false, limits: [{ policy: "admin", by: "ip" }] });
+export const GET = guarded;
+export const POST = guarded;

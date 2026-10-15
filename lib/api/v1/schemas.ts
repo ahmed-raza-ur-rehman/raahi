@@ -374,3 +374,28 @@ export const refreshResponse = z.object({
   persisted: z.boolean(),
   sources: z.array(z.object({ id: z.string(), status: z.string(), items: z.number().int(), error: z.string().optional() })),
 });
+
+// ─── Moderation of partner submissions (admin) ───────────────────────────────
+
+export const submissionId = z.string().regex(/^submission-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+export const submissionSummary = z.strictObject({
+  id: z.string(),
+  name: z.string(),
+  nameUr: z.string(),
+  organizationId: z.string(),
+  domain: z.string(),
+  sourceUrl: httpUrl,
+  sourceTitle: z.string(),
+  description: z.string(),
+  submittedAt: isoInstant,
+});
+export const submissionListResponse = z.object({ data: z.array(submissionSummary), total: z.number().int() });
+export const submissionParams = z.object({ id: submissionId });
+export const reviewRequest = z
+  .object({
+    decision: z.enum(["approve", "reject"]),
+    /** Authority tier to publish at: 1 = government ... 4. Defaults to 4 (lowest published tier). */
+    authorityTier: z.number().int().min(1).max(4).optional(),
+  })
+  .strict();
+export const reviewResponse = z.object({ id: z.string(), decision: z.enum(["approve", "reject"]), status: z.enum(["published", "discarded"]) });

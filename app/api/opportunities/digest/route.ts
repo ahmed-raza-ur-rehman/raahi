@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { CORS_HEADERS, jsonResponse, optionsResponse } from "@/lib/opportunities/api";
 import { buildDigest } from "@/lib/opportunities/digest";
 import { siteOrigin } from "@/lib/opportunities/feeds";
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
  * A short "what to look at today" message — closing within 7 days, new in Pakistan, new abroad, yearly programmes to
  * act on — ready to paste into WhatsApp (`format=text`, the default) or post to Telegram (`format=html`).
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const language = params.get("lang") === "ur" ? "ur" : "en";
   const max = Math.min(Math.max(Number(params.get("max")) || 3800, 600), 4000);
@@ -33,3 +34,6 @@ export async function GET(request: Request) {
 export function OPTIONS() {
   return optionsResponse();
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const GET = guardLegacy(handleGET, { name: "digestLegacy", csrf: false, limits: [{ policy: "read", by: "ip" }] });

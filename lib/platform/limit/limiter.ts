@@ -19,6 +19,12 @@ export const RATE_POLICIES = {
   // Failed credentials only: stops guessing a secret at wire speed.
   authfail: { rpm: 20, burst: 10 },
   admin: { rpm: 20, burst: 5 },
+  // The original cookie-session web endpoints. `chat` and `ocr` call paid models; `submit` writes to a review queue.
+  chat: { rpm: 30, burst: 10 },
+  chatSession: { rpm: 12, burst: 6 },
+  ocr: { rpm: 10, burst: 4 },
+  submit: { rpm: 2, burst: 2 },
+  cases: { rpm: 60, burst: 20 },
 } as const;
 
 export type PolicyName = keyof typeof RATE_POLICIES;

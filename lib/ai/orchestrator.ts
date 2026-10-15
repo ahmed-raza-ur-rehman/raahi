@@ -1,3 +1,4 @@
+import { claimConversation, newConversationId } from "@/lib/db/repositories/conversations";
 import { searchServicesHybrid } from "@/lib/rag/search";
 import { eligibilityEngine } from "@/lib/eligibility/engine";
 import { listActiveServices } from "@/lib/db/repositories/services";
@@ -391,7 +392,7 @@ export function getOrCreateConversation(sessionId: string, caseId?: string): str
       .get(sessionId, caseId) as { id: string } | undefined;
     if (existing) return existing.id;
   }
-  const convId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const convId = newConversationId();
   db.prepare(`INSERT INTO conversations (id, session_id, case_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`)
     .run(convId, sessionId, caseId ?? null, now, now);
   return convId;
@@ -499,6 +500,12 @@ export interface OrchestratorOptions {
 export async function* runOrchestrator(options: OrchestratorOptions): AsyncGenerator<string> {
   const { message, conversationId, sessionId, language } = options;
   const client = getDashScopeClient();
+
+  // Defence in depth: never read or append to a conversation that belongs to another session (the route also checks).
+  if (!claimConversation(conversationId, sessionId, options.caseId)) {
+    yield `data: ${JSON.stringify({ type: "error", error: "That conversation is not available." })}\n\n`;
+    return;
+  }
 
   // Guardrail 1: Sanitize user input against prompt injection
   const { sanitized, flagged } = sanitizeUserInput(message);

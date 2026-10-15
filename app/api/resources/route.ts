@@ -1,9 +1,10 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { jsonResponse, optionsResponse } from "@/lib/opportunities/api";
 import { linkHealthCheckedAt, searchResources } from "@/lib/opportunities/directory";
 import { RESOURCE_CATEGORIES, type ResourceCategory } from "@/lib/opportunities/types";
 
 /** GET /api/resources?q=&category=&scope=&free=1&official=1&verified=1&tag= — the curated directory. */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const category = params.get("category");
   const scope = params.get("scope");
@@ -23,3 +24,6 @@ export async function GET(request: Request) {
 export function OPTIONS() {
   return optionsResponse();
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const GET = guardLegacy(handleGET, { name: "resourcesLegacy", csrf: false, limits: [{ policy: "read", by: "ip" }] });

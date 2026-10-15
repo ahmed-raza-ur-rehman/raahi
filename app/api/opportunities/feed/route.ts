@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { CORS_HEADERS, errorResponse, optionsResponse, parseOpportunityQuery } from "@/lib/opportunities/api";
 import { FEED_CONTENT_TYPE, buildAtom, buildJsonFeed, buildRss, describeQuery, siteOrigin, type FeedFormat } from "@/lib/opportunities/feeds";
 import { getStatus, prepareOpportunities, searchOpportunities } from "@/lib/opportunities/store";
@@ -7,7 +8,7 @@ import { getStatus, prepareOpportunities, searchOpportunities } from "@/lib/oppo
  * Takes the same filters as /api/opportunities (q, kind, scope, country, level, funding, within, remote, pk …).
  * Newest first, 30 entries by default (max 100). Open to Pakistan unless `pk=0`.
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const url = new URL(request.url);
   const requested = (url.searchParams.get("format") ?? "rss").toLowerCase();
   if (requested !== "rss" && requested !== "atom" && requested !== "json") return errorResponse("format must be rss, atom or json", 400);
@@ -41,3 +42,6 @@ export async function GET(request: Request) {
 export function OPTIONS() {
   return optionsResponse();
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const GET = guardLegacy(handleGET, { name: "feedLegacy", csrf: false, limits: [{ policy: "read", by: "ip" }] });

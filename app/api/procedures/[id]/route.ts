@@ -1,7 +1,8 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { NextResponse } from "next/server";
 import { ensureDatabaseSeeded } from "@/lib/db/seed";
 import { findServiceById } from "@/lib/db/repositories/services";
-export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+async function handleGET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   ensureDatabaseSeeded();
   const service = findServiceById((await params).id);
   if (!service) {
@@ -26,4 +27,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       lastVerified: service.lastVerified,
     },
   });
-}
+}
+
+export const GET = guardLegacy<{ params: Promise<{ id: string }> }>(handleGET, { name: "getProcedure", limits: [{ policy: "read", by: "ip" }] });

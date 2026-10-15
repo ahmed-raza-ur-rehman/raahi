@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { ensureDatabaseSeeded } from "@/lib/db/seed";
+import { approveSubmission, listSubmissions, rejectSubmission } from "@/lib/db/repositories/services";
 import { isDashScopeConfigured } from "@/lib/ai/client";
 import { issueDeviceToken } from "@/lib/platform/auth/tokens";
 import { getPowState, issueChallenge, verifySolution } from "@/lib/platform/auth/pow";
@@ -552,6 +554,48 @@ export const adminRefresh = defineOperation({
   },
 });
 
+export const adminListSubmissions = defineOperation({
+  id: "listSubmissions",
+  method: "GET",
+  path: "/api/v1/admin/submissions",
+  summary: "Partner service submissions waiting for review",
+  description: "Services submitted through the partner portal are stored inactive and invisible to citizens until an administrator approves them. Administrator credential required.",
+  tags: ["Operations"],
+  auth: "admin",
+  rate: "admin",
+  cors: "restricted",
+  query: z.object({}).strict(),
+  responses: { 200: { description: "Pending submissions, oldest first.", schema: S.submissionListResponse } },
+  errors: ["unauthorized", "forbidden"],
+  handler: () => {
+    ensureDatabaseSeeded();
+    const data = listSubmissions();
+    return { data, total: data.length };
+  },
+});
+
+export const adminReviewSubmission = defineOperation({
+  id: "reviewSubmission",
+  method: "POST",
+  path: "/api/v1/admin/submissions/{id}",
+  summary: "Approve or reject a partner submission",
+  description: "`approve` publishes it at the authority tier you choose (1 = government ... 4, default 4); `reject` deletes it. Administrator credential required.",
+  tags: ["Operations"],
+  auth: "admin",
+  rate: "admin",
+  cors: "restricted",
+  params: S.submissionParams,
+  body: S.reviewRequest,
+  responses: { 200: { description: "The decision was applied.", schema: S.reviewResponse } },
+  errors: ["unauthorized", "forbidden", "not_found", "validation_failed", "invalid_parameter"],
+  handler: ({ params, body }) => {
+    ensureDatabaseSeeded();
+    const applied = body.decision === "approve" ? approveSubmission(params.id, body.authorityTier ?? 4) : rejectSubmission(params.id);
+    if (!applied) throw new ApiError("not_found", "No pending submission has that id.");
+    return { id: params.id, decision: body.decision, status: body.decision === "approve" ? ("published" as const) : ("discarded" as const) };
+  },
+});
+
 /** The registry: OpenAPI generation, the route-file consistency test and the contract tests iterate this. */
 export const OPERATIONS: readonly Operation[] = [
   health,
@@ -573,4 +617,6 @@ export const OPERATIONS: readonly Operation[] = [
   authDevice,
   adminMetrics,
   adminRefresh,
+  adminListSubmissions,
+  adminReviewSubmission,
 ];

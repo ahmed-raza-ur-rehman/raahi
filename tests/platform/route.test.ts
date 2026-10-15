@@ -23,6 +23,7 @@ let clock = NOW_MS;
 beforeEach(() => {
   config = loadConfig({
     NODE_ENV: "test",
+    RAAHI_RATE_LIMIT_SCALE: "1",
     RAAHI_TOKEN_SECRETS: `k1:${randomBytes(32).toString("base64url")}`,
     RAAHI_ADMIN_SECRET: ADMIN,
     RAAHI_TRUSTED_PROXIES: "1",

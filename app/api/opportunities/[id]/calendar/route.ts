@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { CORS_HEADERS, errorResponse } from "@/lib/opportunities/api";
 import { buildIcs, type IcsEvent } from "@/lib/opportunities/ics";
 import { buildApplicationPlan } from "@/lib/opportunities/plan";
@@ -5,7 +6,7 @@ import { getOpportunity, prepareOpportunities } from "@/lib/opportunities/store"
 import { slugify } from "@/lib/opportunities/text";
 
 /** GET /api/opportunities/:id/calendar[?plan=1] → an .ics file with the deadline (and, optionally, each planned step). */
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+async function handleGET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   await prepareOpportunities();
   const item = getOpportunity(id);
@@ -30,3 +31,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     },
   });
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const GET = guardLegacy<{ params: Promise<{ id: string }> }>(handleGET, { name: "itemCalendarLegacy", csrf: false, limits: [{ policy: "read", by: "ip" }] });

@@ -32,6 +32,26 @@ const BOILERPLATE = [
   /\s*the post .{1,200}? appeared first on .{1,120}$/i,
 ];
 
+/**
+ * Characters that hide or spoof text and have no place in a title or summary: C0/C1 control characters (except tab,
+ * line feed, carriage return), bidirectional embeddings / overrides / isolates (the "Trojan Source" family, e.g. U+202E
+ * makes "gnp.exe" display as "exe.png"), line and paragraph separators, soft hyphen, word joiner, zero-width space and
+ * the byte-order mark. LRM / RLM stay: Urdu mixed with numbers and Latin needs them.
+ */
+const SPOOFING_OR_INVISIBLE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\u00AD\u2028\u2029\u202A-\u202E\u2060\u2066-\u2069\u200B\uFEFF]/g;
+const ARABIC_SCRIPT = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFC]/;
+
+/**
+ * Remove invisible and spoofing characters. Zero-width (non-)joiners are kept only between two Arabic-script letters,
+ * where Urdu and Persian spelling needs them (e.g. compound words); anywhere else they are noise or obfuscation.
+ */
+export function sanitizeText(input: string): string {
+  return input
+    .replace(/\u00a0/g, " ")
+    .replace(SPOOFING_OR_INVISIBLE, "")
+    .replace(/[\u200C\u200D]/g, (joiner, offset: number, whole: string) => (ARABIC_SCRIPT.test(whole[offset - 1] ?? "") && ARABIC_SCRIPT.test(whole[offset + 1] ?? "") ? joiner : ""));
+}
+
 /** HTML → single-paragraph plain text. */
 export function stripHtml(html: string | undefined | null): string {
   if (!html) return "";
@@ -41,7 +61,7 @@ export function stripHtml(html: string | undefined | null): string {
     .replace(/<\s*br\s*\/?>/gi, " ")
     .replace(/<\/(p|div|li|ul|ol|h[1-6]|tr|table|blockquote)>/gi, " ")
     .replace(/<[^>]+>/g, " ");
-  text = decodeEntities(text).replace(/[\u00a0\u200b\u200c\u200d\ufeff]/g, " ").replace(/\s+/g, " ").trim();
+  text = sanitizeText(decodeEntities(text)).replace(/\s+/g, " ").trim();
   for (let pass = 0; pass < 2; pass += 1) {
     for (const pattern of BOILERPLATE) text = text.replace(pattern, "").trim();
   }
@@ -88,10 +108,21 @@ export function slugify(text: string): string {
 const TRACKING_PARAMS = /^(utm_|fbclid|gclid|mc_|ref$|ref_|source$|spm$|igshid|yclid|msclkid)/i;
 
 /** Lower-case host, drop fragments and tracking parameters (keeps `couponCode`). */
+/** localhost, internal-only suffixes, single-label names and IP literals (v4 and v6). */
+export function isUnsafeHost(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/\.$/, "");
+  if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".internal") || host.endsWith(".lan")) return true;
+  if (!host.includes(".") && !host.includes(":")) return true;
+  return /^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.startsWith("[") || host.includes(":");
+}
+
 export function canonicalUrl(raw: string, base?: string): string | undefined {
   try {
     const url = new URL(raw.trim(), base);
     if (url.protocol !== "http:" && url.protocol !== "https:") return undefined;
+    // A listing never needs credentials, an IP literal or an internal name; they are how "trusted.org@evil.example"-style
+    // phishing links and links into private networks are disguised.
+    if (url.username || url.password || isUnsafeHost(url.hostname)) return undefined;
     url.hash = "";
     url.hostname = url.hostname.toLowerCase();
     for (const key of [...url.searchParams.keys()]) {
@@ -99,7 +130,7 @@ export function canonicalUrl(raw: string, base?: string): string | undefined {
     }
     let result = url.toString();
     if (url.pathname.length > 1 && result.endsWith("/") && !url.search) result = result.slice(0, -1);
-    return result;
+    return result.length <= 2048 ? result : undefined;
   } catch {
     return undefined;
   }

@@ -62,7 +62,8 @@ test("[REQ-OPS-001] configuration: sane defaults per environment and clamped num
   assert.equal(loadConfig({ NODE_ENV: "test" }).logLevel, "silent");
   assert.equal(loadConfig({ RAAHI_TRUSTED_PROXIES: "99" }).trustedProxies, 5);
   assert.equal(loadConfig({ RAAHI_TOKEN_TTL_SECONDS: "5" }).tokenTtlSeconds, 300);
-  assert.equal(loadConfig({ RAAHI_RATE_LIMIT_SCALE: "-3" }).rateLimitScale, 1);
+  assert.equal(loadConfig({ NODE_ENV: "production", RAAHI_RATE_LIMIT_SCALE: "-3" }).rateLimitScale, 1);
+  assert.equal(loadConfig({ NODE_ENV: "test" }).rateLimitScale, 100, "tests are quiet unless they opt in");
   assert.equal(loadConfig({ RAAHI_RATE_LIMIT_SCALE: "1000" }).rateLimitScale, 100);
   assert.deepEqual(loadConfig({ RAAHI_POW_BITS: "18" }).powBits, { base: 18, max: 24 });
 });

@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { CORS_HEADERS, optionsResponse, parseOpportunityQuery } from "@/lib/opportunities/api";
 import { describeQuery, pageUrl, siteOrigin } from "@/lib/opportunities/feeds";
 import { buildIcs, type IcsEvent } from "@/lib/opportunities/ics";
@@ -7,7 +8,7 @@ import { prepareOpportunities, searchOpportunities } from "@/lib/opportunities/s
  * GET /api/opportunities/calendar?… — every matching listing's deadline as an all-day event. Add the address to Google,
  * Apple or Outlook Calendar ("subscribe from URL") and the deadlines stay up to date. Same filters as /api/opportunities.
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const url = new URL(request.url);
   const parsed = parseOpportunityQuery(url.searchParams);
   await prepareOpportunities();
@@ -39,3 +40,6 @@ export async function GET(request: Request) {
 export function OPTIONS() {
   return optionsResponse();
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const GET = guardLegacy(handleGET, { name: "calendarLegacy", csrf: false, limits: [{ policy: "read", by: "ip" }] });

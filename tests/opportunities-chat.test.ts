@@ -26,9 +26,11 @@ interface SseEvent {
 }
 
 async function ask(message: string, language = "en"): Promise<SseEvent[]> {
-  const conversationId = getOrCreateConversation(`chat-test-${Math.random().toString(36).slice(2)}`);
+  // One session owns the conversation it runs (the orchestrator refuses a conversation that belongs to another session).
+  const sessionId = `chat-test-${Math.random().toString(36).slice(2)}`;
+  const conversationId = getOrCreateConversation(sessionId);
   const events: SseEvent[] = [];
-  for await (const chunk of runOrchestrator({ message, conversationId, sessionId: "chat-test", language })) {
+  for await (const chunk of runOrchestrator({ message, conversationId, sessionId, language })) {
     events.push(JSON.parse(chunk.replace(/^data: /, "").trim()) as SseEvent);
   }
   return events;

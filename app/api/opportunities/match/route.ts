@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { z } from "zod";
 import { errorResponse, jsonResponse } from "@/lib/opportunities/api";
 import { rankMatches } from "@/lib/opportunities/match";
@@ -17,7 +18,7 @@ const profileSchema = z.object({
 });
 
 /** POST a short profile, get ranked opportunities with the reasons. Nothing is stored. */
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   let body: unknown;
   try {
     body = await request.json();
@@ -38,3 +39,6 @@ export async function POST(request: Request) {
   const results = rankMatches(profile, candidates, 12);
   return jsonResponse({ total: results.length, results });
 }
+
+/** Public and cookie-free (the widget and sibling apps call it cross-origin), so no cross-site check; rate limited per client address. */
+export const POST = guardLegacy(handlePOST, { name: "matchLegacy", csrf: false, limits: [{ policy: "tools", by: "ip" }], maxBodyBytes: 32 * 1024 });

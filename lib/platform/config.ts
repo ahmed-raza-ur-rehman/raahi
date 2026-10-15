@@ -163,7 +163,8 @@ export function loadConfig(env: Env = process.env): PlatformConfig {
     apiKeys: parseApiKeys(env.RAAHI_API_KEYS, warnings),
     adminSecret,
     corsOrigins: [...corsOrigins],
-    rateLimitScale: Number.isFinite(scale) && scale > 0 ? clamp(scale, 0.05, 100) : 1,
+    // Unit tests that are not about rate limiting would otherwise trip the limiter; they can still opt in explicitly.
+    rateLimitScale: Number.isFinite(scale) && scale > 0 ? clamp(scale, 0.05, 100) : nodeEnv === "test" ? 100 : 1,
     validateResponses: env.RAAHI_VALIDATE_RESPONSES ? env.RAAHI_VALIDATE_RESPONSES === "1" : nodeEnv !== "production",
     logLevel: level === "debug" || level === "info" || level === "warn" || level === "error" || level === "silent" ? level : nodeEnv === "test" ? "silent" : "info",
     warnings,

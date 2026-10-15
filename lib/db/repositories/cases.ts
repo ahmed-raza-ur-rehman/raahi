@@ -42,32 +42,22 @@ function hydrate(row: CaseRow): CitizenCase {
   };
 }
 
-export function listCases(sessionId?: string) {
-  const database = getSqlite();
-  if (sessionId) {
-    const rows = database
-      .prepare("SELECT * FROM cases WHERE session_id = ? ORDER BY updated_at DESC")
-      .all(sessionId) as CaseRow[];
-    if (rows.length > 0) return rows.map(hydrate);
-  }
-  return (
-    database
-      .prepare("SELECT * FROM cases ORDER BY updated_at DESC LIMIT 20")
-      .all() as CaseRow[]
-  ).map(hydrate);
+/**
+ * Cases belong to exactly one session. Every read and write below is scoped by `session_id` in SQL, so there is no
+ * code path that can return or change another visitor's case (OWASP API1: broken object-level authorisation).
+ * A session with no cases gets an empty list - never somebody else's.
+ */
+export function listCases(sessionId: string) {
+  const rows = getSqlite()
+    .prepare("SELECT * FROM cases WHERE session_id = ? ORDER BY updated_at DESC")
+    .all(sessionId) as CaseRow[];
+  return rows.map(hydrate);
 }
 
-export function findCase(id: string, sessionId?: string) {
-  const database = getSqlite();
-  if (sessionId) {
-    const row = database
-      .prepare("SELECT * FROM cases WHERE id = ? AND session_id = ?")
-      .get(id, sessionId) as CaseRow | undefined;
-    return row ? hydrate(row) : undefined;
-  }
-  const row = database
-    .prepare("SELECT * FROM cases WHERE id = ?")
-    .get(id) as CaseRow | undefined;
+export function findCase(id: string, sessionId: string) {
+  const row = getSqlite()
+    .prepare("SELECT * FROM cases WHERE id = ? AND session_id = ?")
+    .get(id, sessionId) as CaseRow | undefined;
   return row ? hydrate(row) : undefined;
 }
 
@@ -96,7 +86,7 @@ export function updateCase(id: string, sessionId: string, input: { status?: Citi
   return findCase(id, sessionId);
 }
 
-export function addDocument(input: { caseId: string; sessionId?: string; documentType: string; label: string; ocrData?: Record<string, string>; verified?: boolean }) {
+export function addDocument(input: { caseId: string; sessionId: string; documentType: string; label: string; ocrData?: Record<string, string>; verified?: boolean }) {
   const existing = findCase(input.caseId, input.sessionId);
   if (!existing) return undefined;
   const id = randomUUID();
@@ -108,6 +98,9 @@ export function addDocument(input: { caseId: string; sessionId?: string; documen
   return { id, caseId: input.caseId, documentType: input.documentType, label: input.label, ocrData: input.ocrData, verified, createdAt };
 }
 
-export function deleteDocument(id: string, caseId: string) {
-  return getSqlite().prepare("DELETE FROM documents WHERE id = ? AND case_id = ?").run(id, caseId);
-}
+/** Deletes the document only if the case it belongs to is owned by `sessionId`. */
+export function deleteDocument(id: string, caseId: string, sessionId: string) {
+  return getSqlite()
+    .prepare("DELETE FROM documents WHERE id = ? AND case_id = ? AND case_id IN (SELECT id FROM cases WHERE id = ? AND session_id = ?)")
+    .run(id, caseId, caseId, sessionId);
+}
