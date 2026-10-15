@@ -35,6 +35,7 @@ include(
     ":core:database",
     ":core:data",
     ":core:designsystem",
+    ":core:testing",
     ":feature:opportunities",
     ":feature:planner",
     ":feature:tools",

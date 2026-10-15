@@ -56,6 +56,8 @@ subprojects {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
+            // A warning is a bug waiting for a release: the build fails on any compiler warning.
+            allWarningsAsErrors.set(true)
         }
     }
 }
