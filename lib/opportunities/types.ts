@@ -260,5 +260,7 @@ export interface OpportunitySearchResult {
     scope?: Scope;
     deadlineWithinDays?: number;
     remote?: boolean;
+    /** Set when the search found nothing as typed and was re-run with spelling fixes ("did you mean"). */
+    corrected?: { from: string; to: string; changes: Array<{ from: string; to: string }> };
   };
 }

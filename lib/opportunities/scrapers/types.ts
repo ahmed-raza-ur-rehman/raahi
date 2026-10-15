@@ -16,6 +16,8 @@ export type AdapterId =
   | "spsc"
   | "bpsc"
   | "etea"
+  | "fpsc"
+  | "pts"
   | "himalayas"
   | "remoteok"
   | "workingnomads"

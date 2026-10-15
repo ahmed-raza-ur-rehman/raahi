@@ -1,3 +1,4 @@
+import { buildVocabulary, correctQuery } from "./spellfix";
 import { getSqlite } from "@/lib/db/client";
 import { addDays, computeStatus, isRecentlySeen, todayInPakistan } from "./dates";
 import { clockNow } from "./clock";
@@ -285,7 +286,7 @@ function rank(item: OpportunityView, base: number, now: Date): number {
   return score;
 }
 
-export function searchOpportunities(query: OpportunityQuery = {}, now: Date = clockNow()): OpportunitySearchResult {
+function searchCore(query: OpportunityQuery, now: Date): OpportunitySearchResult {
   const db = getSqlite();
   const interpreted = interpretQuery(query.q ?? "");
 
@@ -429,6 +430,28 @@ export function searchOpportunities(query: OpportunityQuery = {}, now: Date = cl
     },
     interpreted: { terms, kinds, country, level, funding, scope, deadlineWithinDays, remote },
   };
+}
+
+/** Words that appear in live listings: titles, organisations, tags and countries. Built only when a search finds nothing. */
+function liveVocabulary(now: Date): Map<string, number> {
+  const rows = getSqlite()
+    .prepare("SELECT title, organization, tags, country FROM opportunities WHERE expires_at > ?")
+    .all(now.getTime()) as Array<{ title: string | null; organization: string | null; tags: string | null; country: string | null }>;
+  return buildVocabulary(rows.flatMap((row) => [row.title, row.organization, row.tags, row.country]).filter((value): value is string => Boolean(value)));
+}
+
+/**
+ * Search the listings. When nothing matches as typed, unknown words are checked against the live vocabulary and the
+ * search is retried with the closest spellings; `interpreted.corrected` says what was changed.
+ */
+export function searchOpportunities(query: OpportunityQuery = {}, now: Date = clockNow()): OpportunitySearchResult {
+  const result = searchCore(query, now);
+  if (result.total > 0 || result.interpreted.terms.length === 0 || !query.q) return result;
+  const fix = correctQuery(query.q, result.interpreted.terms, liveVocabulary(now));
+  if (!fix) return result;
+  const retry = searchCore({ ...query, q: fix.q }, now);
+  if (retry.total === 0) return result;
+  return { ...retry, interpreted: { ...retry.interpreted, corrected: { from: query.q, to: fix.q, changes: fix.changes } } };
 }
 
 export function getOpportunity(id: string, now: Date = clockNow()): OpportunityView | undefined {

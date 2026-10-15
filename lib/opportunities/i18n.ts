@@ -236,6 +236,8 @@ const S = {
   homeScam: { en: "Check an offer before you pay anyone", ur: "کسی کو پیسے دینے سے پہلے پیشکش جانچیں", ps: "مخکې له پیسو ورکولو وړاندیز وګورئ" },
   homeAll: { en: "See all opportunities", ur: "تمام مواقع دیکھیں", ps: "ټولې فرصتونه وګورئ" },
   footerNote: { en: "RAAHI lists opportunities from other websites and always links back to them. Confirm details on the official page and never pay to apply.", ur: "راہی دوسری ویب سائٹس کے مواقع دکھاتا ہے اور ہمیشہ ان کا لنک دیتا ہے۔ تفصیلات سرکاری صفحے پر تصدیق کریں اور درخواست کے لیے کبھی رقم نہ دیں۔", ps: "راهي نورو سایټونو فرصتونه ښيي او تل لینک ورکوي. جزئیات په رسمي پاڼه تایید کړئ." },
+  didYouMean: { en: "Showing results for", ur: "ان کے نتائج دکھائے جا رہے ہیں", ps: "د دې پایلې ښودل کیږي" },
+  didYouMeanInstead: { en: "No results for", ur: "ان کا کوئی نتیجہ نہیں ملا", ps: "د دې هیڅ پایله ونه موندل شوه" },
   navCalendar: { en: "Calendar", ur: "کیلنڈر", ps: "کیلنډر" },
   calTitle: { en: "Year planner & deadlines", ur: "سالانہ منصوبہ اور آخری تاریخیں", ps: "کلنی پلان او وروستۍ نیټې" },
   calSub: { en: "Scholarships, exams and programmes that come round every year: when they usually open, how to apply from Pakistan, and what to prepare — plus every dated listing closing in the next 60 days.", ur: "ہر سال آنے والی اسکالرشپس، امتحانات اور پروگرام: وہ عموماً کب کھلتے ہیں، پاکستان سے اپلائی کیسے کریں اور کیا تیار کریں — اور اگلے 60 دنوں میں بند ہونے والی ہر تاریخ والی فہرست۔", ps: "هر کال راتلونکي سکالرشپونه، ازموینې او پروګرامونه: عموماً کله پرانیستل کیږي، له پاکستانه څنګه غوښتنه وکړئ او څه چمتو کړئ — او په راتلونکو ۶۰ ورځو کې تړل کیدونکې لیکنې." },

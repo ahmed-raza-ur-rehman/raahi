@@ -161,3 +161,143 @@ export const eteaAdapter: Adapter = async ({ source, http }) => {
   return parseEtea(response.text, response.url).slice(0, source.maxItems ?? 20);
 };
 
+// ─── Federal Public Service Commission (FPSC) ────────────────────────────────
+
+interface FpscJob {
+  id?: number;
+  category?: string;
+  title?: string;
+  date?: string | null;
+  description?: string;
+  expiryDate?: string | null;
+  createdAt?: string;
+}
+
+const FPSC_ORIGIN = "https://www.fpsc.gov.pk";
+const FPSC_OTHERS_THAT_ARE_OPENINGS = /advertisement|situation vacant|post of|recruit/i;
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * fpsc.gov.pk draws its job list in the browser from a public JSON endpoint (`/api/jobs`: active notices only,
+ * `?includeExpired=true` adds the archive). Each notice has a category (GR = general recruitment, CSS, Others),
+ * an expiry date and an HTML description holding the links to the advertisement PDF and the online application.
+ * Captured from GitHub's runners on 2026-10-15; the active list was empty that day, so the field names come from
+ * the archive response.
+ */
+export function parseFpsc(json: unknown, now: Date = new Date()): RawOpportunity[] {
+  const rows = (json as { data?: unknown } | undefined)?.data;
+  if (!Array.isArray(rows)) return [];
+  const today = todayInPakistan(now);
+  const items: RawOpportunity[] = [];
+
+  for (const job of rows as FpscJob[]) {
+    const title = cleanTitle(job.title);
+    if (!title || typeof job.id !== "number") continue;
+    const category = job.category ?? "GR";
+    if (category === "Others" && !FPSC_OTHERS_THAT_ARE_OPENINGS.test(title)) continue; // rules, schedules, results
+    const expiry = job.expiryDate && ISO_DAY.test(job.expiryDate) ? job.expiryDate : undefined;
+    if (expiry && expiry < today) continue;
+
+    const $ = cheerio.load(job.description ?? "");
+    // The label of a link is its own text plus the words just before it: "To Apply Online, <a>Click here</a>".
+    const links = $("a[href]")
+      .toArray()
+      .map((anchor) => {
+        const previous = anchor.previousSibling as { type?: string; data?: string } | null;
+        const before = previous?.type === "text" ? (previous.data ?? "").slice(-40) : "";
+        return { text: `${before} ${$(anchor).text()}`.replace(/\s+/g, " ").trim(), href: $(anchor).attr("href") ?? "" };
+      });
+    const resolve = (href: string) => {
+      try {
+        return new URL(href, FPSC_ORIGIN).toString();
+      } catch {
+        return undefined;
+      }
+    };
+    const advertisement = links.find((link) => /\.pdf(\?|$)/i.test(link.href) && !/guideline|fee payment/i.test(`${link.text} ${link.href}`));
+    const apply = links.find((link) => /apply/i.test(link.text) && !/\.pdf(\?|$)/i.test(link.href)); // 'Guidelines for Applying Online' is a PDF, not the form
+    const url = (advertisement && resolve(advertisement.href)) ?? `${FPSC_ORIGIN}/Jobs?section=${encodeURIComponent(category)}&ref=${job.id}`;
+
+    items.push({
+      title: `Federal Public Service Commission — ${title}`,
+      url,
+      applyUrl: apply ? resolve(apply.href) : undefined,
+      kind: "job",
+      scope: "pakistan",
+      organization: "Federal Public Service Commission",
+      summary: `Official FPSC notice (${category === "CSS" ? "CSS" : category === "GR" ? "general recruitment" : "other"}). Open it for the posts, qualifications, age limits and how to apply online.`,
+      location: "Pakistan (federal government)",
+      deadline: expiry,
+      postedAt: toIsoDateTime(job.date ?? job.createdAt),
+      tags: ["government job", "federal", "fpsc", category.toLowerCase()],
+      funding: "paid",
+    });
+  }
+  return items;
+}
+
+export const fpscAdapter: Adapter = async ({ source, http, now }) => {
+  const json = await http.getJson<unknown>(source.endpoint, { respectRobots: source.respectRobots });
+  return parseFpsc(json, now).slice(0, source.maxItems ?? 30);
+};
+
+// ─── Pakistan Testing Service (PTS) ──────────────────────────────────────────
+
+interface PtsProject {
+  ID?: number;
+  name?: string;
+  lastDate?: string | null;
+}
+
+/** PTS builds the address of a project page by base64-encoding its id nine times (its own `encodedID`). */
+export function ptsProjectId(id: number): string {
+  let value = String(id);
+  for (let round = 0; round < 9; round += 1) value = Buffer.from(value, "utf8").toString("base64");
+  return value;
+}
+
+/**
+ * `/Projects/getProjects/` is the public JSON behind the project list on pts.org.pk. Each project is one
+ * department's recruitment test with a "last date". Finished projects carry a placeholder ("......", "-----")
+ * instead of a date, so only a project with a real, future last date is listed; a date format we cannot read is
+ * logged rather than guessed.
+ */
+export function parsePts(json: unknown, now: Date = new Date(), onUnreadable: (value: string) => void = () => undefined): RawOpportunity[] {
+  if (!Array.isArray(json)) return [];
+  const today = todayInPakistan(now);
+  const items: RawOpportunity[] = [];
+
+  for (const project of json as PtsProject[]) {
+    const name = cleanTitle(project.name);
+    if (!name || typeof project.ID !== "number") continue;
+    const lastDate = (project.lastDate ?? "").trim();
+    if (!lastDate || /^[.\-–—\s]+$/.test(lastDate)) continue; // placeholder: not open
+    const deadline = parseLooseDate(lastDate);
+    if (!deadline) {
+      onUnreadable(lastDate);
+      continue;
+    }
+    if (deadline < today) continue;
+
+    const code = /\((\d{2,4})\)(?!.*\(\d{2,4}\))/.exec(name)?.[1];
+    const organization = name.replace(/\s*\(\d{2,4}\)(?=\s*(?:\(|$))/g, "").replace(/\s+/g, " ").trim();
+    items.push({
+      title: `${organization} — recruitment test through PTS${code ? ` (project ${code})` : ""}`,
+      url: `https://www.pts.org.pk/Projects/Details/${ptsProjectId(project.ID)}`,
+      kind: "job",
+      scope: "pakistan",
+      organization,
+      summary: "Recruitment run through the Pakistan Testing Service. Open the project page for the posts, eligibility and how to apply; the last date is the one PTS shows.",
+      deadline,
+      deadlineText: `Last date: ${lastDate}`,
+      tags: ["government job", "pts", "testing service"],
+      funding: "paid",
+    });
+  }
+  return items;
+}
+
+export const ptsAdapter: Adapter = async ({ source, http, now, log }) => {
+  const json = await http.getJson<unknown>(source.endpoint, { respectRobots: source.respectRobots });
+  return parsePts(json, now, (value) => log(`unreadable last date "${value}" — the format may have changed`)).slice(0, source.maxItems ?? 30);
+};

@@ -1,4 +1,5 @@
 import { crawlDelay, isAllowed, parseRobots, type RobotsRules } from "./robots";
+import { extraCaFor, fetchWithExtraCa, isChainError } from "./tls";
 
 /**
  * Polite HTTP client for the scrapers.
@@ -41,6 +42,11 @@ export interface HttpClientOptions {
   userAgent?: string;
   fetchImpl?: typeof fetch;
   sleep?: (ms: number) => Promise<void>;
+  /**
+   * Extra intermediate certificates by host, for servers that do not send their own chain. Defaults to the built-in
+   * list of known Pakistani hosts; the fallback is only tried after a normal request fails with a chain error.
+   */
+  extraCa?: Record<string, string[]>;
 }
 
 export interface RequestOptions {
@@ -100,16 +106,21 @@ export function createHttpClient(options: HttpClientOptions = {}): HttpClient {
   async function rawFetch(url: string, request: RequestOptions, accept: string): Promise<Response> {
     const signals = [AbortSignal.timeout(timeoutMs)];
     if (request.signal) signals.push(request.signal);
-    return doFetch(url, {
-      redirect: "follow",
-      signal: AbortSignal.any(signals),
-      headers: {
-        "User-Agent": userAgent,
-        Accept: request.accept ?? accept,
-        "Accept-Language": "en",
-        ...request.headers,
-      },
-    });
+    const signal = AbortSignal.any(signals);
+    const headers = {
+      "User-Agent": userAgent,
+      Accept: request.accept ?? accept,
+      "Accept-Language": "en",
+      ...request.headers,
+    };
+    try {
+      return await doFetch(url, { redirect: "follow", signal, headers });
+    } catch (error) {
+      // A server that omits its intermediate certificate: retry once with the known public intermediate for that host.
+      const extra = isChainError(error) ? extraCaFor(new URL(url).hostname, options.extraCa) : undefined;
+      if (extra) return fetchWithExtraCa(url, { headers, signal, maxBytes }, extra);
+      throw error;
+    }
   }
 
   async function loadRobots(origin: string, request: RequestOptions): Promise<RobotsEntry> {

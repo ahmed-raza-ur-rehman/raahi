@@ -2,7 +2,7 @@ import type { Adapter, AdapterId } from "../types";
 import { arbeitnowAdapter, codeforcesAdapter, devpostAdapter, jobicyAdapter, realDiscountAdapter, remotiveAdapter } from "./apis";
 import { rssAdapter, wordpressAdapter } from "./feeds";
 import { beoeNoticesAdapter, njpAdapter, scholarshipTabAdapter } from "./html";
-import { bpscAdapter, eteaAdapter, spscAdapter } from "./pk";
+import { bpscAdapter, eteaAdapter, fpscAdapter, ptsAdapter, spscAdapter } from "./pk";
 import { ctftimeAdapter, himalayasAdapter, remoteOkAdapter, weWorkRemotelyAdapter, workingNomadsAdapter } from "./remote";
 
 export const ADAPTERS: Record<AdapterId, Adapter> = {
@@ -20,6 +20,8 @@ export const ADAPTERS: Record<AdapterId, Adapter> = {
   spsc: spscAdapter,
   bpsc: bpscAdapter,
   etea: eteaAdapter,
+  fpsc: fpscAdapter,
+  pts: ptsAdapter,
   himalayas: himalayasAdapter,
   remoteok: remoteOkAdapter,
   workingnomads: workingNomadsAdapter,

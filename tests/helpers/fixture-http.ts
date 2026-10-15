@@ -54,6 +54,8 @@ export function allSourceRoutes(): Record<string, Route> {
     "https://spsc.gos.pk/advertisement.php": fixture("spsc.sample.html"),
     "https://bpsc.gob.pk/BPSC/pages?jobs": fixture("bpsc.sample.html"),
     "https://www.etea.edu.pk/": fixture("etea.sample.html"),
+    "https://www.fpsc.gov.pk/api/jobs": fixture("fpsc-jobs.active.json"),
+    "https://www.pts.org.pk/Projects/getProjects/": fixture("pts-projects.sample.json"),
     "https://himalayas.app/jobs/api": (url) => {
       const params = new URL(url).searchParams;
       const page = params.get("page");

@@ -319,6 +319,11 @@ export default function HubPage({ initialQuery = "" }: { initialQuery?: string }
             <h2 className="text-base font-black text-[var(--ink)]">
               {data ? `${showSoon ? `${t(language, "allListings")} · ` : ""}${data.total} ${t(language, "results")}` : t(language, "loading")}
             </h2>
+            {interpreted?.corrected && (
+              <p role="status" className="text-xs text-[var(--ink-soft)]">
+                {t(language, "didYouMean")} <span className="font-black text-[var(--forest-dark)]" dir="auto">{interpreted.corrected.to}</span> · {t(language, "didYouMeanInstead")} <span dir="auto">“{interpreted.corrected.from}”</span>
+              </p>
+            )}
             {understood.length > 0 && filters.q && (
               <p className="text-xs text-[var(--muted)]">{t(language, "understood")}: <span className="font-bold text-[var(--forest-dark)]">{understood.join(" · ")}</span></p>
             )}
