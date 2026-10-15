@@ -1,0 +1,116 @@
+name: Android dev loop (temporary)
+
+# TEMPORARY - removed before this branch is merged (the permanent workflow is android.yml).
+# The authoring sandbox cannot reach Google Maven / Maven Central / the Android SDK, so this job builds the
+# Android project on a GitHub runner and commits a compact summary (errors, test counts, lint) under
+# .probe/android/ so compile errors can be fixed without a local toolchain.
+on:
+  push:
+    branches: [arena/e85add2f-raahi]
+    paths: ["android/**", ".github/workflows/android-dev.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-dev
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Validate the Gradle wrapper
+        uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-read-only: false
+
+      - name: Build, test, lint
+        id: gradle
+        working-directory: android
+        run: |
+          set +e
+          ./gradlew --console=plain --stacktrace --warning-mode=all --continue \
+            assembleDebug assembleRelease testDebugUnitTest lintDebug > ../build.log 2>&1
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Summarize
+        if: always()
+        run: |
+          mkdir -p .probe/android
+          python3 - <<'PY' > .probe/android/build-summary.txt
+          import glob, re, xml.etree.ElementTree as ET
+          log = open("build.log", errors="replace").read().splitlines()
+          print("gradle exit status:", "${{ steps.gradle.outputs.status }}")
+          print("\n== Kotlin / javac errors and warnings (first 80)")
+          hits = [l for l in log if re.match(r"^(e|w): ", l) or " error: " in l]
+          print("\n".join(hits[:80]) or "(none)")
+          print("\n== Gradle failures")
+          idx = [i for i, l in enumerate(log) if re.search(r"FAILURE:|What went wrong|Execution failed|Could not (resolve|find|get)|Plugin .* not found|Unresolved reference|Caused by", l)]
+          shown = set()
+          for i in idx[:40]:
+              for j in range(max(0, i - 1), min(len(log), i + 6)):
+                  if j not in shown:
+                      shown.add(j)
+                      print(log[j])
+              print("--")
+          print("\n== Deprecation / warning lines (first 25)")
+          print("\n".join([l for l in log if re.search(r"deprecated|Deprecated", l)][:25]) or "(none)")
+          print("\n== Unit tests")
+          total = fail = skip = 0
+          for f in sorted(glob.glob("android/**/build/test-results/**/*.xml", recursive=True)):
+              r = ET.parse(f).getroot()
+              t, fl, e, s = (int(r.get(k, 0)) for k in ("tests", "failures", "errors", "skipped"))
+              total += t; fail += fl + e; skip += s
+              print(f"{r.get('name')}: tests={t} failures={fl} errors={e} skipped={s}")
+              for case in r.iter("testcase"):
+                  for bad in list(case.iter("failure")) + list(case.iter("error")):
+                      print("  FAIL", case.get("classname"), case.get("name"), (bad.get("message") or "")[:300])
+          print(f"TOTAL tests={total} failed={fail} skipped={skip}")
+          print("\n== Lint")
+          for f in sorted(glob.glob("android/**/build/reports/lint-results-*.txt", recursive=True)):
+              print("##", f)
+              print("\n".join(open(f, errors="replace").read().splitlines()[:60]))
+          print("\n== Artifacts")
+          for f in sorted(glob.glob("android/**/build/outputs/apk/**/*.apk", recursive=True)):
+              import os
+              print(f, os.path.getsize(f), "bytes")
+          print("\n== Log tail")
+          print("\n".join(log[-60:]))
+          PY
+          cat .probe/android/build-summary.txt | head -250
+          {
+            echo '### Android dev loop'
+            echo '```'
+            head -c 60000 .probe/android/build-summary.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the evidence
+        if: always()
+        run: |
+          git config user.name "raahi-bot"
+          git config user.email "raahi-bot@users.noreply.github.com"
+          git add -f .probe/android/build-summary.txt
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git commit -m "chore(probe): android build summary [skip ci]"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Fail if the build failed
+        if: steps.gradle.outputs.status != '0'
+        run: exit 1
