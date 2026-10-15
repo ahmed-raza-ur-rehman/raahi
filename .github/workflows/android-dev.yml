@@ -65,6 +65,21 @@ jobs:
                       shown.add(j)
                       print(log[j])
               print("--")
+          print("\n== Kotlin compiler problems (with context)")
+          shown_p = set()
+          for i, l in enumerate(log):
+              if l.startswith("Problem found:") or re.search(r"^(e|w): ", l) or "warnings found" in l:
+                  for j in range(max(0, i), min(len(log), i + 7)):
+                      if j not in shown_p:
+                          shown_p.add(j)
+                          print(log[j])
+                  print("--")
+              if len(shown_p) > 140:
+                  break
+          print("\n== Task outcomes (tests, compilation, lint)")
+          for l in log:
+              if re.match(r"^> Task :[^ ]*:(test|testDebugUnitTest|compile\w*Kotlin|lint\w*|check)\b", l) and ("FAILED" in l or "NO-SOURCE" in l or l.rstrip().endswith(("test", "testDebugUnitTest"))):
+                  print(l)
           print("\n== Deprecation / warning lines (first 25)")
           print("\n".join([l for l in log if re.search(r"deprecated|Deprecated", l)][:25]) or "(none)")
           print("\n== Unit tests")
