@@ -311,12 +311,14 @@ export default function Home() {
               </div>
               <Link href="/opportunities" className="btn-secondary !min-h-9 !px-3 !py-1.5 !text-xs">{oppText(language, "homeAll")} →</Link>
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
+            <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3">
               {[
                 { href: "/opportunities?kind=scholarship,fellowship", emoji: "🎓", label: oppText(language, "chipScholarships") },
                 { href: "/opportunities?kind=job&scope=pakistan", emoji: "🏛️", label: oppText(language, "chipGovtJobs") },
                 { href: "/opportunities/tools?tool=abroad", emoji: "✈️", label: oppText(language, "chipOverseas") },
                 { href: "/opportunities?kind=coupon,course,training", emoji: "📚", label: oppText(language, "chipFree") },
+                { href: "/opportunities/calendar", emoji: "🗓️", label: oppText(language, "navCalendar") },
+                { href: "/opportunities/guides", emoji: "🧭", label: oppText(language, "navGuides") },
               ].map((tile) => (
                 <Link key={tile.href} href={tile.href} className="quick-card flex items-center gap-2 p-3 text-sm font-bold text-[var(--ink)]">
                   <span className="text-xl" aria-hidden>{tile.emoji}</span>

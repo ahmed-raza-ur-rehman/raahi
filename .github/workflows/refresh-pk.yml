@@ -1,0 +1,70 @@
+name: Refresh Pakistan-only sources
+
+# NJP, BE&OE and several other .gov.pk sites do not answer GitHub's servers (they time out or refuse datacenter
+# traffic), so the normal refresh skips them. This workflow runs the same scrapers on a machine INSIDE Pakistan
+# that you register as a self-hosted runner — a spare PC, a Raspberry Pi or a cheap local VPS on a Pakistani connection.
+#
+# It is switched off by default: the job is skipped unless the repository variable PK_RUNNER is "true", so it never
+# sits in the queue waiting for a runner that does not exist. See README → "Sources that need a Pakistani connection".
+#
+# Safety: a self-hosted runner executes whatever a workflow tells it to. This workflow only runs on a schedule or when
+# the owner starts it by hand — never on pull requests — and keep it that way. Use a machine that holds nothing else of
+# value, and in Settings → Actions → General require approval for workflows from outside collaborators.
+on:
+  schedule:
+    - cron: "37 */6 * * *" # 20 minutes after the GitHub-hosted refresh, so the two rarely overlap
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Same group as the GitHub-hosted refresh: the two never commit the snapshot at the same moment.
+concurrency:
+  group: refresh-opportunities
+  cancel-in-progress: false
+
+jobs:
+  scrape-pk:
+    if: ${{ vars.PK_RUNNER == 'true' }}
+    runs-on: [self-hosted, pakistan]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Scrape the Pakistan-only sources
+        run: |
+          set -o pipefail
+          npm run scrape:pk -- --force 2>&1 | tee scrape.log
+
+      - name: Show the result on the run page
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### Pakistan-only sources'
+            echo '```'
+            sed -n '/^Source /,$p' scrape.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the refreshed snapshot
+        shell: bash
+        run: |
+          git config user.name "raahi-bot"
+          git config user.email "raahi-bot@users.noreply.github.com"
+          git add data/opportunities/snapshot.json
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git commit -m "chore(data): refresh Pakistan-only sources [skip ci]"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

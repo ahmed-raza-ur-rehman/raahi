@@ -17,7 +17,7 @@
     "bootstrap-snapshot": "tsx scripts/bootstrap-snapshot.ts",
     "check-links": "tsx scripts/check-links.ts",
     "digest": "tsx scripts/digest.ts",
-    "lint:opportunities": "eslint lib/opportunities components/opportunities app/opportunities app/api/opportunities app/api/resources app/api/ecosystem lib/ai/opportunity-tools.ts components/chat/OpportunityBlocks.tsx data/opportunities scripts/scrape.ts scripts/check-links.ts scripts/bootstrap-snapshot.ts tests/opportunities-core.test.ts tests/opportunities-scrapers.test.ts tests/opportunities-store.test.ts tests/opportunities-tools.test.ts tests/opportunities-api.test.ts tests/opportunities-chat.test.ts tests/helpers"
+    "lint:opportunities": "eslint lib/opportunities components/opportunities app/opportunities app/api/opportunities app/api/resources app/api/ecosystem app/api/guides app/sitemap.ts app/robots.ts lib/ai/opportunity-tools.ts components/chat/OpportunityBlocks.tsx data/opportunities scripts/scrape.ts scripts/check-links.ts scripts/bootstrap-snapshot.ts scripts/digest.ts \"tests/opportunities-*.test.ts\" tests/helpers"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

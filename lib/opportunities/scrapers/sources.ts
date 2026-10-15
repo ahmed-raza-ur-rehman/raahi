@@ -337,6 +337,7 @@ export const SOURCES: SourceDefinition[] = [
     resourceId: "fpsc",
     attribution: "Federal Public Service Commission (fpsc.gov.pk)",
     terms: "The public JSON the commission's own job page loads (active notices only). Each item links to the official advertisement; the commission's server omits its intermediate certificate, which the client supplies — verification stays on.",
+    params: { emptyIsNormal: true },
   },
   {
     id: "pts",
@@ -354,6 +355,7 @@ export const SOURCES: SourceDefinition[] = [
     resourceId: "pts",
     attribution: "Pakistan Testing Service (pts.org.pk)",
     terms: "The public JSON behind the project list on pts.org.pk. Only projects with a real, future last date are listed, each linking to its PTS project page.",
+    params: { emptyIsNormal: true },
   },
 
   // ── Pakistan: community aggregators (verify on the official portal before acting) ──

@@ -111,3 +111,29 @@ test("pipeline: both sources run through the whole offline pipeline", async () =
   assert.ok(snapshot.items.some((item) => item.sourceId === "fpsc" && item.deadline === "2026-10-30"));
   assert.ok(snapshot.items.some((item) => item.sourceId === "pts" && item.openToPakistan === true));
 });
+
+test("a commission with nothing open is 'ok, nothing open' — a changed response is an error, a blank page is still 'empty'", async () => {
+  const fpscSource = fixtureSources().find((source) => source.id === "fpsc")!;
+  const run = (body: string, source = fpscSource) => runScrapers({ sources: [source], region: "pk", http: createFixtureHttp({ "https://www.fpsc.gov.pk/api/jobs": body }), now: at("2026-10-15T06:00:00Z"), force: true });
+
+  const quiet = (await run('{"success":true,"data":[]}')).sources[0];
+  assert.equal(quiet.status, "ok");
+  assert.equal(quiet.items, 0);
+  assert.match(quiet.note ?? "", /no notice is open right now/);
+  assert.ok(quiet.lastSuccessAt);
+
+  const changed = (await run('{"ok":true,"jobs":[]}')).sources[0];
+  assert.equal(changed.status, "error", "a response without the list means the site changed");
+  assert.match(changed.error ?? "", /may have changed/);
+
+  // the same empty answer from a source that has not declared it normal stays a warning
+  const strict = (await run('{"success":true,"data":[]}', { ...fpscSource, params: {} })).sources[0];
+  assert.equal(strict.status, "empty");
+
+  const pts = fixtureSources().find((source) => source.id === "pts")!;
+  const ptsRun = await runScrapers({ sources: [pts], region: "pk", http: createFixtureHttp({ "https://www.pts.org.pk/Projects/getProjects/": '[{"ID":1,"name":"Done (1)","lastDate":"......"}]' }), now: at("2026-10-15T06:00:00Z"), force: true });
+  assert.equal(ptsRun.sources[0].status, "ok", "finished projects only: nothing open, not a failure");
+  const notAList = await runScrapers({ sources: [pts], region: "pk", http: createFixtureHttp({ "https://www.pts.org.pk/Projects/getProjects/": '{"error":"x"}' }), now: at("2026-10-15T06:00:00Z"), force: true });
+  assert.equal(notAList.sources[0].status, "error");
+});
+

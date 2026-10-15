@@ -238,6 +238,8 @@ export function parseFpsc(json: unknown, now: Date = new Date()): RawOpportunity
 
 export const fpscAdapter: Adapter = async ({ source, http, now }) => {
   const json = await http.getJson<unknown>(source.endpoint, { respectRobots: source.respectRobots });
+  // An empty list is a normal answer between advertisements; a response without the list means the site changed.
+  if (!Array.isArray((json as { data?: unknown } | undefined)?.data)) throw new Error("Unexpected response from the FPSC job list (no `data` list) — the site may have changed");
   return parseFpsc(json, now).slice(0, source.maxItems ?? 30);
 };
 
@@ -299,5 +301,6 @@ export function parsePts(json: unknown, now: Date = new Date(), onUnreadable: (v
 
 export const ptsAdapter: Adapter = async ({ source, http, now, log }) => {
   const json = await http.getJson<unknown>(source.endpoint, { respectRobots: source.respectRobots });
+  if (!Array.isArray(json)) throw new Error("Unexpected response from the PTS project list (not a list) — the site may have changed");
   return parsePts(json, now, (value) => log(`unreadable last date "${value}" — the format may have changed`)).slice(0, source.maxItems ?? 30);
 };

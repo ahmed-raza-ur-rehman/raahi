@@ -121,6 +121,15 @@ export async function runScrapers(options: RunOptions = {}): Promise<Snapshot> {
       const durationMs = Date.now() - started;
       const hadItemsBefore = (previousCounts.get(source.id) ?? 0) > 0;
 
+      if (items.length === 0 && raw.length === 0 && source.params?.emptyIsNormal === true) {
+        // Commissions advertise in bursts: an answer with an empty list is the normal state between advertisements
+        // (the adapter throws when the response has the wrong shape, so a changed format still shows as an error).
+        return {
+          report: { ...base, status: "ok", items: 0, durationMs, lastSuccessAt: now.toISOString(), note: "The site answered; no notice is open right now." },
+          items: [],
+          usable: true,
+        };
+      }
       if (items.length === 0) {
         // A site that suddenly yields nothing has most likely changed its layout: do not trust it.
         return {
