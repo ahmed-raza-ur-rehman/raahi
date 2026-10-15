@@ -186,22 +186,27 @@ export const wordpressAdapter: Adapter = async ({ source, http, log, now }) => {
   const base = source.endpoint.replace(/\/+$/, "");
   const perPage = Math.min(Math.max(source.maxItems ?? 40, 1), 100);
   const options = { respectRobots: source.respectRobots };
-  // The full post is where the deadline and eligibility live; sources can opt out with `params.deep: false`.
-  const fields = source.params?.deep === false ? "id,date_gmt,date,link,title,excerpt,categories" : "id,date_gmt,date,link,title,excerpt,categories,content";
+  // The full post is where the deadline and eligibility live, but some sites refuse (HTTP 403) a request for
+  // `content`. So: ask for it, fall back to excerpts, then to the RSS feed. Sources known to refuse set
+  // `params.deep: false` so we do not send a request that is certain to fail.
+  const excerptFields = "id,date_gmt,date,link,title,excerpt,categories";
+  const attempts = source.params?.deep === false ? [excerptFields] : [`${excerptFields},content`, excerptFields];
 
-  try {
-    const posts = await http.getJson<unknown>(
-      `${base}/wp-json/wp/v2/posts?per_page=${perPage}&_fields=${fields}`,
-      options,
-    );
-    const ids = [...new Set((Array.isArray(posts) ? (posts as WpPost[]) : []).flatMap((post) => post.categories ?? []))];
-    const names = ids.length > 0 ? await loadCategoryNames(base, ids, (url) => http.getJson<unknown>(url, options)) : new Map();
-    const parsed = filterFeedItems(parseWordPressPosts(posts, names), source.params, now);
-    if (parsed.length > 0) return parsed;
-    log("WordPress REST API returned no posts; trying the RSS feed");
-  } catch (error) {
-    if (error instanceof RobotsDisallowedError) throw error;
-    log(`WordPress REST API unavailable (${error instanceof Error ? error.message : "error"}); trying the RSS feed`);
+  for (const [index, fields] of attempts.entries()) {
+    try {
+      const posts = await http.getJson<unknown>(`${base}/wp-json/wp/v2/posts?per_page=${perPage}&_fields=${fields}`, options);
+      const ids = [...new Set((Array.isArray(posts) ? (posts as WpPost[]) : []).flatMap((post) => post.categories ?? []))];
+      const names = ids.length > 0 ? await loadCategoryNames(base, ids, (url) => http.getJson<unknown>(url, options)) : new Map();
+      const parsed = filterFeedItems(parseWordPressPosts(posts, names), source.params, now);
+      if (parsed.length > 0) return parsed;
+      log("WordPress REST API returned no usable posts; trying the RSS feed");
+      break;
+    } catch (error) {
+      if (error instanceof RobotsDisallowedError) throw error;
+      const reason = error instanceof Error ? error.message : "error";
+      const more = index < attempts.length - 1;
+      log(`WordPress REST API ${fields.endsWith("content") ? "with full text " : ""}unavailable (${reason}); ${more ? "retrying with excerpts only" : "trying the RSS feed"}`);
+    }
   }
 
   const feed = await http.getText(`${base}/feed/`, { accept: "application/rss+xml,application/xml;q=0.9,*/*;q=0.5", respectRobots: source.respectRobots });

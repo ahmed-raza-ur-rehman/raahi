@@ -18,10 +18,12 @@ import type { SourceDefinition } from "./types";
  * The HTML sources (njp, beoe-notices, spsc, bpsc, etea) are marked `experimental`: the scheduled run says
  * `empty` or `error` on the status page the day a layout changes.
  */
-/** Words that mark a post as something nobody can apply to (results, slips, syllabi, quizzes …). */
-const PK_NOT_AN_OPENING = "result|roll no|slip|merit list|syllabus|past paper|answer key|admit card|date sheet|test date|quiz|mcqs|general knowledge|solved paper|interview schedule|final list|selection list";
-const PK_OPENING = "jobs?\\b|vacanc|recruit|career|internship|traineeship|scholarship|admission|hiring|walk[- ]in|apply";
-
+/** Words that mark a post as something nobody can apply to (results, slips, syllabi, quizzes, how-to articles …). */
+const PK_NOT_AN_OPENING =
+  "result|roll no|slip|merit list|syllabus|past papers?|answer key|admit card|date sheet|test date|quiz|mcqs|general knowledge|solved paper|interview schedule|final list|selection list|" +
+  "guide\\b|tips\\b|how to (?:write|prepare|crack|dress|pass|get|check|use)|what to wear|cover letter|linkedin|interview (?:questions|tips)|pay scales?|salary (?:slip|structure)|resume|\\bcv\\b|checklist|explained";
+/** What an actual opening looks like in a title: "… Jobs 2026", "Vacancies", "Recruitment", "Internship", "Admissions". */
+const PK_OPENING = "jobs?\\b.*\\b20\\d\\d|vacanc|recruit|hiring|walk[- ]in|internship|traineeship|scholarship|admissions?\\b";
 /**
  * Pakistani job aggregators that publish a WordPress REST API or RSS feed (checked from GitHub's servers on
  * 2026-10-11: robots.txt allows the feed, the site answers). They repost newspaper advertisements, so they
@@ -335,7 +337,7 @@ export const SOURCES: SourceDefinition[] = [
     resourceId: "ntslogin",
     attribution: "Listings via ntslogin.pk — an unofficial aggregator, not NTS",
     terms: "Public WordPress REST API / RSS. Title, excerpt and link only; confirm every ad on the department's own site.",
-    params: { maxAgeDays: 30, include: "jobs?\\b|vacanc|recruit|career|internship|traineeship|scholarship|portal", exclude: "result|roll no|slip|merit list|syllabus|past paper|answer key|admit card|test date|date sheet" },
+    params: { deep: false, maxAgeDays: 30, include: "jobs?\\b|vacanc|recruit|career|internship|traineeship|scholarship|portal", exclude: "result|roll no|slip|merit list|syllabus|past paper|answer key|admit card|test date|date sheet" },
   },
   {
     id: "schoolsti",
@@ -352,7 +354,7 @@ export const SOURCES: SourceDefinition[] = [
     resourceId: "schoolsti",
     attribution: "Listings via Schools STI (schoolsti.org.pk) — an unofficial news and jobs site",
     terms: "Public WordPress REST API / RSS. Only job, internship and scholarship posts are kept; confirm on the official site.",
-    params: { maxAgeDays: 30, include: "jobs?\\b|vacanc|recruit|internship|scholarship", exclude: "result|roll no|slip|merit list|syllabus|past paper|answer key|admit card|date sheet" },
+    params: { deep: false, maxAgeDays: 30, include: "jobs?\\b|vacanc|recruit|internship|scholarship", exclude: "result|roll no|slip|merit list|syllabus|past paper|answer key|admit card|date sheet" },
   },
   {
     id: "mauqapakistan",
@@ -510,50 +512,9 @@ export const SOURCES: SourceDefinition[] = [
     terms: "Documented public API (one request per run). Items link to the CTFtime event page.",
   },
 
-  // ── Pakistan: more aggregators (broad coverage of newspaper job advertisements) ──
-  pkAggregator({ id: "pakgovernment", name: "Pak Government Jobs", homepage: "https://pakgovernment.pk/", endpoint: "https://pakgovernment.pk" }),
-  pkAggregator({ id: "jobistan", name: "Jobistan", homepage: "https://jobistan.com.pk/", endpoint: "https://jobistan.com.pk" }),
+  // ── Pakistan: more aggregators — only those whose newest post is days old (checked on 2026-10-15) ──
   pkAggregator({ id: "jobshah", name: "Jobshah", homepage: "https://jobshah.com/", endpoint: "https://jobshah.com" }),
-  pkAggregator({ id: "rozgarverse", name: "Rozgarverse", homepage: "https://rozgarverse.com/", endpoint: "https://rozgarverse.com" }),
-  pkAggregator({ id: "jobexplain", name: "JobExplain", homepage: "https://jobexplain.com/", endpoint: "https://jobexplain.com" }),
-  pkAggregator({ id: "jobz", name: "Jobz.pk", homepage: "https://www.jobz.pk/", endpoint: "https://www.jobz.pk/feed/", adapter: "rss" }),
   pkAggregator({ id: "jobscompk", name: "Jobs.com.pk", homepage: "https://jobs.com.pk/", endpoint: "https://jobs.com.pk/feed/", adapter: "rss" }),
-
-  // ── Pakistan: official programmes that publish calls through WordPress ──
-  {
-    id: "ignite",
-    name: "Ignite — National Technology Fund",
-    homepage: "https://ignite.org.pk/",
-    adapter: "wordpress",
-    endpoint: "https://ignite.org.pk",
-    defaultKind: "competition",
-    scope: "pakistan",
-    authority: 1,
-    minIntervalMinutes: 360,
-    maxItems: 20,
-    enabled: true,
-    resourceId: "ignite",
-    attribution: "Ignite — National Technology Fund (ignite.org.pk)",
-    terms: "Public WordPress REST API / RSS of a government technology fund. Calls, hackathons and programmes only; each item links to the Ignite page.",
-    params: { maxAgeDays: 120, include: "call for|apply|application|hackathon|competition|challenge|incubat|accelerat|fellowship|internship|seed|grant|bootcamp|training|program", exclude: "tender|bid|quotation|auction|rfp|eoi|procurement|result|winners" },
-  },
-  {
-    id: "navttc",
-    name: "NAVTTC notices",
-    homepage: "https://navttc.gov.pk/",
-    adapter: "wordpress",
-    endpoint: "https://navttc.gov.pk",
-    defaultKind: "training",
-    scope: "pakistan",
-    authority: 1,
-    minIntervalMinutes: 360,
-    maxItems: 20,
-    enabled: true,
-    resourceId: "navttc",
-    attribution: "National Vocational & Technical Training Commission (navttc.gov.pk)",
-    terms: "Public WordPress REST API / RSS of a government commission. Only training, scholarship and recruitment notices are kept (tenders are excluded).",
-    params: { maxAgeDays: 120, include: "training|scholarship|apply|admission|course|programme|program|recruit|vacanc|job|skills", exclude: "tender|bid|quotation|auction|rfp|eoi|procurement|result|corrigendum" },
-  },
 ];
 
 const byId = new Map(SOURCES.map((source) => [source.id, source]));

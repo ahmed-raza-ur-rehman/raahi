@@ -1,4 +1,4 @@
-import { extractDeadline, toIsoDate, toIsoDateTime } from "./dates";
+import { diffDays, extractDeadline, toIsoDate, toIsoDateTime } from "./dates";
 import {
   inferCountry,
   inferEligibility,
@@ -35,6 +35,13 @@ const SUMMARY_LIMIT = 280;
 /** Only the start of a long post is read: eligibility and deadlines are stated near the top, the rest is noise. */
 const BODY_LIMIT = 6000;
 const BODY_ELIGIBILITY_WINDOW = 3000;
+/**
+ * A date picked out of free text is only believed if it is a plausible closing date for the kind of listing:
+ * job ads close within weeks, scholarships can be announced more than a year ahead. Anything further out is usually
+ * a different date in the text (an age cut-off, a start date, a copy-paste from last year).
+ */
+const MAX_TEXT_DEADLINE_LEAD_DAYS: Partial<Record<OpportunityKind, number>> = { job: 150, internship: 210, admission: 240 };
+const DEFAULT_TEXT_DEADLINE_LEAD_DAYS = 540;
 
 function validIso(date: string | undefined): string | undefined {
   if (!date) return undefined;
@@ -80,6 +87,9 @@ export function normalizeOpportunity(raw: RawOpportunity, source: SourceMeta, no
     let extracted = extractDeadline(text, { reference });
     // The teaser rarely carries the deadline; the post itself usually does ("Deadline: 15 December 2026").
     if (!extracted.date && bodyText) extracted = { ...extractDeadline(bodyText, { reference }), rolling: extracted.rolling };
+    if (extracted.date && diffDays(reference, extracted.date) > (MAX_TEXT_DEADLINE_LEAD_DAYS[kind] ?? DEFAULT_TEXT_DEADLINE_LEAD_DAYS)) {
+      extracted = { rolling: extracted.rolling };
+    }
     deadline = extracted.date;
     deadlineText ??= extracted.text;
     rolling ??= extracted.rolling;

@@ -12,7 +12,7 @@
  * parser fixtures. Output goes to `.probe/`.
  */
 import { X509Certificate } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import https from "node:https";
 import tls from "node:tls";
 import { resources } from "../data/opportunities/resources";
@@ -488,6 +488,53 @@ async function stepCerts() {
   write(`${OUT}/certs.md`, `${report.join("\n")}\n`);
 }
 
+// ─── Raw captures: sites whose list is drawn by JavaScript. Keeps the untrimmed HTML (including the data the server
+// embeds for the page) and finds the endpoints the page's own scripts call, so a parser can read the same public data.
+
+async function stepRaw() {
+  console.log("\n=== Raw captures ===");
+  const report: string[] = ["# Raw captures", ""];
+  const fpscCa = [...tls.rootCertificates, readFileSync(".probe/r5/certs/www-fpsc-gov-pk.pem", "utf8")];
+  const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  for (const [id, path] of [["fpsc-jobs-gr", "/Jobs?section=GR"], ["fpsc-jobs-css", "/Jobs?section=CSS"]] as const) {
+    const page = await tlsGet("www.fpsc.gov.pk", path, fpscCa);
+    console.log(`${id}: HTTP ${page.status}, ${page.body.length} bytes ${page.error ?? ""}`);
+    report.push(`## ${id}: HTTP ${page.status}, ${page.body.length} bytes${page.error ? `, ${page.error}` : ""}`);
+    if (!page.body) continue;
+    write(`${OUT}/raw/${id}.html`, page.body.slice(0, 260_000));
+    const scripts = [...page.body.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
+    const payloads = [...page.body.matchAll(/self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)/g)].map((match) => match[1]);
+    report.push(`- ${scripts.length} script tags, ${payloads.length} embedded data chunks (${payloads.reduce((total, chunk) => total + chunk.length, 0)} characters)`);
+    for (const src of scripts.filter((value) => /\/_next\/static\/chunks\//.test(value)).slice(0, 16)) {
+      await pause(700);
+      const script = await tlsGet("www.fpsc.gov.pk", src.replace(/^https?:\/\/[^/]+/, ""), fpscCa);
+      if (!script.body) continue;
+      const calls = [...script.body.matchAll(/["'`](\/?api\/[A-Za-z0-9_\-/.]+(?:\?[^"'`]*)?)["'`]|fetch\(\s*["'`]([^"'`]+)["'`]/g)].map((match) => match[1] ?? match[2]).slice(0, 8);
+      const about = /section=|Jobs|advertis/i.test(script.body);
+      if (calls.length > 0 || about) {
+        report.push(`- ${src.slice(-70)}: ${script.body.length} bytes; calls: ${calls.join(", ") || "none"}; mentions jobs/advertisements: ${about}`);
+        if (about && script.body.length < 220_000) write(`${OUT}/raw/${slug(src)}.js`, script.body.slice(0, 160_000));
+      }
+    }
+    report.push("");
+  }
+
+  for (const target of [
+    { host: "apply.kppsc.gov.pk", path: "/", id: "kppsc-apply" },
+    { host: "internpools.com", path: "/", id: "internpools" },
+  ]) {
+    await pause(1200);
+    const robots = await tlsGet(target.host, "/robots.txt", [...tls.rootCertificates]);
+    const allowed = robots.status === 200 ? isAllowed(parseRobots(robots.body.slice(0, 512 * 1024)), ROBOTS_TOKEN, target.path) : true;
+    const page = allowed ? await tlsGet(target.host, target.path, [...tls.rootCertificates]) : { status: 0, body: "", error: "robots.txt disallows" };
+    console.log(`${target.id}: robots HTTP ${robots.status}, page HTTP ${page.status}, ${page.body.length} bytes ${page.error ?? ""}`);
+    report.push(`## ${target.id}: robots HTTP ${robots.status}; page HTTP ${page.status}, ${page.body.length} bytes${page.error ? `, ${page.error}` : ""}`, "");
+    if (page.body) write(`${OUT}/raw/${target.id}.html`, cleanHtml(page.body, 90_000));
+  }
+  write(`${OUT}/raw.md`, `${report.join("\n")}\n`);
+}
+
 async function stepLinks() {
   console.log(`\n=== 5/5 Link health for the ${resources.length} directory resources ===`);
   const started = Date.now();
@@ -500,7 +547,7 @@ async function stepLinks() {
 async function main() {
   mkdirSync(OUT, { recursive: true });
   console.log(`Probe started ${new Date().toISOString()} as ${USER_AGENT}`);
-  for (const [name, step] of [["scrape", stepScrape], ["certs", stepCerts], ["pages", stepPages], ["apis", stepApis], ["discovery", stepDiscovery], ["links", stepLinks]] as const) {
+  for (const [name, step] of [["scrape", stepScrape], ["certs", stepCerts], ["raw", stepRaw], ["pages", stepPages], ["apis", stepApis], ["discovery", stepDiscovery], ["links", stepLinks]] as const) {
     if (!STEPS.has(name)) continue;
     try {
       await step();
