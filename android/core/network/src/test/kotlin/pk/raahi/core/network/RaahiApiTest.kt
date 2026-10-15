@@ -14,7 +14,10 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
+import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
+import okhttp3.tls.HandshakeCertificates
+import okhttp3.tls.HeldCertificate
 import pk.raahi.core.testing.Fixtures
 
 class RaahiApiTest {
@@ -114,11 +117,18 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `REQ-AND-004 a persistent 500 gives up after the attempt budget and reports a server error`() = withApi { api, server ->
-        repeat(5) { server.enqueue(MockResponse.Builder().code(500).body("{}").build()) }
+    fun `REQ-AND-004 a persistent 503 gives up after the attempt budget and reports a server error`() = withApi { api, server ->
+        repeat(5) { server.enqueue(MockResponse.Builder().code(503).body("{}").build()) }
         val failure = assertIs<ApiResult.Failure>(api.guides("en"))
-        assertEquals(ApiError.Server(500), failure.error)
+        assertEquals(ApiError.Server(503), failure.error)
         assertEquals(3, server.requestCount, "exactly maxAttempts requests")
+    }
+
+    @Test
+    fun `REQ-AND-004 a 500 is a server bug and is not retried`() = withApi { api, server ->
+        repeat(3) { server.enqueue(MockResponse.Builder().code(500).body("{}").build()) }
+        assertEquals(ApiError.Server(500), assertIs<ApiResult.Failure>(api.guides("en")).error)
+        assertEquals(1, server.requestCount)
     }
 
     @Test
@@ -163,17 +173,57 @@ class RaahiApiTest {
         }
     }
 
-    @Test
-    fun `REQ-AND-004 a TLS handshake failure is an insecure-connection error and is never retried`() = runTest {
-        // MockWebServer speaks plain HTTP; an https:// request to it fails the handshake.
-        MockWebServer().use { server ->
+    /** A real HTTPS server with a self-signed certificate (what a man-in-the-middle looks like to the app). */
+    private class TlsServer : AutoCloseable {
+        val certificate: HeldCertificate = HeldCertificate.Builder().commonName("localhost").addSubjectAlternativeName("localhost").build()
+        val server = MockWebServer()
+
+        init {
+            server.useHttps(HandshakeCertificates.Builder().heldCertificate(certificate).build().sslSocketFactory())
             server.start()
-            val tlsUrl = server.url("/").newBuilder().scheme("https").build()
+        }
+
+        fun clientTrusting(): OkHttpClient {
+            val trust = HandshakeCertificates.Builder().addTrustedCertificate(certificate.certificate).build()
+            return OkHttpClient.Builder().sslSocketFactory(trust.sslSocketFactory(), trust.trustManager).build()
+        }
+
+        override fun close() = server.close()
+    }
+
+    @Test
+    fun `REQ-AND-004 a certificate the system does not trust is an insecure-connection error and is never retried`() = runTest {
+        TlsServer().use { tls ->
             val attempts = AtomicInteger()
-            val transport = ApiTransport(tlsUrl, HttpClientFactory.create(), "test", fastRetry, newRequestId = { "r${attempts.incrementAndGet()}" })
+            val transport = ApiTransport(tls.server.url("/"), HttpClientFactory.create(), "test", fastRetry, newRequestId = { "r${attempts.incrementAndGet()}" })
             val failure = assertIs<ApiResult.Failure>(DefaultRaahiApi(transport).guides("en"))
             assertIs<ApiError.Insecure>(failure.error)
             assertEquals(1, attempts.get(), "TLS failures are not retried")
+            assertEquals(0, tls.server.requestCount, "no request was sent over the untrusted connection")
+        }
+    }
+
+    @Test
+    fun `REQ-AND-004 the same server works once its certificate is trusted, and pinning accepts only the pinned key`() = runTest {
+        TlsServer().use { tls ->
+            val host = tls.server.hostName
+            val goodPin = CertificatePinner.pin(tls.certificate.certificate)
+            val backup = "sha256/" + "B".repeat(43) + "="
+            val wrong = "sha256/" + "C".repeat(43) + "="
+            fun api(pins: Map<String, List<String>>): RaahiApi {
+                val client = HttpClientFactory.create(pins = pins, base = tls.clientTrusting())
+                return DefaultRaahiApi(ApiTransport(tls.server.url("/"), client, "test", RetryPolicy(maxAttempts = 1)))
+            }
+
+            tls.server.enqueue(json(Fixtures.text("guides.list.json")))
+            assertIs<ApiResult.Success<GuideListDto>>(api(emptyMap()).guides("en"))
+
+            tls.server.enqueue(json(Fixtures.text("guides.list.json")))
+            assertIs<ApiResult.Success<GuideListDto>>(api(mapOf(host to listOf(goodPin, backup))).guides("en"), "the right pin plus a backup is accepted")
+
+            tls.server.enqueue(json(Fixtures.text("guides.list.json")))
+            val mismatched = assertIs<ApiResult.Failure>(api(mapOf(host to listOf(wrong, backup))).guides("en"))
+            assertIs<ApiError.Insecure>(mismatched.error, "a certificate that matches no pin is refused even though it is otherwise trusted")
         }
     }
 

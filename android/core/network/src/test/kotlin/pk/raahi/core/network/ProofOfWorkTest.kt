@@ -49,7 +49,7 @@ class ProofOfWorkTest {
     }
 
     @Test
-    fun `REQ-AND-003 a real challenge string is parsed and solved end to end`() = runBlocking {
+    fun `REQ-AND-003 a real challenge string is parsed and solved end to end`() = runBlocking<Unit> {
         val challenge = challengeOf("AAAAAAAAAAAAAAAAAAAAAA", 10)
         val parsed = assertNotNull(ProofOfWork.parse(challenge))
         assertEquals("AAAAAAAAAAAAAAAAAAAAAA", parsed.salt)
@@ -66,13 +66,13 @@ class ProofOfWorkTest {
     }
 
     @Test
-    fun `REQ-AND-003 a hostile server cannot make the phone burn its battery`() = runBlocking {
+    fun `REQ-AND-003 a hostile server cannot make the phone burn its battery`() = runBlocking<Unit> {
         val tooHard = challengeOf("AAAAAAAAAAAAAAAA", 30)
         assertFailsWith<ProofOfWorkException> { ProofOfWork.solve(tooHard) }
     }
 
     @Test
-    fun `REQ-AND-003 cancelling the coroutine stops the search promptly`() = runBlocking {
+    fun `REQ-AND-003 cancelling the coroutine stops the search promptly`() = runBlocking<Unit> {
         val job = async(start = CoroutineStart.DEFAULT) { runCatching { ProofOfWork.solve(challengeOf("AAAAAAAAAAAAAAAA", 24)) } }
         Thread.sleep(100)
         val started = System.nanoTime()
