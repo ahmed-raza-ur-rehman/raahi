@@ -8,15 +8,17 @@ import type { SourceDefinition } from "./types";
  *  - `minIntervalMinutes` honours each provider's published rate guidance;
  *  - if a provider's terms forbid redistribution, it does not belong here.
  *
- * Everything here was exercised against the real sites from GitHub's own runners on 2026-10-11 (see the
- * "live probe" notes in the README). Two findings shaped the registry:
- *  - several `.gov.pk` sites (NJP, BE&OE, FPSC, PPSC, AJKPSC, HEC …) time out, fail TLS or answer 403 when
- *    called from a US datacenter. Those are tagged `network: "pk"` and are only fetched from a Pakistani
- *    connection (`npm run scrape:pk`); the rest of the pipeline never waits on them;
- *  - a few well-known aggregators block datacenter traffic outright. They are switched off with the reason
- *    written down, never retried with disguised requests.
- * The HTML sources (njp, beoe-notices, spsc, bpsc, etea) are marked `experimental`: the scheduled run says
- * `empty` or `error` on the status page the day a layout changes.
+ * Everything here was exercised against the real sites from GitHub's own runners on 2026-10-11 and 2026-10-15 (README →
+ * "How the sources were verified"). Findings that shaped the registry:
+ *  - NJP and BE&OE (like PPSC, AJKPSC, HEC …, which have no parser yet) time out or refuse datacenter traffic. NJP and BE&OE are
+ *    tagged `network: "pk"` and are only fetched from a Pakistani connection (`npm run scrape:pk`, or the opt-in self-hosted
+ *    runner); the rest of the pipeline never waits on them;
+ *  - FPSC, PMYP and DigiSkills serve their certificate without its intermediate — see `scrapers/tls.ts`;
+ *  - a few well-known aggregators block datacenter traffic outright. They are switched off with the reason written down,
+ *    never retried with disguised requests;
+ *  - several aggregators turned out to be dead (no post for months) and were dropped; discovery must check the newest post's date.
+ * The page-based sources (njp, beoe-notices, spsc, bpsc, etea, fpsc, pts, pakistanjobsbank, gopunjab) are marked `experimental`:
+ * the scheduled run says `empty` or `error` on the status page the day a layout changes.
  */
 /** Words that mark a post as something nobody can apply to (results, slips, syllabi, quizzes, how-to articles …). */
 const PK_NOT_AN_OPENING =

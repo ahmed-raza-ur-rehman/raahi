@@ -1,6 +1,0 @@
-{
-  "url": "https://www.scholarshiptab.com/",
-  "ok": false,
-  "status": 403,
-  "note": "HTTP 403 for https://www.scholarshiptab.com/"
-}
