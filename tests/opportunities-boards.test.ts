@@ -1,11 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { normalizeOpportunity } from "@/lib/opportunities/normalize";
-import { goPunjabAdapter, pakistanJobsBankAdapter, pakistanJobsBankDayPages, parseGoPunjab, parsePakistanJobsBank } from "@/lib/opportunities/scrapers/adapters/boards";
-import { HttpError, type HttpClient } from "@/lib/opportunities/scrapers/http";
+import { goPunjabAdapter, pakistanJobsBankAdapter, parseGoPunjab, parsePakistanJobsBank } from "@/lib/opportunities/scrapers/adapters/boards";
 import { runScrapers } from "@/lib/opportunities/scrapers/run";
 import { getSource } from "@/lib/opportunities/scrapers/sources";
-import type { RawOpportunity } from "@/lib/opportunities/types";
 import { allSourceRoutes, createFixtureHttp, fixture, fixtureSources } from "./helpers/fixture-http";
 
 /**
@@ -45,78 +43,67 @@ test("PJB: the kind of an advertisement comes from its title", () => {
   assert.equal(kinds.get("NRSP Microfinance "), "job");
 });
 
-test("PJB: the day pages linked from the home page are found, newest first, never in the future", () => {
-  const pages = pakistanJobsBankDayPages(pjb, "https://www.pakistanjobsbank.com/", at("2026-10-11T06:00:00Z"), 5);
-  assert.deepEqual(pages, [
-    "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-11/",
-    "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-10/",
-    "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-09/",
-    "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-08/",
-    "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-07/",
-  ]);
-  const early = pakistanJobsBankDayPages(pjb, "https://www.pakistanjobsbank.com/", at("2026-10-05T06:00:00Z"), 3);
-  assert.ok(early.every((page) => page <= "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-05/"), "pages dated after today are ignored");
-});
-
-test("PJB adapter: home page plus day pages, duplicates merged, a missing day page is logged and skipped", async () => {
-  const log: string[] = [];
-  const source = { ...getSource("pakistanjobsbank")!, params: { maxAgeDays: 14, dayPages: 3 } };
-  const served = createFixtureHttp({
-    "https://www.pakistanjobsbank.com/": pjb,
-    "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-10/": fixture("pakistanjobsbank.day.sample.html"),
-  });
-  // the day page for 11 October answers 404; 9 October is served the home page again (the fixture client matches by prefix)
-  const http: HttpClient = {
-    getText: async (url, options) => {
-      if (url.includes("2026-10-11")) throw new HttpError(404, url);
-      return served.getText(url, options);
-    },
-    getJson: served.getJson,
-  };
-  const items = await pakistanJobsBankAdapter({ source, http, now: at("2026-10-11T06:00:00Z"), log: (line) => log.push(line) });
-  assert.equal(items.length, 10, "nine from the home page, one from the day page");
-  assert.match(items[0].title, /\(fixture\)/, "newest first");
-  assert.ok(log.some((line) => /home page: 9 advertisements/.test(line)));
-  assert.ok(log.some((line) => /2026-10-10\/: 1 new advertisements/.test(line)));
-  assert.ok(log.some((line) => /2026-10-11\/ unavailable \(HTTP 404/.test(line)));
-  assert.ok(log.some((line) => /2026-10-09\/: 0 new advertisements/.test(line)), "a page that repeats known advertisements adds nothing");
-  assert.equal(new Set(items.map((item) => item.url)).size, items.length);
-});
-
-test("PJB adapter: advertisements older than the age limit are not listed", async () => {
-  const source = { ...getSource("pakistanjobsbank")!, params: { maxAgeDays: 14, dayPages: 0 } };
-  const http = createFixtureHttp({ "https://www.pakistanjobsbank.com/": pjb });
-  const stale = await pakistanJobsBankAdapter({ source, http, now: at("2026-10-30T06:00:00Z"), log: () => undefined });
-  assert.equal(stale.length, 0, "04 October is 26 days old on 30 October");
+test("PJB adapter: newest first, older than the age limit dropped, one request only", async () => {
+  const source = getSource("pakistanjobsbank")!;
+  const requested: string[] = [];
+  const http = createFixtureHttp({ "https://www.pakistanjobsbank.com/": pjb }, requested);
   const fresh = await pakistanJobsBankAdapter({ source, http, now: at("2026-10-15T06:00:00Z"), log: () => undefined });
   assert.equal(fresh.length, 9);
+  assert.deepEqual(requested, ["https://www.pakistanjobsbank.com/"], "the 800 KB day archives are not fetched");
+  const stale = await pakistanJobsBankAdapter({ source, http, now: at("2026-10-30T06:00:00Z"), log: () => undefined });
+  assert.equal(stale.length, 0, "04 October is 26 days old on 30 October");
 });
 
-test("GoPunjab: cards give organisation, title, seats and the last date; the index link is not a card", () => {
-  const items = parseGoPunjab(gopunjab);
-  assert.equal(items.length, 3);
-  const police = items.find((item) => /Police/.test(item.title)) as RawOpportunity;
-  assert.equal(police.title, "Punjab Police — Rahim Yar Khan Police Jobs 2026");
-  assert.equal(police.organization, "Punjab Police");
-  assert.equal(police.deadline, "2026-10-31");
-  assert.equal(police.url, "https://gopunjab.pk/jobs/punjab-police-rahim-yar-khan-rajanpur-jobs-2026/");
-  assert.equal(police.extra?.vacancies, 1170);
-  assert.match(police.summary ?? "", /1,170 seats/);
-  assert.match(police.deadlineText ?? "", /Last date: 31 October 2026/);
-
-  const ppsc = items.filter((item) => /Public Service Commission/.test(item.title));
-  assert.equal(ppsc.length, 2);
-  assert.ok(ppsc.every((item) => item.deadline === "2026-10-26"));
+test("GoPunjab: full cards give organisation, title, seats and the last date; plain links and the index are not cards", () => {
+  const items = parseGoPunjab(gopunjab, "https://gopunjab.pk/jobs/", at("2026-10-14T06:00:00Z"));
+  assert.equal(items.length, 5, "five jobs have a card; the sixth is only a plain link with no date");
+  const ppsc = items.find((item) => /Livestock/.test(item.title));
+  assert.ok(ppsc);
+  assert.equal(ppsc.title, "Punjab Public Service Commission (PPSC) — PPSC Livestock Department Jobs 2026: 61 Senior Veterinary Officer and 40 Veterinary Officer Posts");
+  assert.equal(ppsc.organization, "Punjab Public Service Commission (PPSC)");
+  assert.equal(ppsc.deadline, "2026-10-26");
+  assert.equal(ppsc.url, "https://gopunjab.pk/jobs/ppsc-livestock-department-jobs-2026/");
+  assert.equal(ppsc.extra?.vacancies, 101);
+  assert.match(ppsc.summary ?? "", /101 seats/);
   assert.ok(!items.some((item) => item.url === "https://gopunjab.pk/jobs/"));
+  assert.ok(!items.some((item) => /social-welfare/.test(item.url)));
+  assert.equal(new Set(items.map((item) => item.url)).size, items.length, "a job shown twice is listed once");
 });
 
-test("GoPunjab adapter: a closed advertisement is dropped", async () => {
+test("GoPunjab: when a job shows twice, the card with an explicit last date wins over the 'days left' badge", () => {
+  // On 14 October the compact PSCA card says "1 days left" (→ 14 October by the badge); the full card says 15 October.
+  const items = parseGoPunjab(gopunjab, "https://gopunjab.pk/jobs/", at("2026-10-14T06:00:00Z"));
+  const psca = items.find((item) => /PSCA/.test(item.title));
+  assert.ok(psca);
+  assert.equal(psca.deadline, "2026-10-15");
+  assert.equal(psca.deadlineText, "Last date: 15 October 2026");
+  assert.equal(psca.organization, "Punjab Safe Cities Authority (PSCA)");
+});
+
+test("GoPunjab: a job that only has the compact card gets a conservative date from its badge, and says so", () => {
+  const compact = '<ul><li><a href="/jobs/example-authority-jobs-2026/"><span>4 days left</span><span>Example Authority Jobs 2026: 10 Posts (fixture)</span><span>Example Authority · 10 seats</span></a></li></ul>';
+  const [item] = parseGoPunjab(compact, "https://gopunjab.pk/jobs/", at("2026-10-15T06:00:00Z"));
+  assert.equal(item.deadline, "2026-10-18", "inclusive counting: four days left means today plus three");
+  assert.match(item.deadlineText ?? "", /About 4 days left \(as shown by GoPunjab\) — confirm the exact date/);
+  assert.equal(item.organization, "Example Authority");
+  assert.equal(item.extra?.vacancies, 10);
+
+  // 20:00 UTC is already the next day in Pakistan: the UTC date is used, so the result can only be a day early, never late
+  const evening = parseGoPunjab(compact, "https://gopunjab.pk/jobs/", at("2026-10-15T20:00:00Z"))[0];
+  assert.equal(evening.deadline, "2026-10-18");
+  const lastDay = parseGoPunjab(compact.replace("4 days left", "1 days left"), "https://gopunjab.pk/jobs/", at("2026-10-15T06:00:00Z"))[0];
+  assert.equal(lastDay.deadline, "2026-10-15", "'1 days left' is the last day itself");
+});
+
+test("GoPunjab adapter: closed advertisements are dropped and the rest come soonest first", async () => {
   const source = getSource("gopunjab")!;
-  const http = createFixtureHttp({ "https://gopunjab.pk/": gopunjab });
+  const http = createFixtureHttp({ "https://gopunjab.pk/jobs/": gopunjab });
   const open = await goPunjabAdapter({ source, http, now: at("2026-10-15T06:00:00Z"), log: () => undefined });
-  assert.equal(open.length, 3);
+  assert.equal(open.length, 5);
+  assert.deepEqual(open.map((item) => item.deadline), [...open.map((item) => item.deadline)].sort());
+  assert.equal(open[0].deadline, "2026-10-15");
   const later = await goPunjabAdapter({ source, http, now: at("2026-10-27T06:00:00Z"), log: () => undefined });
-  assert.deepEqual(later.map((item) => item.deadline), ["2026-10-31"]);
+  assert.equal(later.length, 0, "every card in the sample has closed by 27 October");
 });
 
 test("registry and pipeline: both boards are on, flagged experimental, and run offline", async () => {
@@ -131,8 +118,9 @@ test("registry and pipeline: both boards are on, flagged experimental, and run o
   const bank = snapshot.sources.find((report) => report.sourceId === "pakistanjobsbank");
   const punjab = snapshot.sources.find((report) => report.sourceId === "gopunjab");
   assert.equal(bank?.status, "ok");
-  assert.ok((bank?.items ?? 0) >= 9);
+  assert.equal(bank?.items, 9);
   assert.equal(punjab?.status, "ok");
-  assert.equal(punjab?.items, 3);
+  assert.equal(punjab?.items, 5);
   assert.ok(snapshot.items.filter((item) => item.sourceId === "pakistanjobsbank").every((item) => item.openToPakistan === true && item.scope === "pakistan"));
+  assert.ok(snapshot.items.filter((item) => item.sourceId === "gopunjab").every((item) => item.deadline !== undefined));
 });
