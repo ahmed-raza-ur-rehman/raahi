@@ -1,0 +1,452 @@
+gradle exit status: 1
+
+== Kotlin / javac errors and warnings (first 80)
+(none)
+
+== Gradle failures
+    app.cash.turbine.TurbineAssertionError at OpportunitiesViewModelTest.kt:173
+        Caused by: app.cash.turbine.TurbineTimeoutCancellationException at channel.kt:123
+            Caused by: app.cash.turbine.TurbineTimeoutCancellationException at OpportunitiesViewModelTest.kt:173
+
+14 tests completed, 2 failed
+
+> Task :feature:opportunities:testDebugUnitTest FAILED
+--
+> Task :feature:opportunities:bundleDebugLocalLintAar
+--
+
+FAILURE: Build completed with 4 failures.
+
+1: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':core:network:test'.
+--
+> There were failing tests. See the report at: file:///home/runner/work/raahi/raahi/android/core/network/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+--
+
+--
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':core:network:test'.
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
+--
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+Caused by: org.gradle.api.internal.exceptions.MarkedVerificationException: There were failing tests. See the report at: file:///home/runner/work/raahi/raahi/android/core/network/build/reports/tests/test/index.html
+	at org.gradle.api.tasks.testing.AbstractTestTask.executeTests(AbstractTestTask.java:637)
+	at org.gradle.api.tasks.testing.Test.executeTests(Test.java:778)
+	at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:125)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.doExecute(StandardTaskAction.java:58)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:51)
+--
+-----------
+* What went wrong:
+Execution failed for task ':feature:planner:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///home/runner/work/raahi/raahi/android/feature/planner/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+--
+
+--
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':feature:planner:testDebugUnitTest'.
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
+--
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: org.gradle.api.internal.exceptions.MarkedVerificationException: There were failing tests. See the report at: file:///home/runner/work/raahi/raahi/android/feature/planner/build/reports/tests/testDebugUnitTest/index.html
+	at org.gradle.api.tasks.testing.AbstractTestTask.executeTests(AbstractTestTask.java:637)
+	at org.gradle.api.tasks.testing.Test.executeTests(Test.java:778)
+	at com.android.build.gradle.tasks.factory.AndroidUnitTest.executeTests(AndroidUnitTest.java:204)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+--
+-----------
+* What went wrong:
+Execution failed for task ':feature:opportunities:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///home/runner/work/raahi/raahi/android/feature/opportunities/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+--
+
+--
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':feature:opportunities:testDebugUnitTest'.
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
+--
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: org.gradle.api.internal.exceptions.MarkedVerificationException: There were failing tests. See the report at: file:///home/runner/work/raahi/raahi/android/feature/opportunities/build/reports/tests/testDebugUnitTest/index.html
+	at org.gradle.api.tasks.testing.AbstractTestTask.executeTests(AbstractTestTask.java:637)
+	at org.gradle.api.tasks.testing.Test.executeTests(Test.java:778)
+	at com.android.build.gradle.tasks.factory.AndroidUnitTest.executeTests(AndroidUnitTest.java:204)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+--
+-----------
+* What went wrong:
+Execution failed for task ':feature:opportunities:lintDebug' (registered by plugin 'com.android.internal.library').
+> Lint found errors in the project; aborting build.
+  
+  Fix the issues identified by lint, or create a baseline to see only new errors.
+  To create a baseline, run `gradlew updateLintBaseline` after adding the following to the module's build.gradle file:
+--
+  ```
+--
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':feature:opportunities:lintDebug' (registered by plugin 'com.android.internal.library').
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
+--
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.lang.RuntimeException: Lint found errors in the project; aborting build.
+
+Fix the issues identified by lint, or create a baseline to see only new errors.
+To create a baseline, run `gradlew updateLintBaseline` after adding the following to the module's build.gradle file:
+```
+android {
+--
+
+== Kotlin compiler problems (with context)
+Problem found: Kotlin compiler: DEPRECATION (id: kotlin:compiler:warning:DEPRECATION)
+  Kotlin compiler warning
+    'fun createComposeRule(effectContext: CoroutineContext = ...): ComposeContentTestRule' is deprecated. Use `androidx.compose.ui.test.junit4.v2.createComposeRule` instead. The v2 APIs use StandardTestDispatcher instead of UnconfinedTestDispatcher, which aligns with standard coroutine behavior by queuing tasks rather than executing them immediately. Tests relying on immediate execution may require explicit synchronization. Please refer to the migration guide for more details.
+    Location: /home/runner/work/raahi/raahi/android/core/designsystem/src/test/kotlin/pk/raahi/core/designsystem/ComponentsTest.kt:20
+
+> Task :core:designsystem:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :core:designsystem:packageDebugUnitTestForUnitTest
+--
+Problem found: Kotlin compiler: OPT_IN_USAGE (id: kotlin:compiler:warning:OPT_IN_USAGE)
+  Kotlin compiler warning
+    This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+    Location: /home/runner/work/raahi/raahi/android/core/network/src/test/kotlin/pk/raahi/core/network/RetryPolicyTest.kt:43
+
+> Task :core:network:compileTestJava NO-SOURCE
+> Task :core:network:processTestResources NO-SOURCE
+--
+Problem found: Kotlin compiler: DEPRECATION (id: kotlin:compiler:warning:DEPRECATION)
+  Kotlin compiler warning
+    'fun createComposeRule(effectContext: CoroutineContext = ...): ComposeContentTestRule' is deprecated. Use `androidx.compose.ui.test.junit4.v2.createComposeRule` instead. The v2 APIs use StandardTestDispatcher instead of UnconfinedTestDispatcher, which aligns with standard coroutine behavior by queuing tasks rather than executing them immediately. Tests relying on immediate execution may require explicit synchronization. Please refer to the migration guide for more details.
+    Location: /home/runner/work/raahi/raahi/android/feature/opportunities/src/test/kotlin/pk/raahi/feature/opportunities/OpportunitiesScreenTest.kt:26
+Problem found: Kotlin compiler: UNNECESSARY_SAFE_CALL (id: kotlin:compiler:warning:UNNECESSARY_SAFE_CALL)
+  Kotlin compiler warning
+    Unnecessary safe call on a non-null receiver of type 'List<Opportunity>'.
+--
+    Location: /home/runner/work/raahi/raahi/android/feature/opportunities/src/test/kotlin/pk/raahi/feature/opportunities/OpportunitiesViewModelTest.kt:43
+Problem found: Kotlin compiler: UNNECESSARY_SAFE_CALL (id: kotlin:compiler:warning:UNNECESSARY_SAFE_CALL)
+  Kotlin compiler warning
+    Unnecessary safe call on a non-null receiver of type 'List<Opportunity>'.
+--
+    Location: /home/runner/work/raahi/raahi/android/feature/opportunities/src/test/kotlin/pk/raahi/feature/opportunities/OpportunitiesViewModelTest.kt:44
+
+> Task :feature:opportunities:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :feature:opportunities:processDebugUnitTestJavaRes
+--
+Problem found: Kotlin compiler: DEPRECATION (id: kotlin:compiler:warning:DEPRECATION)
+  Kotlin compiler warning
+    'fun createComposeRule(effectContext: CoroutineContext = ...): ComposeContentTestRule' is deprecated. Use `androidx.compose.ui.test.junit4.v2.createComposeRule` instead. The v2 APIs use StandardTestDispatcher instead of UnconfinedTestDispatcher, which aligns with standard coroutine behavior by queuing tasks rather than executing them immediately. Tests relying on immediate execution may require explicit synchronization. Please refer to the migration guide for more details.
+    Location: /home/runner/work/raahi/raahi/android/feature/planner/src/test/kotlin/pk/raahi/feature/planner/PlannerTest.kt:119
+
+> Task :feature:planner:javaPreCompileDebugUnitTest FROM-CACHE
+> Task :feature:planner:compileDebugUnitTestJavaWithJavac NO-SOURCE
+--
+Problem found: Kotlin compiler: DEPRECATION (id: kotlin:compiler:warning:DEPRECATION)
+  Kotlin compiler warning
+    'fun createComposeRule(effectContext: CoroutineContext = ...): ComposeContentTestRule' is deprecated. Use `androidx.compose.ui.test.junit4.v2.createComposeRule` instead. The v2 APIs use StandardTestDispatcher instead of UnconfinedTestDispatcher, which aligns with standard coroutine behavior by queuing tasks rather than executing them immediately. Tests relying on immediate execution may require explicit synchronization. Please refer to the migration guide for more details.
+    Location: /home/runner/work/raahi/raahi/android/feature/tools/src/test/kotlin/pk/raahi/feature/tools/ToolsTest.kt:201
+Problem found: Kotlin compiler: DEPRECATION (id: kotlin:compiler:warning:DEPRECATION)
+  Kotlin compiler warning
+    'fun createComposeRule(effectContext: CoroutineContext = ...): ComposeContentTestRule' is deprecated. Use `androidx.compose.ui.test.junit4.v2.createComposeRule` instead. The v2 APIs use StandardTestDispatcher instead of UnconfinedTestDispatcher, which aligns with standard coroutine behavior by queuing tasks rather than executing them immediately. Tests relying on immediate execution may require explicit synchronization. Please refer to the migration guide for more details.
+--
+    Location: /home/runner/work/raahi/raahi/android/feature/tools/src/test/kotlin/pk/raahi/feature/tools/ToolsTest.kt:225
+
+> Task :feature:tools:javaPreCompileDebugUnitTest FROM-CACHE
+> Task :feature:tools:compileDebugUnitTestJavaWithJavac NO-SOURCE
+--
+
+== Task outcomes (tests, compilation, lint)
+> Task :app:testDebugUnitTest
+> Task :core:data:testDebugUnitTest
+> Task :app:test
+> Task :core:data:test
+> Task :core:network:test
+> Task :core:network:test FAILED
+> Task :core:testing:compileTestKotlin NO-SOURCE
+> Task :core:testing:test NO-SOURCE
+> Task :core:database:testDebugUnitTest
+> Task :core:database:test
+> Task :core:designsystem:testDebugUnitTest
+> Task :core:designsystem:test
+> Task :feature:opportunities:testDebugUnitTest
+> Task :feature:planner:testDebugUnitTest
+> Task :feature:planner:testDebugUnitTest FAILED
+> Task :feature:opportunities:testDebugUnitTest
+> Task :feature:opportunities:testDebugUnitTest
+> Task :feature:opportunities:testDebugUnitTest FAILED
+> Task :feature:tools:testDebugUnitTest
+> Task :feature:tools:test
+> Task :feature:opportunities:lintDebug FAILED
+
+== Deprecation / warning lines (first 25)
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+
+== Unit tests
+pk.raahi.app.CertPinsTest: tests=2 failures=0 errors=0 skipped=0
+pk.raahi.app.LocalizationCompletenessTest: tests=4 failures=0 errors=0 skipped=0
+pk.raahi.app.ManifestPolicyTest: tests=8 failures=0 errors=0 skipped=0
+pk.raahi.app.ReminderTimingTest: tests=2 failures=0 errors=0 skipped=0
+pk.raahi.core.data.MappersTest: tests=4 failures=0 errors=0 skipped=0
+pk.raahi.core.data.SyncEngineTest: tests=11 failures=0 errors=0 skipped=0
+pk.raahi.core.database.OpportunityDaoTest: tests=7 failures=0 errors=0 skipped=0
+pk.raahi.core.database.OpportunityQueryBuilderTest: tests=4 failures=0 errors=0 skipped=0
+pk.raahi.core.designsystem.ComponentsTest: tests=5 failures=0 errors=0 skipped=0
+pk.raahi.core.designsystem.ThemeContrastTest: tests=4 failures=0 errors=0 skipped=0
+pk.raahi.core.model.DomainLogicTest: tests=9 failures=0 errors=0 skipped=0
+pk.raahi.core.model.ReminderPlannerTest: tests=6 failures=0 errors=0 skipped=0
+pk.raahi.core.model.ServerVectorsTest: tests=3 failures=0 errors=0 skipped=0
+pk.raahi.core.network.ContractParsingTest: tests=5 failures=0 errors=0 skipped=0
+pk.raahi.core.network.DeviceAuthenticatorTest: tests=6 failures=0 errors=0 skipped=0
+pk.raahi.core.network.ProofOfWorkTest: tests=7 failures=0 errors=0 skipped=0
+pk.raahi.core.network.RaahiApiTest: tests=17 failures=2 errors=0 skipped=0
+  FAIL pk.raahi.core.network.RaahiApiTest REQ-AND-004 a certificate the system does not trust is an insecure-connection error and is never retried java.lang.AssertionError: Expected value to be of type <pk.raahi.core.network.ApiError$Insecure (Kotlin reflection is not available)>, actual <class pk.raahi.core.network.ApiError$Offline (Kotlin reflection is not available)>.
+  FAIL pk.raahi.core.network.RaahiApiTest REQ-AND-004 the same server works once its certificate is trusted, and pinning accepts only the pinned key java.lang.AssertionError: a certificate that matches no pin is refused even though it is otherwise trusted. Expected value to be of type <pk.raahi.core.network.ApiError$Insecure (Kotlin reflection is not available)>, actual <class pk.raahi.core.network.ApiError$Offline (Kotlin reflection is not avai
+pk.raahi.core.network.RetryPolicyTest: tests=4 failures=0 errors=0 skipped=0
+pk.raahi.feature.opportunities.OpportunitiesScreenTest: tests=6 failures=1 errors=0 skipped=0
+  FAIL pk.raahi.feature.opportunities.OpportunitiesScreenTest REQ-AND-001 listings are shown with a count and open when tapped java.lang.AssertionError: Assert failed: The component with Text + InputText + EditableText contains 'DAAD masters' (ignoreCase: false) is not displayed!
+pk.raahi.feature.opportunities.OpportunitiesViewModelTest: tests=8 failures=1 errors=0 skipped=0
+  FAIL pk.raahi.feature.opportunities.OpportunitiesViewModelTest REQ-AND-012 the saved list follows the saved ids and un-saving removes an entry app.cash.turbine.TurbineAssertionError: No value produced in 3s
+pk.raahi.feature.planner.LearnViewModelTest: tests=1 failures=0 errors=0 skipped=0
+pk.raahi.feature.planner.ProgrammeCardTest: tests=3 failures=2 errors=0 skipped=0
+  FAIL pk.raahi.feature.planner.ProgrammeCardTest REQ-DAT-005 an official date says so and a reported date tells the person to confirm it java.lang.IllegalStateException: androidx.activity.ComponentActivity@3140945 has already set content. If you have populated the Activity with a ComposeView, make sure to call setContent on that ComposeView instead of on the test rule; and make sure that that call to `setContent {}` is done after the
+  FAIL pk.raahi.feature.planner.ProgrammeCardTest REQ-DAT-005 closing soon shows the days left and the card expands to the details and the official link java.lang.AssertionError: expected:<https://example.org/a> but was:<null>
+pk.raahi.feature.planner.ProgrammeGroupingTest: tests=2 failures=0 errors=0 skipped=0
+pk.raahi.feature.tools.AgeFormTest: tests=3 failures=0 errors=0 skipped=0
+pk.raahi.feature.tools.ScamCheckViewModelTest: tests=4 failures=0 errors=0 skipped=0
+pk.raahi.feature.tools.ScamScreenEnglishTest: tests=2 failures=0 errors=0 skipped=0
+pk.raahi.feature.tools.ScamScreenUrduTest: tests=1 failures=0 errors=0 skipped=0
+TOTAL tests=138 failed=6 skipped=0
+
+== Lint
+## android/app/build/reports/lint-results-debug.txt
+/home/runner/work/raahi/raahi/android/app/src/main/AndroidManifest.xml:14: Warning: Attribute enableOnBackInvokedCallback is only used in API level 33 and higher (current min is 26) [UnusedAttribute]
+        android:enableOnBackInvokedCallback="true"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedAttribute":
+   This check finds attributes set in XML files that were introduced in a
+   version newer than the oldest version targeted by your application (with
+   the minSdkVersion attribute).
+
+   This is not an error; the application will simply ignore the attribute.
+   However, if the attribute is important to the appearance or functionality
+   of your application, you should consider finding an alternative way to
+   achieve the same result with only available attributes, and then you can
+   optionally create a copy of the layout in a layout-vNN folder which will be
+   used on API NN or higher where you can take advantage of the newer
+   attribute.
+
+   Note: This check does not only apply to attributes. For example, some tags
+   can be unused too, such as the new <tag> element in layouts introduced in
+   API 21.
+
+/home/runner/work/raahi/raahi/android/app/src/main/kotlin/pk/raahi/app/LocaleSupport.kt:18: Warning: Found dynamic locale changes, but did not find corresponding Play Core library calls for downloading languages and splitting by language is not disabled in the bundle configuration [AppBundleLocaleChanges]
+    configuration.setLocale(locale)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "AppBundleLocaleChanges":
+   When changing locales at runtime (e.g. to provide an in-app language
+   switcher), the Android App Bundle must be configured to not split by locale
+   or the Play Core library must be used to download additional locales at
+   runtime.
+
+   https://developer.android.com/guide/app-bundle/configure-base#handling_language_changes
+
+/home/runner/work/raahi/raahi/android/app/src/main/res/values/strings.xml:35: Warning: Formatting %d followed by words ("listings"): This should probably be a plural rather than a string [PluralsCandidate]
+    <string name="settings_listings_stored">%d listings on this phone</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "PluralsCandidate":
+   This lint check looks for potential errors in internationalization where
+   you have translated a message which involves a quantity and it looks like
+   other parts of the string may need grammatical changes.
+
+   For example, rather than something like this:
+     <string name="try_again">Try again in %d seconds.</string>
+   you should be using a plural:
+      <plurals name="try_again">
+           <item quantity="one">Try again in %d second</item>
+           <item quantity="other">Try again in %d seconds</item>
+       </plurals>
+   This will ensure that in other languages the right set of translations are
+   provided for the different quantity classes.
+
+   (This check depends on some heuristics, so it may not accurately determine
+   whether a string really should be a quantity. You can use tools:ignore to
+   filter out false positives.
+
+   https://developer.android.com/guide/topics/resources/string-resource.html#Plurals
+
+/home/runner/work/raahi/raahi/android/app/src/main/res/values/strings.xml:10: Warning: The resource R.string.settings_title appears to be unused [UnusedResources]
+    <string name="settings_title">Settings</string>
+## android/core/data/build/reports/lint-results-debug.txt
+No issues found.
+## android/core/database/build/reports/lint-results-debug.txt
+No issues found.
+## android/core/designsystem/build/reports/lint-results-debug.txt
+No issues found.
+## android/feature/opportunities/build/reports/lint-results-debug.txt
+/home/runner/work/raahi/raahi/android/feature/opportunities/src/main/kotlin/pk/raahi/feature/opportunities/OpportunitiesScreen.kt:74: Error: Querying resource values using LocalContext.current is not configuration-aware and may return stale values if the Configuration changes [LocalContextGetResourceValueCall from androidx.compose.ui]
+    LaunchedEffect(viewModel) { viewModel.messages.collect { snackbar.showSnackbar(context.getString(it.textRes())) } }
+                                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "LocalContextGetResourceValueCall":
+   Changes to the Configuration object will not cause LocalContext.current
+   reads to be invalidated, so calls to APIs such as Context.getString() will
+   not be updated when the Configuration changes, and so stale values might be
+   used. Instead, you can use Compose APIs such as stringResource,
+   colorResource, and painterResource - or LocalResources.current and query
+   properties from Resources directly. Using these APIs will invalidate
+   callers when the Configuration changes, to ensure that these calls reflect
+   the latest values.
+
+   Vendor: Jetpack Compose
+   Identifier: androidx.compose.ui
+   Feedback: https://issuetracker.google.com/issues/new?component=612128
+
+1 error
+## android/feature/planner/build/reports/lint-results-debug.txt
+/home/runner/work/raahi/raahi/android/feature/planner/src/main/res/values/strings.xml:42: Warning: Formatting %d followed by words ("steps"): This should probably be a plural rather than a string [PluralsCandidate]
+    <string name="guide_steps">%d steps</string>
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "PluralsCandidate":
+   This lint check looks for potential errors in internationalization where
+   you have translated a message which involves a quantity and it looks like
+   other parts of the string may need grammatical changes.
+
+   For example, rather than something like this:
+     <string name="try_again">Try again in %d seconds.</string>
+   you should be using a plural:
+      <plurals name="try_again">
+           <item quantity="one">Try again in %d second</item>
+           <item quantity="other">Try again in %d seconds</item>
+       </plurals>
+   This will ensure that in other languages the right set of translations are
+   provided for the different quantity classes.
+
+   (This check depends on some heuristics, so it may not accurately determine
+   whether a string really should be a quantity. You can use tools:ignore to
+   filter out false positives.
+
+   https://developer.android.com/guide/topics/resources/string-resource.html#Plurals
+
+0 errors, 1 warning
+## android/feature/tools/build/reports/lint-results-debug.txt
+No issues found.
+
+== Artifacts
+android/app/build/outputs/apk/debug/app-debug.apk 15048176 bytes
+android/app/build/outputs/apk/release/app-release-unsigned.apk 2179620 bytes
+
+== Log tail
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:74)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:49)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.executeMutable(StoreExecutionStateStep.java:46)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.executeMutable(StoreExecutionStateStep.java:35)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveMutableCachingStateStep.executeDelegate(ResolveMutableCachingStateStep.java:70)
+	at org.gradle.internal.execution.steps.ResolveMutableCachingStateStep.executeDelegate(ResolveMutableCachingStateStep.java:32)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:69)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:37)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:63)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:34)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.executeDelegate(ValidateStep.java:79)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.executeDelegate(ValidateStep.java:65)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:105)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.execute(ValidateStep.java:65)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.executeMutable(CaptureMutableStateBeforeExecutionStep.java:86)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:65)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:45)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeWithNonEmptySources(SkipEmptyMutableWorkStep.java:210)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:85)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:53)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.executeMutable(LoadPreviousExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.executeMutable(LoadPreviousExecutionStateStep.java:23)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:77)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:43)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$executeMutable$0(AssignMutableWorkspaceStep.java:34)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:314)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:30)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:21)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:56)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:38)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
+	... 28 more
+
+==============================================================================
+
+BUILD FAILED in 6m 25s
+686 actionable tasks: 597 executed, 89 from cache
