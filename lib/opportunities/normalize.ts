@@ -32,6 +32,9 @@ export interface NormalizeResult {
 
 const DEADLINE_KINDS: ReadonlySet<OpportunityKind> = new Set(["scholarship", "fellowship", "internship", "job", "competition", "grant", "admission", "training", "course"]);
 const SUMMARY_LIMIT = 280;
+/** Only the start of a long post is read: eligibility and deadlines are stated near the top, the rest is noise. */
+const BODY_LIMIT = 6000;
+const BODY_ELIGIBILITY_WINDOW = 3000;
 
 function validIso(date: string | undefined): string | undefined {
   if (!date) return undefined;
@@ -52,17 +55,21 @@ export function normalizeOpportunity(raw: RawOpportunity, source: SourceMeta, no
   const applyUrl = raw.applyUrl ? canonicalUrl(raw.applyUrl) : undefined;
 
   const organization = raw.organization ? cleanTitle(raw.organization).slice(0, 200) || undefined : undefined;
-  const summaryText = raw.summary ? stripHtml(raw.summary) : "";
+  const bodyText = raw.body ? stripHtml(raw.body).slice(0, BODY_LIMIT) : "";
+  let summaryText = raw.summary ? stripHtml(raw.summary) : "";
+  // Some feeds send an empty or one-line teaser; the opening of the post is a better summary than nothing.
+  if (summaryText.length < 40 && bodyText.length > summaryText.length) summaryText = bodyText;
   const summary = summaryText ? truncate(summaryText, SUMMARY_LIMIT) : undefined;
-  const text = `${title}. ${summaryText}`;
+  const inferText = summaryText.slice(0, 1200);
+  const text = `${title}. ${inferText}`;
 
-  const kind = raw.kind ?? inferKind(title, summaryText, source.defaultKind);
+  const kind = raw.kind ?? inferKind(title, inferText, source.defaultKind);
   const scope = raw.scope ?? source.scope;
 
-  const country = raw.country ?? (scope === "pakistan" ? "Pakistan" : inferCountry(title) ?? inferCountry(summaryText));
+  const country = raw.country ?? (scope === "pakistan" ? "Pakistan" : inferCountry(title) ?? inferCountry(inferText));
   const levels = raw.levels && raw.levels.length > 0 ? raw.levels : kind === "notice" ? [] : inferLevels(text);
   const fields = raw.fields && raw.fields.length > 0 ? raw.fields : kind === "notice" ? [] : inferFields(text);
-  const funding = raw.funding ?? (kind === "notice" ? undefined : inferFunding(text));
+  const funding = raw.funding ?? (kind === "notice" ? undefined : (inferFunding(text) ?? (bodyText ? inferFunding(bodyText.slice(0, BODY_ELIGIBILITY_WINDOW)) : undefined)));
 
   let deadline = validIso(raw.deadline);
   let deadlineText = raw.deadlineText?.slice(0, 120);
@@ -70,7 +77,9 @@ export function normalizeOpportunity(raw: RawOpportunity, source: SourceMeta, no
   if (!deadline && DEADLINE_KINDS.has(kind)) {
     // A year-less date ("Apply by 1 October") belongs to the year the item was posted in, or the coming one.
     const reference = (toIsoDateTime(raw.postedAt) ?? now.toISOString()).slice(0, 10);
-    const extracted = extractDeadline(text, { reference });
+    let extracted = extractDeadline(text, { reference });
+    // The teaser rarely carries the deadline; the post itself usually does ("Deadline: 15 December 2026").
+    if (!extracted.date && bodyText) extracted = { ...extractDeadline(bodyText, { reference }), rolling: extracted.rolling };
     deadline = extracted.date;
     deadlineText ??= extracted.text;
     rolling ??= extracted.rolling;
@@ -91,7 +100,8 @@ export function normalizeOpportunity(raw: RawOpportunity, source: SourceMeta, no
     } else if (kind === "notice" || kind === "coupon" || kind === "course") {
       openToPakistan = true; // online learning and Pakistani regulator notices are not nationality-limited
     } else {
-      const guess = inferEligibility(text);
+      let guess = inferEligibility(text);
+      if (guess.openToPakistan === null && bodyText) guess = inferEligibility(bodyText.slice(0, BODY_ELIGIBILITY_WINDOW));
       openToPakistan = guess.openToPakistan;
       eligibilityNote ??= guess.note;
     }

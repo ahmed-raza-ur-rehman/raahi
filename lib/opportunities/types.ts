@@ -87,6 +87,11 @@ export interface RawOpportunity {
   organization?: string;
   /** Plain text or HTML; cleaned and truncated by the normalizer. */
   summary?: string;
+  /**
+   * The full post text (HTML or plain) when the source provides it. It is used only to fill gaps the title and
+   * summary leave — a deadline, the funding type, whether Pakistan is eligible — and is never stored or shown.
+   */
+  body?: string;
   country?: string;
   location?: string;
   remote?: boolean;

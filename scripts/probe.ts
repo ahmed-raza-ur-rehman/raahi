@@ -11,7 +11,10 @@
  * What it records is metadata (status, content type, a few titles) plus trimmed page samples used to write
  * parser fixtures. Output goes to `.probe/`.
  */
+import { X509Certificate } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
+import https from "node:https";
+import tls from "node:tls";
 import { resources } from "../data/opportunities/resources";
 import { checkResources } from "../lib/opportunities/linkcheck";
 import { parseFeed } from "../lib/opportunities/scrapers/adapters/feeds";
@@ -263,7 +266,9 @@ async function stepScrape() {
   }
   const bySource = new Map<string, number>();
   for (const item of snapshot.items) bySource.set(item.sourceId, (bySource.get(item.sourceId) ?? 0) + 1);
-  lines.push("", "Items per source in the merged snapshot:", "", [...bySource].map(([id, count]) => `${id}: ${count}`).join(", "));
+  const withDeadline = new Map<string, number>();
+  for (const item of snapshot.items) if (item.deadline) withDeadline.set(item.sourceId, (withDeadline.get(item.sourceId) ?? 0) + 1);
+  lines.push("", "Items per source in the merged snapshot (items with a deadline in brackets):", "", [...bySource].map(([id, count]) => `${id}: ${count} (${withDeadline.get(id) ?? 0})`).join(", "));
   write(`${OUT}/scrape-report.md`, `${lines.join("\n")}\n`);
   console.log(lines.join("\n"));
 }
@@ -330,6 +335,159 @@ async function stepDiscovery() {
   write(`${OUT}/discovery.md`, `${lines.join("\n")}\n`);
 }
 
+// ─── TLS chains: several .gov.pk servers send only their own certificate and not the intermediate ─────────────
+// Browsers repair this by following the certificate's "CA Issuers" link (AIA); Node does not. This step finds the
+// missing intermediate certificates, proves that adding them makes the chain verify against the normal root store
+// (it never switches verification off), and keeps a trimmed copy of the home page for writing a parser.
+
+const CERT_HOSTS = ["www.fpsc.gov.pk", "pmyp.gov.pk", "www.digiskills.pk"];
+
+function derToPem(der: Buffer): string {
+  return `-----BEGIN CERTIFICATE-----\n${der.toString("base64").match(/.{1,64}/g)?.join("\n") ?? ""}\n-----END CERTIFICATE-----\n`;
+}
+
+interface ChainLink {
+  subject: string;
+  issuer: string;
+  validTo: string;
+  aia: string[];
+}
+
+function readChain(host: string): Promise<{ chain: ChainLink[]; authorized: boolean; error?: string }> {
+  return new Promise((resolve) => {
+    const socket = tls.connect({ host, port: 443, servername: host, rejectUnauthorized: false, timeout: 15_000 }, () => {
+      const chain: ChainLink[] = [];
+      const seen = new Set<string>();
+      let cert: tls.DetailedPeerCertificate | undefined = socket.getPeerCertificate(true);
+      while (cert?.fingerprint256 && !seen.has(cert.fingerprint256) && chain.length < 6) {
+        seen.add(cert.fingerprint256);
+        const aia = cert.infoAccess?.["CA Issuers - URI"] ?? [];
+        chain.push({ subject: String(cert.subject?.CN ?? cert.subject?.O ?? "?"), issuer: String(cert.issuer?.CN ?? cert.issuer?.O ?? "?"), validTo: cert.valid_to, aia: Array.isArray(aia) ? aia : [aia] });
+        cert = cert.issuerCertificate;
+      }
+      const authorized = socket.authorized;
+      const error = authorized ? undefined : String(socket.authorizationError ?? "");
+      socket.end();
+      resolve({ chain, authorized, error });
+    });
+    socket.on("error", (error) => resolve({ chain: [], authorized: false, error: error.message }));
+    socket.on("timeout", () => {
+      socket.destroy();
+      resolve({ chain: [], authorized: false, error: "timeout" });
+    });
+  });
+}
+
+async function downloadCertificate(url: string): Promise<X509Certificate | undefined> {
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(15_000), headers: { "User-Agent": USER_AGENT } });
+    if (!response.ok) return undefined;
+    const bytes = Buffer.from(await response.arrayBuffer());
+    try {
+      return new X509Certificate(bytes);
+    } catch {
+      return new X509Certificate(bytes.toString("utf8"));
+    }
+  } catch {
+    return undefined;
+  }
+}
+
+function tlsGet(host: string, path: string, ca: string[]): Promise<{ status: number; body: string; error?: string }> {
+  return new Promise((resolve) => {
+    const request = https.request({ host, path, port: 443, method: "GET", ca, servername: host, timeout: 20_000, headers: { "User-Agent": USER_AGENT, Accept: "text/html,*/*;q=0.5" } }, (response) => {
+      const parts: Buffer[] = [];
+      let size = 0;
+      response.on("data", (chunk: Buffer) => {
+        size += chunk.length;
+        if (size < 3_000_000) parts.push(chunk);
+      });
+      response.on("end", () => resolve({ status: response.statusCode ?? 0, body: Buffer.concat(parts).toString("utf8") }));
+    });
+    request.on("error", (error) => resolve({ status: 0, body: "", error: `${error.message}${(error as { code?: string }).code ? ` (${(error as { code?: string }).code})` : ""}` }));
+    request.on("timeout", () => {
+      request.destroy();
+      resolve({ status: 0, body: "", error: "timeout" });
+    });
+    request.end();
+  });
+}
+
+async function stepCerts() {
+  console.log(`\n=== TLS chains for ${CERT_HOSTS.length} hosts ===`);
+  const report: string[] = ["# TLS chain repair", ""];
+  for (const host of CERT_HOSTS) {
+    const outcome = await readChain(host);
+    console.log(`${host}: authorized=${outcome.authorized} ${outcome.error ?? ""} chain=${outcome.chain.map((link) => `${link.subject}←${link.issuer}`).join(" | ")}`);
+    report.push(`## ${host}`, "", `- verified by Node as served: ${outcome.authorized}${outcome.error ? ` (${outcome.error})` : ""}`);
+    for (const link of outcome.chain) report.push(`- ${link.subject} ← issued by ${link.issuer}; valid to ${link.validTo}; AIA: ${link.aia.join(", ") || "none"}`);
+    if (outcome.authorized || outcome.chain.length === 0) {
+      report.push("");
+      continue;
+    }
+
+    // Follow the "CA Issuers" links until the chain verifies against the normal root store.
+    const found: X509Certificate[] = [];
+    let queue = outcome.chain.flatMap((link) => link.aia);
+    for (let round = 0; round < 4 && queue.length > 0; round += 1) {
+      const next: string[] = [];
+      for (const url of [...new Set(queue)]) {
+        const certificate = await downloadCertificate(url);
+        report.push(`- downloaded ${url}: ${certificate ? `${certificate.subject.replace(/\n/g, ", ")} (valid to ${certificate.validTo})` : "failed"}`);
+        if (!certificate) continue;
+        found.push(certificate);
+        const aia = /CA Issuers - URI:(\S+)/.exec(certificate.infoAccess ?? "")?.[1];
+        if (aia) next.push(aia);
+      }
+      queue = next;
+    }
+    const pem = found.map((certificate) => derToPem(certificate.raw)).join("");
+    const trial = await tlsGet(host, "/robots.txt", [...tls.rootCertificates, ...found.map((certificate) => certificate.toString())]);
+    const works = trial.status > 0;
+    console.log(`  ${found.length} intermediate certificate(s) found; verifies with them: ${works} (robots.txt HTTP ${trial.status}${trial.error ? ` ${trial.error}` : ""})`);
+    report.push(`- ${found.length} intermediate certificate(s) found; chain verifies once they are added: **${works}** (robots.txt HTTP ${trial.status}${trial.error ? `, ${trial.error}` : ""})`);
+    if (found.length > 0) write(`${OUT}/certs/${slug(host)}.pem`, pem);
+    if (!works) {
+      report.push("");
+      continue;
+    }
+
+    const ca = [...tls.rootCertificates, ...found.map((certificate) => certificate.toString())];
+    const rules = trial.status === 200 ? parseRobots(trial.body.slice(0, 512 * 1024)) : undefined;
+    const allowed = (path: string) => (rules ? isAllowed(rules, ROBOTS_TOKEN, path) : true);
+    report.push(`- robots.txt allows the home page: ${allowed("/")}`);
+    if (!allowed("/")) {
+      report.push("");
+      continue;
+    }
+    const home = await tlsGet(host, "/", ca);
+    report.push(`- home page: HTTP ${home.status}, ${home.body.length} bytes${home.error ? `, ${home.error}` : ""}`);
+    if (home.body) {
+      write(`${OUT}/html/${slug(host)}.html`, cleanHtml(home.body, 80_000));
+      const $ = cheerio.load(home.body);
+      const links = $("a[href]")
+        .map((_, node) => ({ text: $(node).text().replace(/\s+/g, " ").trim(), href: $(node).attr("href") ?? "" }))
+        .get()
+        .filter((link) => /job|advert|vacanc|career|recruit|scholar|enrol|batch/i.test(`${link.text} ${link.href}`))
+        .slice(0, 12);
+      for (const link of links) report.push(`  - "${link.text.slice(0, 80)}" → ${link.href.slice(0, 120)}`);
+      // One level deeper: the most promising listing page, again only if robots.txt allows it.
+      const listing = links.find((link) => /jobs?|advert|vacanc/i.test(link.href) && !/^(https?:)?\/\//i.test(link.href) && !/\.(pdf|docx?|jpg|png)$/i.test(link.href));
+      if (listing) {
+        const path = listing.href.startsWith("/") ? listing.href : `/${listing.href}`;
+        if (allowed(path)) {
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          const page = await tlsGet(host, path, ca);
+          report.push(`- listing ${path}: HTTP ${page.status}, ${page.body.length} bytes`);
+          if (page.body) write(`${OUT}/pages/${slug(host)}-listing.html`, cleanHtml(page.body, 90_000));
+        }
+      }
+    }
+    report.push("");
+  }
+  write(`${OUT}/certs.md`, `${report.join("\n")}\n`);
+}
+
 async function stepLinks() {
   console.log(`\n=== 5/5 Link health for the ${resources.length} directory resources ===`);
   const started = Date.now();
@@ -342,7 +500,7 @@ async function stepLinks() {
 async function main() {
   mkdirSync(OUT, { recursive: true });
   console.log(`Probe started ${new Date().toISOString()} as ${USER_AGENT}`);
-  for (const [name, step] of [["scrape", stepScrape], ["pages", stepPages], ["apis", stepApis], ["discovery", stepDiscovery], ["links", stepLinks]] as const) {
+  for (const [name, step] of [["scrape", stepScrape], ["certs", stepCerts], ["pages", stepPages], ["apis", stepApis], ["discovery", stepDiscovery], ["links", stepLinks]] as const) {
     if (!STEPS.has(name)) continue;
     try {
       await step();

@@ -11,6 +11,8 @@ export interface FeedItem {
   title: string;
   link: string;
   summary: string;
+  /** The full post when the feed carries it (`content:encoded` / Atom `content`). */
+  content?: string;
   published?: string;
   categories: string[];
   /** Non-standard child elements of an RSS item (e.g. We Work Remotely's `<region>`), keyed by lower-case tag name. */
@@ -33,6 +35,7 @@ export function parseFeed(xml: string): FeedItem[] {
       title,
       link,
       summary: item.children("description").first().text() || item.children("content\\:encoded").first().text(),
+      content: item.children("content\\:encoded").first().text() || undefined,
       published: item.children("pubDate").first().text() || item.children("dc\\:date").first().text() || undefined,
       categories: item.children("category").map((__, c) => $(c).text().trim()).get().filter(Boolean),
       fields: Object.fromEntries(
@@ -55,6 +58,7 @@ export function parseFeed(xml: string): FeedItem[] {
       title,
       link,
       summary: entry.children("summary").first().text() || entry.children("content").first().text(),
+      content: entry.children("content").first().text() || undefined,
       published: entry.children("published").first().text() || entry.children("updated").first().text() || undefined,
       categories: entry.children("category").map((__, c) => $(c).attr("term") ?? $(c).text()).get().filter(Boolean),
       fields: {},
@@ -69,6 +73,7 @@ function feedItemToRaw(item: FeedItem): RawOpportunity {
     title: item.title,
     url: item.link,
     summary: item.summary,
+    body: item.content && item.content !== item.summary ? item.content : undefined,
     postedAt: item.published ? toIsoDateTime(item.published) : undefined,
     tags: item.categories,
     kind: kindFromCategories(item.categories),
@@ -125,6 +130,7 @@ interface WpPost {
   link?: string;
   title?: { rendered?: string };
   excerpt?: { rendered?: string };
+  content?: { rendered?: string };
   categories?: number[];
 }
 
@@ -145,6 +151,7 @@ export function parseWordPressPosts(json: unknown, categoryNames: Map<number, st
       title,
       url: link,
       summary: entry.excerpt?.rendered,
+      body: entry.content?.rendered,
       postedAt: gmt ?? entry.date,
       tags: names.map(cleanTitle),
       kind: kindFromCategories(names),
@@ -179,10 +186,12 @@ export const wordpressAdapter: Adapter = async ({ source, http, log, now }) => {
   const base = source.endpoint.replace(/\/+$/, "");
   const perPage = Math.min(Math.max(source.maxItems ?? 40, 1), 100);
   const options = { respectRobots: source.respectRobots };
+  // The full post is where the deadline and eligibility live; sources can opt out with `params.deep: false`.
+  const fields = source.params?.deep === false ? "id,date_gmt,date,link,title,excerpt,categories" : "id,date_gmt,date,link,title,excerpt,categories,content";
 
   try {
     const posts = await http.getJson<unknown>(
-      `${base}/wp-json/wp/v2/posts?per_page=${perPage}&_fields=id,date_gmt,date,link,title,excerpt,categories`,
+      `${base}/wp-json/wp/v2/posts?per_page=${perPage}&_fields=${fields}`,
       options,
     );
     const ids = [...new Set((Array.isArray(posts) ? (posts as WpPost[]) : []).flatMap((post) => post.categories ?? []))];
