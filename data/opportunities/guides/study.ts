@@ -312,7 +312,7 @@ export const studyGuides: Guide[] = [
     ],
     resourceIds: ["chevening", "daad", "usefp-fulbright", "khan-academy"],
     related: ["study-abroad-roadmap", "internship-playbook"],
-    tools: ["plan"],
+    tools: ["plan", "cv"],
     keywords: ["cv", "resume", "cover letter", "sop", "statement of purpose", "motivation letter", "reference letter", "recommendation", "personal statement", "cv kaise banayen", "سی وی", "کور لیٹر", "ایس او پی", "سفارشی خط"],
     reviewed: REVIEWED,
   },

@@ -122,7 +122,7 @@ export function Shell({
 }) {
   return (
     <main className="app-shell flex min-h-screen flex-col px-4 py-5 sm:px-6" dir={dirOf(language)} lang={language}>
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] pb-4 print:hidden">
         <Link href="/" className="flex items-center gap-2.5" aria-label="RAAHI home">
           <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--forest)] to-[var(--forest-dark)] text-xl font-black text-white shadow-md">ر</span>
           <span>
@@ -136,7 +136,7 @@ export function Shell({
         </div>
       </header>
 
-      <nav aria-label="Opportunities sections" className="-mx-1 mt-3 flex gap-1 overflow-x-auto px-1 pb-1">
+      <nav aria-label="Opportunities sections" className="-mx-1 mt-3 flex gap-1 overflow-x-auto px-1 pb-1 print:hidden">
         {NAV.map((entry) => (
           <Link
             key={entry.id}
@@ -151,7 +151,7 @@ export function Shell({
 
       <div className="mx-auto w-full max-w-6xl flex-1 py-6">{children}</div>
 
-      <footer className="mx-auto w-full max-w-6xl border-t border-[var(--line)] pt-5 text-center text-[11px] leading-relaxed text-[var(--muted)]">
+      <footer className="mx-auto w-full max-w-6xl border-t border-[var(--line)] pt-5 text-center text-[11px] leading-relaxed text-[var(--muted)] print:hidden">
         <p className="mx-auto max-w-2xl">{t(language, "footerNote")}</p>
         <p className="mt-2 flex flex-wrap items-center justify-center gap-3 font-bold text-[var(--forest)]">
           <Link href="/" className="hover:underline">{t(language, "navHome")}</Link>

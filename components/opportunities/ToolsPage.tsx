@@ -13,19 +13,23 @@ import { OpportunityCard } from "./OpportunityCard";
 import { formatDate, TONE_CLASS } from "./format";
 import { useLanguage } from "./useLanguage";
 import { useSaved } from "./useSaved";
+import AgeTool from "./AgeTool";
+import CvBuilder from "./CvBuilder";
 import { Shell } from "./ui";
 
-type Tab = "scam" | "match" | "plan" | "abroad";
-const TABS: Array<{ id: Tab; key: "toolScam" | "toolMatch" | "toolPlan" | "toolAgent"; emoji: string }> = [
+type Tab = "scam" | "match" | "plan" | "age" | "cv" | "abroad";
+const TABS: Array<{ id: Tab; key: "toolScam" | "toolMatch" | "toolPlan" | "toolAge" | "toolCv" | "toolAgent"; emoji: string }> = [
   { id: "scam", key: "toolScam", emoji: "🛡️" },
   { id: "match", key: "toolMatch", emoji: "🎯" },
   { id: "plan", key: "toolPlan", emoji: "🗓️" },
+  { id: "age", key: "toolAge", emoji: "🎂" },
+  { id: "cv", key: "toolCv", emoji: "📄" },
   { id: "abroad", key: "toolAgent", emoji: "✈️" },
 ];
 
 export default function ToolsPage({ initialTab = "scam" }: { initialTab?: string }) {
   const [language, setLanguage] = useLanguage();
-  const [tab, setTab] = useState<Tab>(initialTab === "match" || initialTab === "plan" || initialTab === "abroad" ? initialTab : "scam");
+  const [tab, setTab] = useState<Tab>((["match", "plan", "age", "cv", "abroad"] as string[]).includes(initialTab) ? (initialTab as Tab) : "scam");
 
   const choose = (next: Tab) => {
     setTab(next);
@@ -34,12 +38,12 @@ export default function ToolsPage({ initialTab = "scam" }: { initialTab?: string
 
   return (
     <Shell language={language} onLanguage={setLanguage} active="tools">
-      <section className="rounded-3xl bg-gradient-to-br from-[var(--forest-deep)] via-[var(--forest-dark)] to-[var(--forest)] p-5 text-white shadow-[var(--shadow-forest)] sm:p-7">
+      <section className="rounded-3xl bg-gradient-to-br from-[var(--forest-deep)] via-[var(--forest-dark)] to-[var(--forest)] p-5 text-white shadow-[var(--shadow-forest)] print:hidden sm:p-7">
         <h1 className="text-2xl font-black sm:text-3xl">{t(language, "toolsTitle")}</h1>
         <p className="mt-2 max-w-3xl text-sm text-white/85">{t(language, "toolsSub")}</p>
       </section>
 
-      <div role="tablist" aria-label={t(language, "toolsTitle")} className="mt-4 flex gap-1 overflow-x-auto pb-1">
+      <div role="tablist" aria-label={t(language, "toolsTitle")} className="mt-4 flex gap-1 overflow-x-auto pb-1 print:hidden">
         {TABS.map((entry) => (
           <button key={entry.id} role="tab" id={`tab-${entry.id}`} aria-selected={tab === entry.id} aria-controls={`panel-${entry.id}`} onClick={() => choose(entry.id)} className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition ${tab === entry.id ? "bg-[var(--forest)] text-white" : "border border-[var(--line)] bg-[var(--surface)] text-[var(--ink-soft)] hover:bg-[var(--forest-light)]"}`}>
             <span aria-hidden>{entry.emoji}</span> {t(language, entry.key)}
@@ -51,6 +55,8 @@ export default function ToolsPage({ initialTab = "scam" }: { initialTab?: string
         {tab === "scam" && <ScamTool language={language} />}
         {tab === "match" && <MatchTool language={language} />}
         {tab === "plan" && <PlanTool language={language} />}
+        {tab === "age" && <AgeTool language={language} />}
+        {tab === "cv" && <CvBuilder language={language} />}
         {tab === "abroad" && <AbroadGuide language={language} />}
       </div>
     </Shell>

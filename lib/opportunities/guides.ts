@@ -17,7 +17,7 @@ export type { LText } from "./ltext";
 export const GUIDE_CATEGORIES = ["study", "careers", "abroad", "skills", "safety", "documents"] as const;
 export type GuideCategory = (typeof GUIDE_CATEGORIES)[number];
 
-export type GuideToolId = "scam" | "match" | "plan" | "abroad";
+export type GuideToolId = "scam" | "match" | "plan" | "age" | "cv" | "abroad";
 
 export interface GuideStep {
   title: LText;

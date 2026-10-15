@@ -81,7 +81,8 @@ function FlagshipCard({ entry, language, guideTitles }: { entry: PlannerEntry; l
   const { flagship: f, status } = entry;
   const cycle = f.cycle;
   const route = ROUTE_LABEL[f.route];
-  const showMonths = !cycle && status.phase === "off-season" && status.monthsToOpen > 0;
+  const showNext = (status.phase === "closed" || status.phase === "off-season") && status.monthsToOpen > 0;
+  const nextMonth = monthNames(language)[status.nextOpensMonth - 1];
   return (
     <article id={f.id} className="card flex flex-col gap-3 p-4">
       <header className="flex flex-wrap items-start justify-between gap-2">
@@ -108,6 +109,7 @@ function FlagshipCard({ entry, language, guideTitles }: { entry: PlannerEntry; l
             </p>
             {cycle.closesNote && <p className="text-[11.5px] text-[var(--muted)]" dir="auto">{pickText(language, cycle.closesNote)}</p>}
             {cycle.note && <p className="mt-1" dir="auto">{pickText(language, cycle.note)}</p>}
+            {showNext && <p className="mt-1 text-[11.5px] font-bold text-[var(--forest-dark)]">{t(language, "calNextOpens")}: {nextMonth} (≈ {status.monthsToOpen} {t(language, "calMonthsShort")})</p>}
             <p className="mt-1.5 flex flex-wrap items-center gap-1.5">
               <Chip tone={cycle.confidence === "official" ? "ok" : "soon"}>{t(language, cycle.confidence === "official" ? "calConfOfficial" : "calConfReported")}</Chip>
               <span className="text-[11px] text-[var(--muted)]">{t(language, "calChecked")}: {formatDate(cycle.checked, language)}</span>
@@ -117,7 +119,7 @@ function FlagshipCard({ entry, language, guideTitles }: { entry: PlannerEntry; l
           <>
             <p className="font-bold text-[var(--ink)]">{t(language, "calUsual")}</p>
             <p dir="auto">{pickText(language, f.windowNote)}</p>
-            {showMonths && <p className="mt-1 text-[11.5px] text-[var(--muted)]">≈ {status.monthsToOpen} {t(language, "calMonthsAway")}</p>}
+            {showNext && <p className="mt-1 text-[11.5px] font-bold text-[var(--forest-dark)]">{t(language, "calNextOpens")}: {nextMonth} (≈ {status.monthsToOpen} {t(language, "calMonthsShort")})</p>}
           </>
         )}
         {f.variable && <p className="mt-1.5 text-[11px] text-[var(--muted)]">≈ {t(language, "calVariable")}</p>}
@@ -165,7 +167,11 @@ function YearGrid({ entries, month, language }: { entries: PlannerEntry[]; month
     <section className="mt-8" aria-labelledby="grid-title">
       <h2 id="grid-title" className="text-base font-black text-[var(--ink)]">{t(language, "calGrid")}</h2>
       <p className="mt-1 text-xs text-[var(--muted)]">{t(language, "calGridNote")}</p>
-      <div className="card mt-3 overflow-x-auto p-2">
+      <p className="mt-1.5 flex flex-wrap items-center gap-3 text-[11px] text-[var(--ink-soft)]">
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="inline-block h-3 w-5 rounded-sm bg-[color:rgb(19_122_66/0.32)]" />{t(language, "calLegendFixed")}</span>
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="inline-block h-3 w-5 rounded-sm bg-[color:rgb(184_102_8/0.28)]" />{t(language, "calVariable")}</span>
+      </p>
+      <div className="card relative mt-3 overflow-x-auto p-2">
         <table className="w-full min-w-[720px] border-separate border-spacing-y-1 text-center text-[11px]">
           <thead>
             <tr>
@@ -184,7 +190,7 @@ function YearGrid({ entries, month, language }: { entries: PlannerEntry[]; month
                     <a href={`#${flagship.id}`} className="hover:underline">{pickText(language, flagship.title)}</a>
                   </th>
                   {strip.map((on, index) => (
-                    <td key={index} className={`h-7 ${on ? (flagship.variable ? "bg-[var(--amber-bg)]" : "bg-[var(--forest-light)]") : "bg-[var(--surface-2)]"} ${index + 1 === month ? "outline outline-2 -outline-offset-2 outline-[var(--forest)]" : ""}`}>
+                    <td key={index} className={`h-7 ${on ? (flagship.variable ? "bg-[color:rgb(184_102_8/0.28)]" : "bg-[color:rgb(19_122_66/0.32)]") : "bg-[var(--surface-2)]"} ${index + 1 === month ? "outline outline-2 -outline-offset-2 outline-[var(--forest)]" : ""}`}>
                       <span className="sr-only">{names[index]}: {on ? t(language, "calPhaseTypical") : "—"}</span>
                       {on ? <span aria-hidden className="text-[var(--forest-dark)]">●</span> : null}
                     </td>

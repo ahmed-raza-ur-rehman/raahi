@@ -24,6 +24,8 @@ const TOOL_LABEL: Record<GuideToolId, { key: StringKey; emoji: string }> = {
   scam: { key: "toolScam", emoji: "🛡️" },
   match: { key: "toolMatch", emoji: "🔎" },
   plan: { key: "toolPlan", emoji: "🗓️" },
+  age: { key: "toolAge", emoji: "🎂" },
+  cv: { key: "toolCv", emoji: "📄" },
   abroad: { key: "toolAgent", emoji: "✈️" },
 };
 
