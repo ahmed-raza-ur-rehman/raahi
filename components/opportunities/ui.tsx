@@ -100,8 +100,9 @@ export function EcosystemStrip({ language, medium = "opportunities" }: { languag
   );
 }
 
-const NAV: Array<{ id: "opportunities" | "guides" | "resources" | "tools" | "status"; href: string; key: "navOpportunities" | "navGuides" | "navResources" | "navTools" | "navStatus" }> = [
+const NAV: Array<{ id: "opportunities" | "calendar" | "guides" | "resources" | "tools" | "status"; href: string; key: "navOpportunities" | "navCalendar" | "navGuides" | "navResources" | "navTools" | "navStatus" }> = [
   { id: "opportunities", href: "/opportunities", key: "navOpportunities" },
+  { id: "calendar", href: "/opportunities/calendar", key: "navCalendar" },
   { id: "guides", href: "/opportunities/guides", key: "navGuides" },
   { id: "resources", href: "/opportunities/resources", key: "navResources" },
   { id: "tools", href: "/opportunities/tools", key: "navTools" },

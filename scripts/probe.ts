@@ -535,6 +535,78 @@ async function stepRaw() {
   write(`${OUT}/raw.md`, `${report.join("\n")}\n`);
 }
 
+// ─── Data endpoints behind JavaScript-drawn lists (FPSC, PTS) and the wording of DigiSkills enrolment news ──────
+
+async function stepApi2() {
+  console.log("\n=== Data endpoints ===");
+  const report: string[] = ["# Data endpoints", ""];
+  const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  const roots = [...tls.rootCertificates];
+  const fpscCa = [...roots, readFileSync(".probe/r5/certs/www-fpsc-gov-pk.pem", "utf8")];
+  const digiCa = [...roots, readFileSync(".probe/r5/certs/www-digiskills-pk.pem", "utf8")];
+
+  for (const [id, path] of [["fpsc-api-jobs", "/api/jobs"], ["fpsc-api-jobs-all", "/api/jobs?includeExpired=true"]] as const) {
+    const response = await tlsGet("www.fpsc.gov.pk", path, fpscCa);
+    console.log(`${id}: HTTP ${response.status}, ${response.body.length} bytes ${response.error ?? ""}`);
+    report.push(`## ${id}: HTTP ${response.status}, ${response.body.length} bytes${response.error ? `, ${response.error}` : ""}`, "");
+    if (response.body) write(`${OUT}/raw/${id}.json`, response.body.slice(0, 180_000));
+    await pause(1200);
+  }
+
+  // PTS draws its list with AngularJS: find the endpoints its own scripts call.
+  const pts = await tlsGet("www.pts.org.pk", "/Projects/", roots);
+  report.push(`## PTS projects page: HTTP ${pts.status}, ${pts.body.length} bytes${pts.error ? `, ${pts.error}` : ""}`);
+  if (pts.body) {
+    write(`${OUT}/raw/pts-projects-raw.html`, pts.body.slice(0, 120_000));
+    const bodies: string[] = [...pts.body.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
+    const sources = [...pts.body.matchAll(/<script[^>]+src="([^"]+)"/g)]
+      .map((match) => match[1])
+      .filter((src) => !/googletagmanager|googlesyndication|jquery|bootstrap|angular(\.min)?\.js|cdnjs|gstatic|cloudflare|analytics/i.test(src));
+    for (const src of sources.slice(0, 8)) {
+      const url = new URL(src, "https://www.pts.org.pk/");
+      if (!/(^|\.)pts\.org\.pk$/.test(url.host)) continue;
+      await pause(800);
+      const script = await tlsGet(url.host, `${url.pathname}${url.search}`, roots);
+      if (script.body) {
+        bodies.push(script.body);
+        report.push(`- script ${url.pathname}: ${script.body.length} bytes`);
+      }
+    }
+    const endpoints = new Set<string>();
+    for (const body of bodies) {
+      for (const match of body.matchAll(/\$http(?:\.get|\.post)?\(\s*(?:\{[^}]*url\s*:\s*)?['"`]([^'"`]+)['"`]|url\s*:\s*['"`](\/[^'"`]+)['"`]/g)) endpoints.add(match[1] ?? match[2]);
+    }
+    report.push(`- endpoints found: ${[...endpoints].join(", ") || "none"}`);
+    write(`${OUT}/raw/pts-scripts.txt`, bodies.join("\n\n/* ---- next script ---- */\n\n").slice(0, 200_000));
+    for (const endpoint of [...endpoints].filter((value) => value.startsWith("/") && !/save|login|submit|delete|update|insert/i.test(value)).slice(0, 4)) {
+      await pause(1200);
+      const response = await tlsGet("www.pts.org.pk", endpoint, roots);
+      report.push(`- GET ${endpoint}: HTTP ${response.status}, ${response.body.length} bytes`);
+      if (response.body) write(`${OUT}/raw/pts-${slug(endpoint)}.txt`, response.body.slice(0, 80_000));
+    }
+  }
+  report.push("");
+
+  // DigiSkills: how enrolment announcements are worded (only the visible text is kept).
+  const digi: string[] = [];
+  for (const id of [268, 267, 266, 265, 264, 263, 262, 261, 260]) {
+    await pause(1200);
+    const page = await tlsGet("www.digiskills.pk", `/NewsDetails.aspx?NewsId=${id}`, digiCa);
+    if (!page.body) {
+      digi.push(`### NewsId=${id}: HTTP ${page.status} ${page.error ?? ""}`);
+      continue;
+    }
+    const $ = cheerio.load(page.body);
+    $("script, style, nav, header, footer").remove();
+    const text = $("body").text().replace(/\s+/g, " ").trim();
+    const at = text.search(/enrol|batch|commence/i);
+    digi.push(`### NewsId=${id}: ${$("title").text().trim().slice(0, 80)}\n${text.slice(Math.max(0, at - 80), Math.max(0, at - 80) + 700)}`);
+  }
+  write(`${OUT}/raw/digiskills-news.txt`, digi.join("\n\n"));
+  report.push(`## DigiSkills news: ${digi.length} pages kept`, "");
+  write(`${OUT}/api2.md`, `${report.join("\n")}\n`);
+}
+
 async function stepLinks() {
   console.log(`\n=== 5/5 Link health for the ${resources.length} directory resources ===`);
   const started = Date.now();
@@ -547,7 +619,7 @@ async function stepLinks() {
 async function main() {
   mkdirSync(OUT, { recursive: true });
   console.log(`Probe started ${new Date().toISOString()} as ${USER_AGENT}`);
-  for (const [name, step] of [["scrape", stepScrape], ["certs", stepCerts], ["raw", stepRaw], ["pages", stepPages], ["apis", stepApis], ["discovery", stepDiscovery], ["links", stepLinks]] as const) {
+  for (const [name, step] of [["scrape", stepScrape], ["certs", stepCerts], ["raw", stepRaw], ["api2", stepApi2], ["pages", stepPages], ["apis", stepApis], ["discovery", stepDiscovery], ["links", stepLinks]] as const) {
     if (!STEPS.has(name)) continue;
     try {
       await step();

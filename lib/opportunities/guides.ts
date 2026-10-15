@@ -1,6 +1,7 @@
 import { GUIDES } from "@/data/opportunities/guides";
 import type { Language } from "@/lib/types";
 import type { EcosystemApp } from "./ecosystem";
+import { pickText, type LText } from "./ltext";
 import type { Funding, Level, OpportunityKind, Scope } from "./types";
 
 /**
@@ -10,12 +11,8 @@ import type { Funding, Level, OpportunityKind, Scope } from "./types";
  * stated, the guide names the official page it comes from (`sources`) and when it was last reviewed.
  */
 
-/** Text in the languages RAAHI speaks. Pashto falls back to Urdu, then English, like the rest of the hub. */
-export interface LText {
-  en: string;
-  ur: string;
-  ps?: string;
-}
+export { pickText } from "./ltext";
+export type { LText } from "./ltext";
 
 export const GUIDE_CATEGORIES = ["study", "careers", "abroad", "skills", "safety", "documents"] as const;
 export type GuideCategory = (typeof GUIDE_CATEGORIES)[number];
@@ -70,10 +67,6 @@ export const CATEGORY_TITLES: Record<GuideCategory, LText & { emoji: string }> =
   documents: { emoji: "📄", en: "Documents", ur: "دستاویزات" },
 };
 
-export function pickText(language: Language, value: LText): string {
-  if (language === "ps") return value.ps ?? value.ur ?? value.en;
-  return language === "ur" ? value.ur : value.en;
-}
 
 export function listGuides(): Guide[] {
   return GUIDES;
