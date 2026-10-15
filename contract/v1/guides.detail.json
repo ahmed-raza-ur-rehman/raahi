@@ -1,0 +1,148 @@
+{
+  "data": {
+    "id": "after-matric-intermediate",
+    "category": "study",
+    "emoji": "🧭",
+    "title": "What to do after Matric, FSc or your degree",
+    "summary": "A simple way to choose between university, a skill, a government job or studying abroad — without paying anyone to decide for you.",
+    "steps": [
+      {
+        "title": "Start from the goal, not the degree",
+        "body": "Write down what you want in five years: a profession, a steady income soon, or to live and study abroad. Talk to two people who actually do that work and ask what they wish they had known.",
+        "resourceIds": []
+      },
+      {
+        "title": "Match the goal to its entry route",
+        "body": "Medicine and dentistry go through MDCAT. Engineering, computer science and business usually go through university entry tests (many accept NTS tests, others run their own). The civil service starts with a Bachelor's degree and then FPSC or provincial commission exams. Skills-first routes include NAVTTC programmes, DigiSkills and diplomas. Studying abroad mostly runs through scholarships.",
+        "resourceIds": [
+          "pmdc",
+          "nts",
+          "fpsc",
+          "navttc",
+          "digiskills"
+        ]
+      },
+      {
+        "title": "Check that the institution and programme are recognised",
+        "body": "Before you apply or pay a fee, confirm the university or college is recognised — HEC for universities, PMDC for medical and dental colleges. A glossy brochure is not recognition.",
+        "resourceIds": [
+          "hec",
+          "pmdc"
+        ]
+      },
+      {
+        "title": "Look for money before you look for admission",
+        "body": "Need-based and merit scholarships open on their own calendars: HEC need-based aid and the Ehsaas undergraduate scholarship, PEEF in Punjab, SEF in Sindh, the LUMS National Outreach Programme, and many universities' own aid. Note the windows now.",
+        "resourceIds": [
+          "hec-scholarship-portal",
+          "ehsaas-hec",
+          "peef",
+          "sef-sindh",
+          "lums-nop"
+        ]
+      },
+      {
+        "title": "Build a calendar — and a plan B",
+        "body": "List every test date and application deadline, add them to your phone's calendar (RAAHI can export deadlines as .ics files), and choose a plan B in the same field in case the first choice does not come through. Use the waiting time to learn a skill for free.",
+        "resourceIds": [
+          "digiskills",
+          "harvard-cs50"
+        ]
+      }
+    ],
+    "duration": "One evening to decide, a few weeks to prepare",
+    "reviewed": "2026-10-11",
+    "url": "/opportunities/guides/after-matric-intermediate",
+    "audience": "Students finishing Matric, Intermediate or a Bachelor's who are not sure what comes next.",
+    "checklist": [
+      "CNIC, or B-Form if you are under 18",
+      "Matric and Intermediate certificates and mark sheets",
+      "Domicile certificate",
+      "Passport-size photographs",
+      "Income certificate or other proof if you apply for need-based aid",
+      "A mobile number and email address you check every day"
+    ],
+    "pitfalls": [
+      "Paying an ‘admission consultant’ for a guaranteed seat — merit seats are not for sale.",
+      "Assuming every private university or college is recognised.",
+      "Missing a registration window because you followed dates from social media instead of the official page.",
+      "Choosing a field only because your friends did."
+    ],
+    "resources": [
+      {
+        "id": "hec",
+        "name": "Higher Education Commission (HEC)",
+        "url": "https://www.hec.gov.pk/"
+      },
+      {
+        "id": "hec-scholarship-portal",
+        "name": "HEC Scholarship Portal",
+        "url": "http://scholarship.hec.gov.pk/"
+      },
+      {
+        "id": "ehsaas-hec",
+        "name": "Ehsaas Undergraduate Scholarship (HEC)",
+        "url": "https://ehsaas.hec.gov.pk/"
+      },
+      {
+        "id": "peef",
+        "name": "Punjab Educational Endowment Fund (PEEF)",
+        "url": "https://peef.org.pk/"
+      },
+      {
+        "id": "nts",
+        "name": "National Testing Service (NTS)",
+        "url": "https://www.nts.org.pk/"
+      },
+      {
+        "id": "pmdc",
+        "name": "Pakistan Medical & Dental Council (PMDC)",
+        "url": "https://pmdc.pk/"
+      },
+      {
+        "id": "navttc",
+        "name": "NAVTTC",
+        "url": "https://navttc.gov.pk/"
+      },
+      {
+        "id": "digiskills",
+        "name": "DigiSkills.pk",
+        "url": "https://digiskills.pk/"
+      },
+      {
+        "id": "ibcc",
+        "name": "IBCC — equivalence certificates",
+        "url": "https://ibcc.edu.pk/"
+      },
+      {
+        "id": "fpsc",
+        "name": "Federal Public Service Commission (FPSC)",
+        "url": "https://www.fpsc.gov.pk/"
+      },
+      {
+        "id": "sef-sindh",
+        "name": "Sindh Education Foundation",
+        "url": "https://sef.org.pk/"
+      },
+      {
+        "id": "lums-nop",
+        "name": "LUMS National Outreach Programme",
+        "url": "https://nop.lums.edu.pk/"
+      },
+      {
+        "id": "harvard-cs50",
+        "name": "Harvard CS50",
+        "url": "https://cs50.harvard.edu/"
+      }
+    ],
+    "related": [
+      "study-abroad-roadmap",
+      "mdcat-roadmap",
+      "learn-free-90-days"
+    ],
+    "tools": [
+      "plan"
+    ],
+    "sources": []
+  }
+}

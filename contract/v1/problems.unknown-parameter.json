@@ -1,0 +1,16 @@
+{
+  "type": "urn:raahi:problem:unknown-parameter",
+  "title": "The request has a parameter this endpoint does not accept",
+  "status": 400,
+  "code": "unknown_parameter",
+  "detail": "bogus: This field is not accepted.",
+  "instance": "/api/v1/opportunities",
+  "requestId": "fixture-request-0001",
+  "errors": [
+    {
+      "path": "bogus",
+      "code": "unrecognized_key",
+      "message": "This field is not accepted."
+    }
+  ]
+}

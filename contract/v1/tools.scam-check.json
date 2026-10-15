@@ -1,0 +1,92 @@
+{
+  "request": {
+    "text": "Congratulations! Pay Rs 25000 advance for a Dubai visa and send your CNIC and OTP on WhatsApp. Limited seats!"
+  },
+  "response": {
+    "data": {
+      "score": 92,
+      "level": "high",
+      "signals": [
+        {
+          "id": "secrets",
+          "weight": 40,
+          "en": "Asks for an OTP, PIN or password. No employer, embassy or scholarship ever needs these — sharing them can empty your bank or wallet.",
+          "ur": "او ٹی پی، پن یا پاس ورڈ مانگا جا رہا ہے۔ کسی آجر، سفارت خانے یا وظیفے کو یہ درکار نہیں ہوتے — انہیں بتانے سے آپ کا اکاؤنٹ یا والیٹ خالی ہو سکتا ہے۔",
+          "source": "text"
+        },
+        {
+          "id": "messaging-only",
+          "weight": 15,
+          "en": "Moves the conversation to WhatsApp/Telegram/DMs. Agents may use these, but real employers and institutions also have official websites, email domains and offices.",
+          "ur": "بات چیت واٹس ایپ/ٹیلیگرام/ان باکس پر لے جائی جا رہی ہے۔ ایجنٹ یہ استعمال کر سکتے ہیں، مگر اصل ادارے کی سرکاری ویب سائٹ، ای میل اور دفتر بھی ہوتا ہے۔",
+          "source": "text"
+        },
+        {
+          "id": "urgency",
+          "weight": 15,
+          "en": "Pressure to decide or pay quickly. Scammers rush you so you do not verify.",
+          "ur": "جلدی فیصلے یا ادائیگی کا دباؤ۔ دھوکہ باز آپ کو جلدی میں رکھتے ہیں تاکہ آپ تصدیق نہ کریں۔",
+          "source": "text"
+        },
+        {
+          "id": "documents-by-chat",
+          "weight": 12,
+          "en": "Asks you to send CNIC/passport/bank details over chat. Share documents only on the organisation's official portal.",
+          "ur": "چیٹ پر شناختی کارڈ/پاسپورٹ/بینک تفصیل بھیجنے کو کہا جا رہا ہے۔ دستاویزات صرف ادارے کے سرکاری پورٹل پر دیں۔",
+          "source": "text"
+        }
+      ],
+      "oepLicences": [],
+      "advice": [
+        {
+          "en": "Do not pay anything and do not share OTPs, passwords or document photos until you have verified the offer through an official channel.",
+          "ur": "جب تک سرکاری ذریعے سے تصدیق نہ کر لیں، کوئی رقم نہ دیں اور او ٹی پی، پاس ورڈ یا دستاویزات کی تصاویر شیئر نہ کریں۔"
+        },
+        {
+          "en": "Ask the agent for their BE&OE licence number (OEPL No. 1234/LHR style) and check it on the official list before paying or handing over documents.",
+          "ur": "ایجنٹ سے بی ای او ای لائسنس نمبر (جیسے OEPL No. 1234/LHR) مانگیں اور ادائیگی یا دستاویزات دینے سے پہلے سرکاری فہرست میں چیک کریں۔",
+          "url": "https://beoe.gov.pk/list-of-oeps?show=active",
+          "label": {
+            "en": "Open the BE&OE licensed-agent list",
+            "ur": "بی ای او ای کی لائسنس یافتہ ایجنٹس کی فہرست کھولیں"
+          }
+        },
+        {
+          "en": "Travel for work only with a work visa and emigrant protection (e-Protector). Never work abroad on a visit visa.",
+          "ur": "کام کے لیے صرف ورک ویزا اور ایمیگرنٹ پروٹیکشن (ای پروٹیکٹر) کے ساتھ جائیں۔ وزٹ ویزے پر بیرون ملک کام نہ کریں۔",
+          "url": "https://beoe.gov.pk/online-emigrant-registration-delta",
+          "label": {
+            "en": "BE&OE e-Protector registration",
+            "ur": "بی ای او ای ای پروٹیکٹر رجسٹریشن"
+          }
+        },
+        {
+          "en": "If you already paid or shared documents, keep every receipt and chat, stop paying, and report it to the FIA and the BE&OE.",
+          "ur": "اگر آپ رقم دے چکے یا دستاویزات دے چکے ہیں تو تمام رسیدیں اور چیٹس محفوظ رکھیں، مزید ادائیگی بند کریں اور ایف آئی اے اور بی ای او ای کو اطلاع دیں۔",
+          "url": "https://beoe.gov.pk/complaints",
+          "label": {
+            "en": "BE&OE complaints",
+            "ur": "بی ای او ای شکایات"
+          }
+        },
+        {
+          "en": "FIA — report fraud and trafficking.",
+          "ur": "ایف آئی اے — فراڈ اور انسانی سمگلنگ کی اطلاع دیں۔",
+          "url": "https://www.fia.gov.pk/",
+          "label": {
+            "en": "FIA website",
+            "ur": "ایف آئی اے کی ویب سائٹ"
+          }
+        }
+      ],
+      "headline": {
+        "en": "High risk — several serious warning signs",
+        "ur": "زیادہ خطرہ — کئی سنگین انتباہی علامات"
+      },
+      "disclaimer": {
+        "en": "This check looks for common warning signs only. It cannot confirm that an offer is genuine and does not accuse anyone. Always verify through the official website or office.",
+        "ur": "یہ جانچ صرف عام انتباہی علامات دیکھتی ہے۔ یہ پیشکش کے جائز ہونے کی تصدیق نہیں کر سکتی اور کسی پر الزام نہیں لگاتی۔ ہمیشہ سرکاری ویب سائٹ یا دفتر سے تصدیق کریں۔"
+      }
+    }
+  }
+}

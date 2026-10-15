@@ -1,0 +1,63 @@
+{
+  "total": 18,
+  "data": [
+    {
+      "id": "beoe-blacklist",
+      "name": "BE&OE — blacklisted trade-test centres",
+      "description": "Technical trade-testing centres the Bureau has blacklisted.",
+      "url": "https://beoe.gov.pk/blacklists",
+      "category": "overseas-employment",
+      "scope": "pakistan",
+      "authority": 1,
+      "tags": [
+        "blacklist",
+        "trade-test",
+        "overseas",
+        "pakistan",
+        "government"
+      ],
+      "free": true,
+      "checked": "2026-10-11",
+      "linkStatus": "blocked"
+    },
+    {
+      "id": "beoe-complaints",
+      "name": "BE&OE — complaints against agents",
+      "description": "Complaint results and the process for reporting an agent.",
+      "url": "https://beoe.gov.pk/complaints",
+      "category": "overseas-employment",
+      "scope": "pakistan",
+      "authority": 1,
+      "tags": [
+        "complaint",
+        "oep",
+        "fraud",
+        "overseas",
+        "pakistan",
+        "government"
+      ],
+      "free": true,
+      "checked": "2026-10-11",
+      "linkStatus": "blocked"
+    },
+    {
+      "id": "beoe-eprotector",
+      "name": "BE&OE — e-Protector registration",
+      "description": "Apply online for emigrant protection (e-Protector) before travelling for work.",
+      "url": "https://beoe.gov.pk/online-emigrant-registration-delta",
+      "category": "overseas-employment",
+      "scope": "pakistan",
+      "authority": 1,
+      "tags": [
+        "protector",
+        "registration",
+        "overseas",
+        "pakistan",
+        "government"
+      ],
+      "free": true,
+      "checked": "2026-10-11",
+      "linkStatus": "blocked"
+    }
+  ]
+}

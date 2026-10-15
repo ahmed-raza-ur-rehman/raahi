@@ -1,0 +1,866 @@
+[
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-14",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-14",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-15",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-15",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-16",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 1
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-16",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 1
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-22",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-22",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-23",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 8
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-10-23",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 8
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-11-30",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 46
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2026-11-30",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 46
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2027-03-01",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 137
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": "2027-03-01",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 137
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": null,
+    "rolling": false,
+    "expected": {
+      "status": "unknown",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-15T00:00:00Z",
+    "deadline": null,
+    "rolling": true,
+    "expected": {
+      "status": "rolling",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-14",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-14",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-15",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-15",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-16",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 1
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-16",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 1
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-22",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-22",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-23",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 8
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-10-23",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 8
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-11-30",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 46
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2026-11-30",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 46
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2027-03-01",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 137
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": "2027-03-01",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 137
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": null,
+    "rolling": false,
+    "expected": {
+      "status": "unknown",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-15T18:59:59Z",
+    "deadline": null,
+    "rolling": true,
+    "expected": {
+      "status": "rolling",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-14",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -2
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-14",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -2
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-15",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-15",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-16",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-16",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-22",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 6
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-22",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 6
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-23",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-10-23",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-11-30",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 45
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2026-11-30",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 45
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2027-03-01",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 136
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": "2027-03-01",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 136
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": null,
+    "rolling": false,
+    "expected": {
+      "status": "unknown",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-15T19:00:00Z",
+    "deadline": null,
+    "rolling": true,
+    "expected": {
+      "status": "rolling",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-14",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -2
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-14",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -2
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-15",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-15",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-16",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-16",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-22",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 6
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-22",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 6
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-23",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-10-23",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-11-30",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 45
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2026-11-30",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 45
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2027-03-01",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 136
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": "2027-03-01",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 136
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": null,
+    "rolling": false,
+    "expected": {
+      "status": "unknown",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-15T23:59:59Z",
+    "deadline": null,
+    "rolling": true,
+    "expected": {
+      "status": "rolling",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-14",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -2
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-14",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -2
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-15",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-15",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -1
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-16",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-16",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 0
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-22",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 6
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-22",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 6
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-23",
+    "rolling": false,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-10-23",
+    "rolling": true,
+    "expected": {
+      "status": "closing-soon",
+      "daysLeft": 7
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-11-30",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 45
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2026-11-30",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 45
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2027-03-01",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 136
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": "2027-03-01",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 136
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": null,
+    "rolling": false,
+    "expected": {
+      "status": "unknown",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-10-16T18:59:59Z",
+    "deadline": null,
+    "rolling": true,
+    "expected": {
+      "status": "rolling",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-14",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -79
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-14",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -79
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-15",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -78
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-15",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -78
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-16",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -77
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-16",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -77
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-22",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -71
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-22",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -71
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-23",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -70
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-10-23",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -70
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-11-30",
+    "rolling": false,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -32
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2026-11-30",
+    "rolling": true,
+    "expected": {
+      "status": "closed",
+      "daysLeft": -32
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2027-03-01",
+    "rolling": false,
+    "expected": {
+      "status": "open",
+      "daysLeft": 59
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": "2027-03-01",
+    "rolling": true,
+    "expected": {
+      "status": "open",
+      "daysLeft": 59
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": null,
+    "rolling": false,
+    "expected": {
+      "status": "unknown",
+      "daysLeft": null
+    }
+  },
+  {
+    "now": "2026-12-31T19:00:00Z",
+    "deadline": null,
+    "rolling": true,
+    "expected": {
+      "status": "rolling",
+      "daysLeft": null
+    }
+  }
+]

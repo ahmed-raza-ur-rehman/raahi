@@ -1,0 +1,15 @@
+{
+  "note": "items.vN.json is every listing in state N; manifest.vN.json its manifest. v2 = 2 changed (new rev), 2 removed (the last two of v1), 1 added, 8 unchanged. A client synced to v1 must end up equal to v2 after one sync.",
+  "removedIds": [
+    "devpost-08ad514888",
+    "devpost-04b7053e8c"
+  ],
+  "changedIds": [
+    "gopunjab-00927c2d0d",
+    "gopunjab-17d787f786"
+  ],
+  "addedIds": [
+    "demo-0123456789"
+  ],
+  "unchangedCount": 8
+}

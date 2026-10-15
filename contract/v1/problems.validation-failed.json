@@ -1,0 +1,16 @@
+{
+  "type": "urn:raahi:problem:validation-failed",
+  "title": "The request body failed validation",
+  "status": 422,
+  "code": "validation_failed",
+  "detail": "Provide the offer text or tick at least one checklist answer.",
+  "instance": "/api/v1/tools/scam-check",
+  "requestId": "fixture-request-0001",
+  "errors": [
+    {
+      "path": "",
+      "code": "missing_input",
+      "message": "`text` or `answers` is required."
+    }
+  ]
+}

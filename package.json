@@ -10,14 +10,20 @@
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
     "embed": "tsx scripts/embed.ts",
-    "test": "tsx --test tests/**/*.test.ts",
+    "test": "tsx --test \"tests/**/*.test.ts\"",
     "verify": "npm run typecheck && npm run test && npm run build",
     "scrape": "tsx scripts/scrape.ts",
     "scrape:pk": "tsx scripts/scrape.ts --region pk --only njp,beoe-notices",
     "bootstrap-snapshot": "tsx scripts/bootstrap-snapshot.ts",
     "check-links": "tsx scripts/check-links.ts",
     "digest": "tsx scripts/digest.ts",
-    "lint:opportunities": "eslint lib/opportunities components/opportunities app/opportunities app/api/opportunities app/api/resources app/api/ecosystem app/api/guides app/sitemap.ts app/robots.ts lib/ai/opportunity-tools.ts components/chat/OpportunityBlocks.tsx data/opportunities scripts/scrape.ts scripts/check-links.ts scripts/bootstrap-snapshot.ts scripts/digest.ts \"tests/opportunities-*.test.ts\" tests/helpers"
+    "lint:opportunities": "eslint lib/opportunities components/opportunities app/opportunities app/api/opportunities app/api/resources app/api/ecosystem app/api/guides app/sitemap.ts app/robots.ts lib/ai/opportunity-tools.ts components/chat/OpportunityBlocks.tsx data/opportunities scripts/scrape.ts scripts/check-links.ts scripts/bootstrap-snapshot.ts scripts/digest.ts \"tests/opportunities-*.test.ts\" tests/helpers",
+    "openapi:write": "tsx scripts/openapi.ts",
+    "openapi:check": "tsx scripts/openapi.ts --check",
+    "contract:write": "tsx scripts/contract-fixtures.ts",
+    "contract:check": "tsx scripts/contract-fixtures.ts --check",
+    "test:platform": "tsx --test \"tests/platform/*.test.ts\"",
+    "test:api": "tsx --test \"tests/api/*.test.ts\""
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

@@ -1,0 +1,207 @@
+{
+  "data": {
+    "id": "opportunitiesforyouth-19337e2fc5",
+    "rev": "04380ab0ff66",
+    "kind": "scholarship",
+    "scope": "international",
+    "title": "France Excellence Eiffel Scholarship 2027: Study in France with Monthly Funding of Up to €2,100 for Master’s and PhD Students",
+    "summary": "The France Excellence Eiffel Scholarship Programme is an international scholarship initiative developed by the French Ministry for Europe and Foreign Affairs to help French higher education institutions attract outstanding international students to master’s and doctoral…",
+    "url": "https://opportunitiesforyouth.org/2026/10/13/applications-open-france-excellence-eiffel-scholarship-program-2026",
+    "source": {
+      "id": "opportunitiesforyouth",
+      "name": "Opportunities for Youth",
+      "url": "https://www.opportunitiesforyouth.org/"
+    },
+    "country": "France",
+    "levels": [
+      "masters",
+      "phd"
+    ],
+    "fields": [
+      "education"
+    ],
+    "tags": [
+      "europe",
+      "master",
+      "phd",
+      "scholarships"
+    ],
+    "funding": "stipend",
+    "postedAt": "2026-10-13T13:35:06.000Z",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "openToPakistan": true,
+    "eligibilityNote": "Open to international applicants (confirm Pakistan is eligible).",
+    "status": "unknown",
+    "daysLeft": null,
+    "isNew": true
+  },
+  "related": [
+    {
+      "id": "opportunitiesforyouth-0292ba71d5",
+      "rev": "2531a519a336",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "SENSS Student-Led PhD Studentships 2027 in the UK: Fully Funded Doctoral Research Opportunities",
+      "summary": "The South and East Network for Social Sciences Doctoral Training Partnership (SENSS) has opened applications for its Student-Led Studentships Competition for the 2027 academic year. This funding opportunity supports talented prospective doctoral researchers who want to develop…",
+      "url": "https://opportunitiesforyouth.org/2026/10/13/senss-cam-student-led-studentship-competitions-youth-trust-transformation-long-term-impact-of-police-led-support-for-neet-young-people-in-barbados",
+      "source": {
+        "id": "opportunitiesforyouth",
+        "name": "Opportunities for Youth",
+        "url": "https://www.opportunitiesforyouth.org/"
+      },
+      "country": "United Kingdom",
+      "levels": [
+        "phd"
+      ],
+      "fields": [],
+      "tags": [
+        "europe",
+        "grants",
+        "latin america and the caribbean",
+        "phd",
+        "scholarships"
+      ],
+      "funding": "full",
+      "deadline": "2027-01-11",
+      "deadlineText": "Application Deadline: Monday, 11 January 2027, at 12:00 noon GMT Application Platform: HEI",
+      "postedAt": "2026-10-13T13:38:21.000Z",
+      "firstSeen": "2026-10-15T04:38:08.851Z",
+      "lastSeen": "2026-10-15T04:38:08.851Z",
+      "status": "open",
+      "daysLeft": 88,
+      "isNew": true
+    },
+    {
+      "id": "opportunitiesforyouth-033520a62f",
+      "rev": "d783735f96f3",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "Trinity College Dublin PhD Researcher in Sociology Scholarship 2027: Fully Funded PhD in Ireland with €25,000 Annual Stipend",
+      "summary": "Are you a postgraduate graduate with a background in Sociology, Social Policy, Sociology of Health, or a related social science discipline looking for a fully funded PhD opportunity in Europe? Trinity College Dublin is offering a PhD research position in Sociology focused on…",
+      "url": "https://opportunitiesforyouth.org/2026/10/13/trinity-college-dublin-phd-researcher-in-sociology-scholarship-2027-fully-funded-phd-in-ireland-with-e25000-annual-stipend",
+      "source": {
+        "id": "opportunitiesforyouth",
+        "name": "Opportunities for Youth",
+        "url": "https://www.opportunitiesforyouth.org/"
+      },
+      "country": "Ireland",
+      "levels": [
+        "masters",
+        "phd"
+      ],
+      "fields": [
+        "medicine-health",
+        "law-policy",
+        "social-sciences"
+      ],
+      "tags": [
+        "continent",
+        "africa",
+        "america",
+        "asia",
+        "australia and oceania",
+        "europe",
+        "latin america and the caribbean",
+        "middle east and north africa",
+        "phd",
+        "scholarships",
+        "south america"
+      ],
+      "funding": "full",
+      "deadline": "2026-10-30",
+      "deadlineText": "Application deadline: 30 October 2026 at 23:00 GMT. Application fee: The supplied announce",
+      "postedAt": "2026-10-13T10:44:17.000Z",
+      "firstSeen": "2026-10-15T04:38:08.851Z",
+      "lastSeen": "2026-10-15T04:38:08.851Z",
+      "status": "open",
+      "daysLeft": 15,
+      "isNew": true
+    },
+    {
+      "id": "opportunitiesforyouth-041b6d617b",
+      "rev": "b0a6dd1e9cf7",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "ELLIS PhD Program 2027 in Europe: Application Guide, Research Opportunities, Requirements and Deadline",
+      "summary": "The ELLIS PhD Program is inviting applications from talented prospective doctoral researchers interested in machine learning, artificial intelligence (AI), and related interdisciplinary research fields. The programme offers an opportunity to work with leading academic and…",
+      "url": "https://opportunitiesforyouth.org/2026/10/09/ellis-phd-program-2027-in-europe-application-guide-research-opportunities-requirements-and-deadline",
+      "source": {
+        "id": "opportunitiesforyouth",
+        "name": "Opportunities for Youth",
+        "url": "https://www.opportunitiesforyouth.org/"
+      },
+      "country": "Europe",
+      "levels": [
+        "phd"
+      ],
+      "fields": [
+        "computer-science"
+      ],
+      "tags": [
+        "continent",
+        "africa",
+        "america",
+        "asia",
+        "australia and oceania",
+        "europe",
+        "latin america and the caribbean",
+        "middle east and north africa",
+        "phd",
+        "scholarships",
+        "south america"
+      ],
+      "postedAt": "2026-10-09T19:17:06.000Z",
+      "firstSeen": "2026-10-11T08:53:05.345Z",
+      "lastSeen": "2026-10-11T08:53:05.345Z",
+      "status": "unknown",
+      "daysLeft": null,
+      "isNew": false
+    },
+    {
+      "id": "opportunitiesforyouth-0bbf7852ed",
+      "rev": "b02967e9f77d",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "Fully Funded PhD Scholarships in Climate Science and Data Science in the UK: UNRISK CDT 2027 Programme",
+      "summary": "Are you interested in climate change research, data science, environmental modelling, artificial intelligence, or evidence-based decision-making? The Understanding Uncertainty to Reduce Climate Risks (UNRISK) Centre for Doctoral Training (CDT) offers an exciting opportunity for…",
+      "url": "https://opportunitiesforyouth.org/2026/10/09/fully-funded-phd-opportunities-with-unrisk-centre-for-doctoral-training-at-top-uk-universities",
+      "source": {
+        "id": "opportunitiesforyouth",
+        "name": "Opportunities for Youth",
+        "url": "https://www.opportunitiesforyouth.org/"
+      },
+      "country": "United Kingdom",
+      "levels": [
+        "phd"
+      ],
+      "fields": [
+        "computer-science",
+        "agriculture-environment"
+      ],
+      "tags": [
+        "africa",
+        "america",
+        "asia",
+        "australia and oceania",
+        "europe",
+        "latin america and the caribbean",
+        "middle east and north africa",
+        "phd",
+        "scholarships",
+        "south america"
+      ],
+      "funding": "full",
+      "postedAt": "2026-10-09T09:45:42.000Z",
+      "firstSeen": "2026-10-11T08:53:05.345Z",
+      "lastSeen": "2026-10-11T08:53:05.345Z",
+      "status": "unknown",
+      "daysLeft": null,
+      "isNew": false
+    }
+  ],
+  "meta": {
+    "generatedAt": "2026-10-15T04:38:08.851Z",
+    "dataVersion": "dc621498889e"
+  }
+}

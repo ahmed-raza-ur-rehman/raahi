@@ -1,0 +1,39 @@
+{
+  "data": {
+    "id": "chevening",
+    "kind": "scholarship",
+    "title": "Chevening Scholarships (UK)",
+    "provider": "UK Foreign, Commonwealth & Development Office (FCDO)",
+    "where": "United Kingdom",
+    "levels": [
+      "masters"
+    ],
+    "funding": "full",
+    "summary": "Fully funded one-year master's at a UK university for people with leadership potential and at least two years' work experience.",
+    "route": "direct",
+    "routeNote": "Apply online on the Chevening website — there is no nominating agency. You choose three UK courses and write four essays; an unconditional university offer is needed later, if you are selected.",
+    "usualWindow": "Opens in early August and closes in early October (2027/28 cycle: 4 August – 6 October 2026).",
+    "variable": false,
+    "phase": "closed",
+    "monthsToOpen": 10,
+    "prepareNow": false,
+    "prepare": [
+      "Two years (about 2,800 hours) of work experience after your degree",
+      "Three UK course choices and four essays (leadership, networking, studying in the UK, career plan)",
+      "Two references",
+      "A plan to return home for at least two years after the award"
+    ],
+    "cycle": {
+      "label": "2027/28 cycle",
+      "opens": "2026-08-04",
+      "closes": "2026-10-06",
+      "closesNote": "11:00 UTC (4:00 pm in Pakistan)",
+      "note": "Interviews run February–April 2027; results come from mid-June 2027.",
+      "confidence": "reported",
+      "checked": "2026-10-15",
+      "source": "https://www.chevening.org/scholarships/"
+    },
+    "official": "https://www.chevening.org/scholarships/",
+    "reviewed": "2026-10-15"
+  }
+}

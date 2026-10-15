@@ -1,0 +1,9 @@
+{
+  "type": "urn:raahi:problem:unauthorized",
+  "title": "Authentication is required or the credential is invalid",
+  "status": 401,
+  "code": "unauthorized",
+  "detail": "This operation needs an access token or API key.",
+  "instance": "/api/v1/tools/scam-check",
+  "requestId": "fixture-request-0001"
+}

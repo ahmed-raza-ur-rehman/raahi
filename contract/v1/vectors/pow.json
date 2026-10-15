@@ -1,0 +1,107 @@
+{
+  "rule": "nonce is the smallest non-negative integer such that SHA-256(`${salt}:${nonce}` as UTF-8) has at least `difficulty` leading zero bits",
+  "vectors": [
+    {
+      "salt": "fixtureSaltAAAAAAAAAAAA",
+      "difficulty": 8,
+      "nonce": 93,
+      "digestHex": "00604c00afc6e4428372af0d4b2f3eb5c5b950328c05a3f825f7937c044cb903"
+    },
+    {
+      "salt": "fixtureSaltAAAAAAAAAAAA",
+      "difficulty": 12,
+      "nonce": 382,
+      "digestHex": "000fd39dc851e08b5a5d370238b6a022eb0212c2afa4e7834068dd7ce04ab5ff"
+    },
+    {
+      "salt": "fixtureSaltAAAAAAAAAAAA",
+      "difficulty": 14,
+      "nonce": 6722,
+      "digestHex": "0000813499a85ef5c896c7d1da974fbf37e7da15c00e768f5dd2f6e11228e557"
+    },
+    {
+      "salt": "fixtureSaltBBBBBBBBBBBB",
+      "difficulty": 8,
+      "nonce": 116,
+      "digestHex": "00f094f90e0c68877eba34bec60df9d44c38f950d4fb0d9126458775fba7317e"
+    },
+    {
+      "salt": "fixtureSaltBBBBBBBBBBBB",
+      "difficulty": 12,
+      "nonce": 3645,
+      "digestHex": "000d0c6d919457da9683b9ce8e7708be2601c993e0c54809fe1fdcbecdf00d5d"
+    },
+    {
+      "salt": "fixtureSaltBBBBBBBBBBBB",
+      "difficulty": 14,
+      "nonce": 31509,
+      "digestHex": "000360ef77b650621acbbf57d68d206b7dcf4e72d5e38c2fe018f271ea9be997"
+    },
+    {
+      "salt": "fixtureSaltCCCCCCCCCCCC",
+      "difficulty": 8,
+      "nonce": 60,
+      "digestHex": "001b68b03bbaffb040a2de220f983ec9655c609a18b03dea81617c75c80dadb8"
+    },
+    {
+      "salt": "fixtureSaltCCCCCCCCCCCC",
+      "difficulty": 12,
+      "nonce": 4784,
+      "digestHex": "000cd51450f841a1c687db80a9cae72519a0eac34841faa454c541f68d2fefa1"
+    },
+    {
+      "salt": "fixtureSaltCCCCCCCCCCCC",
+      "difficulty": 14,
+      "nonce": 32041,
+      "digestHex": "00026af38922470f5527221a006d461cd9cbda080fd9975526ffeaa91fd056da"
+    },
+    {
+      "salt": "uRBnXq3p0m6Zk1dEwY9Hjg",
+      "difficulty": 8,
+      "nonce": 81,
+      "digestHex": "008ec72f8bbf184a1ef90fc454a5fd68084d5b24ed5bced27a3401ea68822b48"
+    },
+    {
+      "salt": "uRBnXq3p0m6Zk1dEwY9Hjg",
+      "difficulty": 12,
+      "nonce": 2657,
+      "digestHex": "0002dd180eafe45f74072d35a9d7d17c86366f6a4b92da96acab7c7082ddbf77"
+    },
+    {
+      "salt": "uRBnXq3p0m6Zk1dEwY9Hjg",
+      "difficulty": 14,
+      "nonce": 2657,
+      "digestHex": "0002dd180eafe45f74072d35a9d7d17c86366f6a4b92da96acab7c7082ddbf77"
+    }
+  ],
+  "bits": [
+    {
+      "hex": "00ff",
+      "bits": 8
+    },
+    {
+      "hex": "0fff",
+      "bits": 4
+    },
+    {
+      "hex": "8000",
+      "bits": 0
+    },
+    {
+      "hex": "0000",
+      "bits": 16
+    },
+    {
+      "hex": "00",
+      "bits": 8
+    },
+    {
+      "hex": "0180",
+      "bits": 7
+    },
+    {
+      "hex": "000f",
+      "bits": 12
+    }
+  ]
+}

@@ -459,6 +459,29 @@ export function getOpportunity(id: string, now: Date = clockNow()): OpportunityV
   return row ? toView(rowToOpportunity(row), now) : undefined;
 }
 
+/** Every live listing, ordered by id. Used by the sync manifest; callers must not mutate the result. */
+export function listLive(now: Date = clockNow()): Opportunity[] {
+  const rows = getSqlite().prepare("SELECT * FROM opportunities WHERE expires_at > ? ORDER BY id").all(now.getTime()) as Row[];
+  return rows.map(rowToOpportunity);
+}
+
+/** The listings with these ids (unknown or expired ids are simply absent), in the order asked. Parameterised. */
+export function getOpportunitiesByIds(ids: readonly string[], now: Date = clockNow()): OpportunityView[] {
+  const unique = [...new Set(ids)].slice(0, 100);
+  if (unique.length === 0) return [];
+  const rows = getSqlite()
+    .prepare(`SELECT * FROM opportunities WHERE id IN (${unique.map(() => "?").join(",")}) AND expires_at > ?`)
+    .all(...unique, now.getTime()) as Row[];
+  const byId = new Map(rows.map((row) => [row.id as string, toView(rowToOpportunity(row), now)]));
+  return unique.flatMap((id) => (byId.has(id) ? [byId.get(id) as OpportunityView] : []));
+}
+
+/** What identifies the current data set: when it was generated, when it was loaded, and how many listings are live. */
+export function dataStamp(now: Date = clockNow()): { generatedAt?: string; loadedAt?: string; live: number } {
+  const live = getSqlite().prepare("SELECT COUNT(*) AS n FROM opportunities WHERE expires_at > ?").get(now.getTime()) as { n: number };
+  return { generatedAt: getMeta("snapshot_generated_at"), loadedAt: getMeta("loaded_at"), live: live.n };
+}
+
 /** Other items a reader of `item` may want: same kind family, shared tags/country, still open. */
 export function relatedOpportunities(item: Opportunity, limit = 4, now: Date = clockNow()): OpportunityView[] {
   const today = todayInPakistan(now);

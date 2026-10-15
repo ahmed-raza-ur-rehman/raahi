@@ -1,0 +1,337 @@
+{
+  "data": [
+    {
+      "id": "scholarshiptab-03240d428a",
+      "rev": "2a006585e805",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "Glocal Erasmus Mundus Scholarship 2027-2029",
+      "summary": "Global Markets, Local Creativities (GLOCAL) is an Erasmus Mundus Joint Master Degree (EMJMD) programme taught over 2 years by a consortium of 7 universities.",
+      "url": "https://www.scholarshiptab.com/scholarships/glocal-erasmus-mundus-scholarship-2027-2029",
+      "source": {
+        "id": "scholarshiptab",
+        "name": "ScholarshipTab",
+        "url": "https://www.scholarshiptab.com/"
+      },
+      "country": "Europe",
+      "levels": [
+        "masters"
+      ],
+      "fields": [],
+      "tags": [],
+      "funding": "full",
+      "deadline": "2027-01-14",
+      "deadlineText": "Deadline: January 14, 2027",
+      "postedAt": "2026-10-02T00:00:00.000Z",
+      "firstSeen": "2026-10-11T06:00:00.000Z",
+      "lastSeen": "2026-10-11T06:00:00.000Z",
+      "openToPakistan": true,
+      "eligibilityNote": "Open to international applicants (confirm Pakistan is eligible).",
+      "alsoOn": [
+        {
+          "sourceName": "Opportunities Corners",
+          "url": "https://opportunitiescorners.com/erasmus-mundus-glocal-scholarship-2027"
+        }
+      ],
+      "status": "open",
+      "daysLeft": 91,
+      "isNew": false
+    },
+    {
+      "id": "scholarshiproar-104c984881",
+      "rev": "b7ef2902a65b",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "Fully Funded Scholarships in China for International Students 2027",
+      "summary": "Fully Funded Scholarships in China 2027 are a great opportunity for international students to study at leading Chinese universities with financial support for tuition fees, accommodation, living expenses, and health insurance. These scholarships are available for undergraduate…",
+      "url": "https://scholarshiproar.com/scholarships-in-china-for-international-students",
+      "source": {
+        "id": "scholarshiproar",
+        "name": "Scholarship Roar",
+        "url": "https://www.scholarshiproar.com/"
+      },
+      "country": "China",
+      "levels": [
+        "undergraduate",
+        "masters",
+        "phd"
+      ],
+      "fields": [
+        "medicine-health",
+        "arts-humanities"
+      ],
+      "tags": [
+        "scholarship lists"
+      ],
+      "funding": "full",
+      "postedAt": "2026-09-30T09:10:46.000Z",
+      "firstSeen": "2026-10-11T08:53:05.345Z",
+      "lastSeen": "2026-10-15T04:38:08.851Z",
+      "openToPakistan": true,
+      "eligibilityNote": "Open to international applicants (confirm Pakistan is eligible).",
+      "status": "unknown",
+      "daysLeft": null,
+      "isNew": false
+    },
+    {
+      "id": "opportunitydesk-09a7093126",
+      "rev": "24bedc4a762f",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "From Rejections to ‘Congratulations’ : What to Do After Winning a Life-Changing Scholarship",
+      "summary": "April 4, 2025, started like any ordinary workday until an email notification sound interrupted my routine. I looked at my screen, and the first word in bold font jumped out at me: “Dear Favour, Greetings from Edinburgh !bFollowing our recruitment process, we are delighted to…",
+      "url": "https://opportunitydesk.org/2026/10/14/from-rejections-to-congratulations-what-to-do-after-winning-a-life-changing-scholarship",
+      "source": {
+        "id": "opportunitydesk",
+        "name": "Opportunity Desk",
+        "url": "https://opportunitydesk.org/"
+      },
+      "levels": [],
+      "fields": [],
+      "tags": [
+        "scholarships",
+        "africa",
+        "europe",
+        "india",
+        "kenya",
+        "nigeria",
+        "uganda",
+        "unesco",
+        "united nations",
+        "youth"
+      ],
+      "postedAt": "2026-10-14T15:15:16.000Z",
+      "firstSeen": "2026-10-15T04:38:08.851Z",
+      "lastSeen": "2026-10-15T04:38:08.851Z",
+      "status": "unknown",
+      "daysLeft": null,
+      "isNew": true
+    },
+    {
+      "id": "scholars4dev-1bc72f9433",
+      "rev": "5814451b0e17",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "Top 20 Excellence Scholarships for Outstanding International Students",
+      "summary": "Are you a bright and talented international student looking for a scholarship? You can study in the USA, UK, Canada, Australia, France, Switzerland for free! Know more about merit-based scholarships out there for excellent students like you.",
+      "url": "https://www.scholars4dev.com/8366/merit-based-scholarships-for-international-students",
+      "source": {
+        "id": "scholars4dev",
+        "name": "Scholars4Dev",
+        "url": "https://www.scholars4dev.com/"
+      },
+      "levels": [],
+      "fields": [],
+      "tags": [
+        "list of"
+      ],
+      "funding": "stipend",
+      "postedAt": "2026-10-06T13:46:57.000Z",
+      "firstSeen": "2026-10-11T06:00:00.000Z",
+      "lastSeen": "2026-10-15T04:38:08.851Z",
+      "openToPakistan": true,
+      "eligibilityNote": "Open to international applicants (confirm Pakistan is eligible).",
+      "status": "unknown",
+      "daysLeft": null,
+      "isNew": false
+    },
+    {
+      "id": "opportunitiescorners-191098c9c0",
+      "rev": "cda5a9c0be76",
+      "kind": "scholarship",
+      "scope": "international",
+      "title": "Erasmus Mundus MESPOM Scholarship 2027/29 (Fully Funded)",
+      "summary": "Applications are now open for the Erasmus Mundus MESPOM Scholarship Program for the academic year 2027/29. MESPOM is an Erasmus Mundus Joint Master’s Degree program at four universities: Central European University (Austria), Lund University (Sweden), the University of…",
+      "url": "https://opportunitiescorners.com/erasmus-mundus-mespom-scholarship-2027",
+      "source": {
+        "id": "opportunitiescorners",
+        "name": "Opportunities Corners",
+        "url": "https://opportunitiescorners.info/"
+      },
+      "country": "Europe",
+      "levels": [
+        "masters"
+      ],
+      "fields": [],
+      "tags": [
+        "scholarships in europe"
+      ],
+      "funding": "full",
+      "deadline": "2027-01-07",
+      "deadlineText": "Deadline: 7th January 2027 What is the Erasmus Mundus Joint Master’s Degree Sc",
+      "postedAt": "2026-10-06T10:08:00.000Z",
+      "firstSeen": "2026-10-11T08:53:05.345Z",
+      "lastSeen": "2026-10-15T04:38:08.851Z",
+      "openToPakistan": true,
+      "eligibilityNote": "Open to international applicants (confirm Pakistan is eligible).",
+      "status": "open",
+      "daysLeft": 84,
+      "isNew": false
+    }
+  ],
+  "page": {
+    "total": 80,
+    "limit": 5,
+    "nextCursor": "eyJvIjoxMCwiZiI6IjYxNDdiOTUzIn0"
+  },
+  "interpreted": {
+    "terms": [],
+    "kinds": [
+      "scholarship"
+    ]
+  },
+  "facets": {
+    "kind": [
+      {
+        "value": "scholarship",
+        "count": 80
+      }
+    ],
+    "scope": [
+      {
+        "value": "international",
+        "count": 79
+      },
+      {
+        "value": "pakistan",
+        "count": 1
+      }
+    ],
+    "country": [
+      {
+        "value": "United Kingdom",
+        "count": 10
+      },
+      {
+        "value": "United States",
+        "count": 7
+      },
+      {
+        "value": "Canada",
+        "count": 6
+      },
+      {
+        "value": "Europe",
+        "count": 6
+      },
+      {
+        "value": "France",
+        "count": 5
+      },
+      {
+        "value": "Netherlands",
+        "count": 5
+      },
+      {
+        "value": "Germany",
+        "count": 4
+      },
+      {
+        "value": "Switzerland",
+        "count": 4
+      },
+      {
+        "value": "Australia",
+        "count": 3
+      },
+      {
+        "value": "China",
+        "count": 2
+      },
+      {
+        "value": "Ireland",
+        "count": 2
+      },
+      {
+        "value": "Sweden",
+        "count": 2
+      },
+      {
+        "value": "Austria",
+        "count": 1
+      },
+      {
+        "value": "Indonesia",
+        "count": 1
+      },
+      {
+        "value": "New Zealand",
+        "count": 1
+      }
+    ],
+    "level": [
+      {
+        "value": "masters",
+        "count": 46
+      },
+      {
+        "value": "phd",
+        "count": 30
+      },
+      {
+        "value": "undergraduate",
+        "count": 22
+      },
+      {
+        "value": "postdoc",
+        "count": 5
+      },
+      {
+        "value": "professional",
+        "count": 2
+      }
+    ],
+    "funding": [
+      {
+        "value": "full",
+        "count": 49
+      },
+      {
+        "value": "stipend",
+        "count": 8
+      },
+      {
+        "value": "paid",
+        "count": 1
+      },
+      {
+        "value": "partial",
+        "count": 1
+      }
+    ],
+    "source": [
+      {
+        "value": "Scholars4Dev",
+        "count": 25
+      },
+      {
+        "value": "Scholarship Roar",
+        "count": 25
+      },
+      {
+        "value": "Opportunities Corners",
+        "count": 11
+      },
+      {
+        "value": "ScholarshipTab",
+        "count": 8
+      },
+      {
+        "value": "Opportunities for Youth",
+        "count": 7
+      },
+      {
+        "value": "Opportunity Desk",
+        "count": 3
+      },
+      {
+        "value": "Pakistan Jobs Bank",
+        "count": 1
+      }
+    ]
+  },
+  "meta": {
+    "generatedAt": "2026-10-15T04:38:08.851Z",
+    "dataVersion": "dc621498889e"
+  }
+}

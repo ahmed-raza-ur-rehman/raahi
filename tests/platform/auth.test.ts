@@ -76,7 +76,7 @@ test("[REQ-SEC-003] key rotation: the first secret signs, every configured secre
   assert.match(after.token.split(".")[0], /^[A-Za-z0-9_-]+$/);
   assert.equal(JSON.parse(b64url.decode(after.token.split(".")[0]).toString()).kid, "k2");
 
-  await rejects(verifyDeviceToken({ tokenSecrets: [newKey], tokenTtlSeconds: 3600 }, before.token, NOW), "unauthorized");
+  await rejects(verifyDeviceToken({ tokenSecrets: [newKey] }, before.token, NOW), "unauthorized");
 });
 
 test("[REQ-SEC-004] proof of work: a solved challenge verifies, anything else does not", () => {

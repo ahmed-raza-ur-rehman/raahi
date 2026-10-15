@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "id": "after-matric-intermediate",
+      "category": "study",
+      "emoji": "🧭",
+      "title": "What to do after Matric, FSc or your degree",
+      "summary": "A simple way to choose between university, a skill, a government job or studying abroad — without paying anyone to decide for you.",
+      "steps": 5,
+      "duration": "One evening to decide, a few weeks to prepare",
+      "reviewed": "2026-10-11",
+      "url": "/opportunities/guides/after-matric-intermediate"
+    },
+    {
+      "id": "apply-government-job",
+      "category": "careers",
+      "emoji": "🏛️",
+      "title": "Apply for a government job in Pakistan",
+      "summary": "Where federal, provincial and testing-agency jobs are announced, what to prepare, and how to avoid fake ‘job’ sites.",
+      "steps": 7,
+      "reviewed": "2026-10-11",
+      "url": "/opportunities/guides/apply-government-job"
+    },
+    {
+      "id": "work-abroad-safely",
+      "category": "abroad",
+      "emoji": "🛂",
+      "title": "Work abroad legally: the BE&OE / OEP / OEC checklist",
+      "summary": "The legal routes, how to verify an agent, what to pay and where, and the registration every emigrant needs — based on the Bureau of Emigration & Overseas Employment's own process pages.",
+      "steps": 8,
+      "reviewed": "2026-10-11",
+      "url": "/opportunities/guides/work-abroad-safely"
+    }
+  ]
+}
