@@ -111,7 +111,7 @@ test("WordPress: when the REST API is closed the RSS feed (with its full text) i
   assert.equal(viaRss.length, 1);
 });
 
-test("a deadline read from free text must be plausible for that kind of listing", () => {
+test("REQ-DAT-003 a deadline read from free text must be plausible for that kind of listing", () => {
   const job = (body: string): RawOpportunity => ({ title: "Excise Department Jobs 2026", url: "https://example.pk/excise", summary: "Vacancies announced.", body, postedAt: "2026-10-08T09:00:00Z" });
 
   // eight months after a job ad was posted is an age cut-off or a typo, not a closing date

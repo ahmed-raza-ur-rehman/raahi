@@ -45,7 +45,7 @@ test("data: every text exists in English and in Urdu script", () => {
   }
 });
 
-test("data: every date says how sure we are, when it was checked, and where it comes from", () => {
+test("REQ-DAT-005 data: every date says how sure we are, when it was checked, and where it comes from", () => {
   for (const f of listFlagships().filter((entry) => entry.cycle)) {
     const cycle = f.cycle!;
     assert.ok(cycle.confidence === "official" || cycle.confidence === "reported", `${f.id}: confidence`);

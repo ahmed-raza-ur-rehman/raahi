@@ -374,3 +374,18 @@ test("[REQ-API-007] the OpenAPI document is served and is a valid object", async
   assert.ok(Object.keys(spec.paths).length >= 15);
   assert.ok(response.headers.get("etag"));
 });
+
+test("REQ-DAT-007 a revision ignores volatile fields and changes exactly when content changes", async () => {
+  const { revisionOf } = await import("@/lib/api/v1/mappers");
+  const { getOpportunity } = await import("@/lib/opportunities/store");
+  const list = await ok(await listGET(req("/api/v1/opportunities?limit=1&kind=scholarship")));
+  const base = getOpportunity(list.data[0].id);
+  assert.ok(base);
+  const revision = revisionOf(base);
+  assert.match(revision, /^[a-f0-9]{12}$/);
+  assert.equal(revisionOf({ ...base, lastSeen: "2030-01-01T00:00:00.000Z" }), revision, "lastSeen is touched by every scrape");
+  assert.equal(revisionOf({ ...base, status: "closed", daysLeft: -4, isNew: false } as typeof base), revision, "computed status moves with the calendar");
+  assert.notEqual(revisionOf({ ...base, title: `${base.title} (updated)` }), revision);
+  assert.notEqual(revisionOf({ ...base, deadline: "2031-01-01" }), revision);
+  assert.notEqual(revisionOf({ ...base, tags: [...base.tags, "new-tag"] }), revision);
+});

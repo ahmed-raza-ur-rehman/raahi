@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { Validator } from "@seriousme/openapi-schema-validator";
@@ -77,7 +77,6 @@ test("[REQ-API-001] every v1 route file exists, exports the right method and OPT
     assert.match(source, /export const OPTIONS = \w+\.preflight;/, `${file} must export OPTIONS`);
     assert.ok(!/export (async )?function/.test(source), `${file} must only re-export its operation`);
   }
-  const { readdirSync, statSync } = require("node:fs") as typeof import("node:fs");
   const found: string[] = [];
   const scan = (dir: string) => {
     for (const entry of readdirSync(dir)) {

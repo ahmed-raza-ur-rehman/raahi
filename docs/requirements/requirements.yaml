@@ -1,0 +1,552 @@
+# RAAHI requirements registry - the single list of what the system shall do and how each statement is verified.
+#
+# Every entry has a stable id (REQ-<AREA>-<NNN>). Tests cite the ids they verify in their titles; `npm run trace` scans the
+# TypeScript and Kotlin tests, checks that every `implemented` requirement is verified, that no test cites an unknown id,
+# that non-test evidence files exist, and regenerates docs/requirements/traceability.md. CI fails on any gap.
+#
+# status:        implemented | partial (works, with a documented limit) | planned (not built yet; must carry a note)
+# verification:  test (automated, counted by the scanner) | inspection | analysis | demonstration (these need `evidence` paths)
+# type:          functional | security | privacy | performance | reliability | usability | maintainability | operability
+# priority:      must | should | could
+
+areas:
+  API: Public HTTP API
+  SEC: Security
+  DAT: Data pipeline and content integrity
+  AND: Android application
+  OPS: Operations and delivery
+  PERF: Performance and efficiency
+  DOC: Documentation and process
+  UX: Web experience
+
+requirements:
+  # ─── API ────────────────────────────────────────────────────────────────────
+  - id: REQ-API-001
+    title: One declared, versioned API surface
+    statement: Every public operation shall be served under /api/v1, declared exactly once in lib/api/v1/operations.ts, and backed by exactly one route file that only re-exports it.
+    type: functional
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-002
+    title: Uniform, safe error model
+    statement: Every failure shall be an RFC 9457 application/problem+json document with a stable machine-readable code, a URN type and the request id; server errors shall never expose internals.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-003
+    title: Strict input validation
+    statement: Query, path and body inputs shall be validated against schemas; unknown or duplicated parameters shall be rejected; error documents shall name the offending fields and never echo submitted values.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-004
+    title: Stable pagination
+    statement: Lists shall paginate with opaque cursors bound to the query that issued them, delivering every matching item exactly once.
+    type: functional
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-005
+    title: Conditional requests
+    statement: Cacheable responses shall carry an ETag and a matching If-None-Match shall return 304 without a body.
+    type: performance
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-006
+    title: Correct cache scoping
+    statement: Anonymous reads shall be shared-cacheable, credentialed responses private, and errors and mutations never stored.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-007
+    title: Contract integrity
+    statement: The OpenAPI 3.1 document shall be generated from the operation specs, validate against the official schema, be committed and current, and every response shall be checked against its declared schema; golden fixtures consumed by the Android client shall be generated from the real handlers and kept current.
+    type: maintainability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-008
+    title: Tolerant evolution within v1
+    statement: Within v1 the server shall only add optional fields and values, and clients shall ignore what they do not know, so an installed app keeps working after the server grows.
+    type: reliability
+    priority: must
+    status: implemented
+    verification: [test]
+    evidence: [docs/api/versioning.md]
+  - id: REQ-API-009
+    title: Delta synchronisation
+    statement: A client shall converge to the server's data set using only a manifest of (id, revision) pairs and batch fetches of the changed ids; revisions shall change only when content changes; an unchanged data set shall cost one conditional request.
+    type: performance
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-010
+    title: Liveness and readiness
+    statement: The service shall expose a liveness probe that touches no dependency and a readiness probe that checks the database and the presence of data.
+    type: operability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-API-011
+    title: Legacy endpoints stay compatible
+    statement: The original /api/* endpoints shall keep their response shapes for the web UI, the embed widget and the sibling apps while running behind the same guard (request ids, limits, size caps, opaque errors).
+    type: reliability
+    priority: must
+    status: implemented
+    verification: [test]
+
+  # ─── SEC ────────────────────────────────────────────────────────────────────
+  - id: REQ-SEC-001
+    title: Rate limiting
+    statement: Every API call shall be subject to a per-client rate limit (GCRA) scaled by credential tier, with RateLimit headers and Retry-After on rejection, bounded memory and a safe client-address derivation.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-002
+    title: Authentication tiers
+    statement: Callers shall be anonymous, device, partner or administrator; a credential that is present but invalid shall be rejected, never silently downgraded; scopes shall be enforced.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-003
+    title: Device access tokens
+    statement: Device tokens shall be short-lived signed JWTs with pinned algorithm, issuer, audience and required claims, support key rotation, and carry no personal data.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-004
+    title: Proof-of-work registration
+    statement: Anonymous device registration shall require a signed, expiring, adaptive-difficulty proof-of-work challenge whose solution cannot be replayed, and shall be disabled rather than weakened when no signing secret is configured.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-005
+    title: Partner API keys
+    statement: Partner API keys shall be stored only as SHA-256 hashes, compared in constant time, scoped, and never able to carry the administrator scope.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-006
+    title: Administrator access
+    statement: Administrative operations shall require the operator secret (24+ characters, constant-time comparison) and shall be unavailable when it is absent or weak.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-007
+    title: Credential-guessing throttle
+    statement: Failed authentication attempts shall be rate limited per client so a secret cannot be guessed at wire speed.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-008
+    title: Bounded, strict request bodies
+    statement: Request bodies shall require a JSON content type, be size-capped while streaming, reject invalid UTF-8, malformed JSON and prototype-polluting keys, and never reach a handler unvalidated.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-009
+    title: Injection-safe search
+    statement: Search text and filters shall never alter a query's structure (parameterised SQL, sanitised full-text expressions) on the server and on the device.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-010
+    title: API security headers
+    statement: API responses shall carry nosniff, a deny-all CSP, frame denial, a no-referrer policy and, in production, HSTS.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-011
+    title: CORS policy
+    statement: Public bearer-token endpoints may be open to any origin; credentialed or sensitive endpoints shall echo only allow-listed origins; credentials shall never be allowed cross-origin.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-012
+    title: Cross-site write protection
+    statement: Cookie-authenticated state-changing endpoints shall refuse cross-site browser requests while allowing same-origin, allow-listed and non-browser callers.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-013
+    title: Page content security policy
+    statement: HTML pages shall be served with a per-request nonce-based CSP that has no unsafe-inline script source, forbids framing and allow-lists no third-party origin.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test, demonstration]
+    evidence: [scripts/smoke.ts]
+  - id: REQ-SEC-014
+    title: Object-level authorisation
+    statement: Cases, documents and conversations shall be readable and writable only by the session that owns them; another session's identifiers shall behave exactly like missing ones.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-015
+    title: Opaque failures
+    statement: Unexpected errors shall return a generic message with a request id while the cause is logged server-side only; no endpoint shall fabricate data to hide a failure.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-016
+    title: Log hygiene
+    statement: Logs shall be structured, correlated by request id and shall never contain credentials, request bodies, query text, cookies or raw client addresses.
+    type: privacy
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-017
+    title: Session cookie hardening
+    statement: The session cookie shall be HttpOnly, SameSite=Lax and Secure in production, shall be a random UUID, and a malformed cookie shall be ignored.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-018
+    title: Hostile scraped content
+    statement: Content from third-party sources shall be sanitised before storage - markup, control and bidirectional-override characters removed; only plain public http(s) links without credentials kept.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-019
+    title: Supply-chain controls
+    statement: Dependencies shall be locked, CI actions pinned to commit SHAs, updates automated and reviewed, dependency changes risk-checked, and a software bill of materials produced for releases.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test, inspection]
+    evidence: [.github/dependabot.yml, .github/workflows/security.yml]
+  - id: REQ-SEC-020
+    title: Secret hygiene
+    statement: No secret shall be committed; CI shall scan every change for secrets and the repository shall ignore environment and key files.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test, inspection]
+    evidence: [.github/workflows/security.yml, SECURITY.md]
+  - id: REQ-SEC-021
+    title: Cost-bearing endpoints are capped
+    statement: Endpoints that call paid models (assistant, OCR, speech) shall be rate limited per session and per address and size-capped before parsing.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-SEC-022
+    title: Catalogue integrity
+    statement: The service catalogue shall change only through a reviewed path - public submissions are stored inactive at the lowest authority tier under server-generated ids and need administrator approval; organisation changes are administrator-only.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+
+  # ─── DAT ────────────────────────────────────────────────────────────────────
+  - id: REQ-DAT-001
+    title: Validated before stored
+    statement: Every scraped item shall be validated against the item schema before storage; invalid items shall be dropped and counted.
+    type: reliability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-DAT-002
+    title: Deduplication and stable ids
+    statement: Listings of the same opportunity from several sources shall be merged under one stable id.
+    type: functional
+    priority: should
+    status: implemented
+    verification: [test]
+  - id: REQ-DAT-003
+    title: Plausible dates only
+    statement: A date inferred from free text shall be accepted only inside kind-specific plausibility bounds.
+    type: reliability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-DAT-004
+    title: Freshness is reported
+    statement: The system shall report when data was generated and flag it stale after 36 hours.
+    type: reliability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-DAT-005
+    title: Honest planner dates
+    statement: Every programme date shall carry a confidence (official or reported), a check date and an https source, and the planner shall never state fees, stipends or quotas.
+    type: functional
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-DAT-006
+    title: Polite, attributable scraping
+    statement: Scrapers shall identify themselves, honour per-source delay and robots rules, and credit each source.
+    type: functional
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-DAT-007
+    title: Stable content revisions
+    statement: A listing's revision shall exclude volatile fields (last seen, computed status) so it changes only when content changes.
+    type: performance
+    priority: must
+    status: implemented
+    verification: [test]
+
+  # ─── AND ────────────────────────────────────────────────────────────────────
+  - id: REQ-AND-001
+    title: Offline-first browsing and search
+    statement: The app shall list, filter, sort and search every synchronised listing from the on-device database without network access, with Unicode (Urdu) full-text search.
+    type: functional
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-002
+    title: Safe delta synchronisation
+    statement: The app shall synchronise with the manifest/batch protocol, apply each result atomically, be idempotent and resumable, keep saved listings that the server drops, and skip one malformed record without failing the sync.
+    type: reliability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-003
+    title: Anonymous device registration
+    statement: The app shall obtain short-lived tokens by solving the server's proof-of-work challenge (single flight, cancellable, bounded difficulty) and run in anonymous mode when registration is unavailable.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-004
+    title: Resilient and secure networking
+    statement: All traffic shall be HTTPS; failures shall be typed, transient ones retried with jittered backoff honouring Retry-After, TLS failures never retried, oversize or malformed bodies rejected, and release builds shall trust only the system certificate store.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-005
+    title: Urdu and English with RTL
+    statement: Every user-visible string shall exist in English and Urdu with identical placeholders, and the layout direction shall follow the chosen language.
+    type: usability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-006
+    title: Deadline reminders
+    statement: Opt-in reminders shall be computed on the Pakistan calendar, sent once per listing and offset (tightest applicable only), at 09:00 Pakistan time, and never for past deadlines.
+    type: functional
+    priority: should
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-007
+    title: Parity with the server's logic
+    statement: Age arithmetic, deadline status and the new badge computed on the device shall reproduce every vector generated from the server's implementation.
+    type: reliability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-008
+    title: Accessible interface
+    statement: Text and component colours shall meet WCAG 2.2 AA contrast, interactive elements shall be labelled and reachable, and layouts shall scale with the system font size.
+    type: usability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-009
+    title: Secure by construction
+    statement: Only the launcher activity shall be exported, with no deep links; external links shall pass a link policy and open in a Custom Tab; the server may require a minimum app version; release builds shall be minified and signed from CI-provided keys.
+    type: security
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-010
+    title: Privacy by default
+    statement: The app shall request only network, network-state and notification permissions, include no analytics or advertising SDK, exclude its data from backups and collect no personal data.
+    type: privacy
+    priority: must
+    status: implemented
+    verification: [test, inspection]
+    evidence: [docs/privacy-policy.md]
+  - id: REQ-AND-011
+    title: Scam check
+    statement: The app shall let a person check an offer message through the API with an explicit privacy notice, specific error messages and no storage of the text.
+    type: functional
+    priority: should
+    status: implemented
+    verification: [test]
+  - id: REQ-AND-012
+    title: Saved listings
+    statement: Saved listings shall persist on the device across restarts and synchronisations and carry their reminder offsets.
+    type: functional
+    priority: must
+    status: implemented
+    verification: [test]
+
+  # ─── OPS ────────────────────────────────────────────────────────────────────
+  - id: REQ-OPS-001
+    title: Structured logging and correlation
+    statement: Logs shall be JSON lines with levels, redaction and a request id shared with the client.
+    type: operability
+    priority: must
+    status: implemented
+    verification: [test]
+  - id: REQ-OPS-002
+    title: Metrics
+    statement: The service shall expose request counts and latency histograms per operation in Prometheus text format to administrators, with bounded label cardinality.
+    type: operability
+    priority: should
+    status: implemented
+    verification: [test]
+  - id: REQ-OPS-003
+    title: Gated, layered CI
+    statement: Every change shall pass static analysis, unit, contract, security, property and build checks on the web side and build, test and lint on the Android side before merge.
+    type: maintainability
+    priority: must
+    status: implemented
+    verification: [inspection]
+    evidence: [.github/workflows/ci.yml, .github/workflows/android.yml]
+  - id: REQ-OPS-004
+    title: Reproducible installs
+    statement: Installs shall use lockfiles and verified wrappers (npm ci, Gradle wrapper with checksum validation).
+    type: maintainability
+    priority: must
+    status: implemented
+    verification: [inspection]
+    evidence: [package-lock.json, android/gradle/wrapper/gradle-wrapper.properties]
+  - id: REQ-OPS-005
+    title: Container image
+    statement: A container image shall run the production server as a non-root user with a health check, built and smoke-tested in CI.
+    type: operability
+    priority: should
+    status: implemented
+    verification: [inspection]
+    evidence: [Dockerfile, .github/workflows/container.yml]
+  - id: REQ-OPS-006
+    title: Release process
+    statement: Android releases shall be built from a tag by CI, signed with CI-held keys, published with checksums and build provenance, and documented.
+    type: operability
+    priority: should
+    status: implemented
+    verification: [inspection]
+    evidence: [.github/workflows/android-release.yml, docs/mobile/release.md]
+
+  # ─── PERF ───────────────────────────────────────────────────────────────────
+  - id: REQ-PERF-001
+    title: Search latency budget
+    statement: Searching the full data set shall stay within a latency budget (p95 below 150 ms in CI) on the server.
+    type: performance
+    priority: should
+    status: implemented
+    verification: [test]
+  - id: REQ-PERF-002
+    title: Sync payload budget
+    statement: The sync manifest shall stay small enough for mobile data (under 100 KB raw for the current data set) and a no-change sync shall transfer no body.
+    type: performance
+    priority: should
+    status: implemented
+    verification: [test]
+  - id: REQ-PERF-003
+    title: Load tolerance
+    statement: Under sustained concurrent load the key read endpoints shall answer without errors within agreed latency percentiles, and the rate limiter shall shed excess load with 429, not failures.
+    type: performance
+    priority: should
+    status: implemented
+    verification: [demonstration]
+    evidence: [scripts/bench/load.ts, docs/operations/performance.md]
+  - id: REQ-PERF-004
+    title: Web bundle budget
+    statement: The first-load JavaScript of the main pages shall stay under a stated budget.
+    type: performance
+    priority: could
+    status: implemented
+    verification: [test]
+  - id: REQ-PERF-005
+    title: Android size budget
+    statement: The release APK shall stay under a stated size budget.
+    type: performance
+    priority: could
+    status: implemented
+    verification: [demonstration]
+    evidence: [.github/workflows/android.yml]
+
+  # ─── DOC ────────────────────────────────────────────────────────────────────
+  - id: REQ-DOC-001
+    title: Architecture documentation
+    statement: The architecture, data flows and I/O procedures shall be documented with diagrams.
+    type: maintainability
+    priority: must
+    status: implemented
+    verification: [inspection]
+    evidence: [docs/architecture/overview.md, docs/architecture/io-and-processing.md]
+  - id: REQ-DOC-002
+    title: Decision records
+    statement: Significant design decisions shall be recorded as ADRs with context, decision and consequences.
+    type: maintainability
+    priority: must
+    status: implemented
+    verification: [inspection]
+    evidence: [docs/adr/README.md]
+  - id: REQ-DOC-003
+    title: Threat model
+    statement: A threat model shall list threats, mitigations and the tests that verify them.
+    type: security
+    priority: must
+    status: implemented
+    verification: [inspection]
+    evidence: [docs/security/threat-model.md]
+  - id: REQ-DOC-004
+    title: API reference
+    statement: The API shall be documented for integrators, including authentication, errors, rate limits and the sync protocol.
+    type: maintainability
+    priority: must
+    status: implemented
+    verification: [inspection]
+    evidence: [docs/api/README.md, openapi/raahi.v1.json]
+  - id: REQ-DOC-005
+    title: Operations runbook
+    statement: Operators shall have a runbook for configuration, key rotation, incidents and recovery.
+    type: operability
+    priority: must
+    status: implemented
+    verification: [inspection]
+    evidence: [docs/operations/runbook.md]
+  - id: REQ-DOC-006
+    title: Privacy policy
+    statement: A privacy policy matching the actual behaviour of the website and the app shall be published.
+    type: privacy
+    priority: must
+    status: implemented
+    verification: [inspection]
+    evidence: [docs/privacy-policy.md, app/privacy/page.tsx]
+  - id: REQ-DOC-007
+    title: Verified traceability
+    statement: Requirements shall be traced to verifying tests by a script that fails the build on gaps.
+    type: maintainability
+    priority: must
+    status: implemented
+    verification: [test]
+
+  # ─── UX ─────────────────────────────────────────────────────────────────────
+  - id: REQ-UX-001
+    title: Accessible web pages
+    statement: The main web pages shall have no automatically detectable WCAG A/AA violations.
+    type: usability
+    priority: should
+    status: planned
+    verification: [test]
+    note: Needs the browser-based accessibility run (axe) in e2e/; scheduled after the Android and security work.

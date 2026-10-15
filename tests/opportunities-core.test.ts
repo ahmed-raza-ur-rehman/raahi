@@ -139,7 +139,7 @@ test("judges whether a remote job accepts candidates in Pakistan", () => {
   assert.equal(inferRemoteEligibility("Remote").openToPakistan, null);
 });
 
-test("normalises a raw listing into a validated opportunity", () => {
+test("REQ-DAT-001 normalises a raw listing into a validated opportunity", () => {
   const { item, reason } = normalizeOpportunity(
     {
       title: "ENS International Selection Scholarships",
@@ -163,7 +163,7 @@ test("normalises a raw listing into a validated opportunity", () => {
   assert.ok(!item.summary?.includes("<p>"));
 });
 
-test("rejects listings without a usable title or http(s) url, and de-duplicates by url", () => {
+test("REQ-DAT-001 rejects listings without a usable title or http(s) url, and de-duplicates by url", () => {
   const result = normalizeAll(
     [
       { title: "ok title here", url: "https://x.example/a" },
@@ -188,7 +188,7 @@ function opp(partial: Partial<Opportunity> & Pick<Opportunity, "title" | "source
   return { ...item, ...partial };
 }
 
-test("merges the same scholarship listed on several sites and keeps the most authoritative record", () => {
+test("REQ-DAT-002 merges the same scholarship listed on several sites and keeps the most authoritative record", () => {
   const authority = (id: string) => ({ official: 1, tab: 4, desk: 4 })[id as "official" | "tab" | "desk"] ?? 4;
   const items = [
     opp({ title: "Commonwealth Master's Scholarships 2027/2028", sourceId: "tab", url: "https://tab.example/commonwealth", deadline: "2026-10-20" }),

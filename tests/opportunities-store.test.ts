@@ -183,7 +183,7 @@ test("ensureOpportunitiesReady reloads only when the offered snapshot is newer",
   loadSnapshotIntoDb(snapshot, NOW);
 });
 
-test("status reports freshness, counts and per-source results", () => {
+test("REQ-DAT-004 status reports freshness, counts and per-source results", () => {
   loadSnapshotIntoDb(snapshot, NOW);
   const fresh = getStatus(new Date(NOW.getTime() + 2 * 3_600_000));
   assert.equal(fresh.stale, false);

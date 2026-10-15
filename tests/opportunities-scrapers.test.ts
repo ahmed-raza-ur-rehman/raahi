@@ -83,7 +83,7 @@ async function withServer(handler: (req: IncomingMessage, res: ServerResponse, s
 
 const noSleep = async () => undefined;
 
-test("http client identifies honestly, obeys robots.txt and caches it", async () => {
+test("REQ-DAT-006 http client identifies honestly, obeys robots.txt and caches it", async () => {
   await withServer(
     (req, res) => {
       if (req.url === "/robots.txt") {
@@ -174,7 +174,7 @@ test("http client retries 503 with backoff, gives up on 404, rejects oversized a
   );
 });
 
-test("http client spaces requests to the same host", async () => {
+test("REQ-DAT-006 http client spaces requests to the same host", async () => {
   await withServer(
     (req, res) => void res.end(req.url === "/robots.txt" ? "" : "ok"),
     async (base) => {
