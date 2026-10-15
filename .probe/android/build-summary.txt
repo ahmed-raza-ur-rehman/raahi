@@ -1,0 +1,153 @@
+gradle exit status: 0
+
+== Kotlin / javac errors and warnings (first 80)
+(none)
+
+== Gradle failures
+
+== Deprecation / warning lines (first 25)
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+
+== Unit tests
+pk.raahi.app.SkeletonTest: tests=1 failures=0 errors=0 skipped=0
+pk.raahi.core.data.SkeletonTest: tests=2 failures=0 errors=0 skipped=0
+pk.raahi.core.database.SkeletonTest: tests=1 failures=0 errors=0 skipped=0
+pk.raahi.core.designsystem.SkeletonTest: tests=1 failures=0 errors=0 skipped=0
+TOTAL tests=5 failed=0 skipped=0
+
+== Lint
+## android/app/build/reports/lint-results-debug.txt
+/home/runner/work/raahi/raahi/android/app/src/main/AndroidManifest.xml:7: Warning: The attribute android:allowBackup is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute android:dataExtractionRules specifying an @xml resource which configures cloud backups and device transfers on Android 12 and higher. [DataExtractionRules]
+        android:allowBackup="false"
+                             ~~~~~
+
+   Explanation for issues of type "DataExtractionRules":
+   Before Android 12, the attributes android:allowBackup and
+   android:fullBackupContent were used to configure all forms of backup,
+   including cloud backups, device-to-device transfers and adb backup.
+
+   In Android 12 and higher, these attributes have been deprecated and will
+   only apply to cloud backups. You should instead use the attribute
+   android:dataExtractionRules, specifying an @xml resource that configures
+   which files to back up, for cloud backups and for device-to-device
+   transfers, separately. If your minSdkVersion supports older versions,
+   you'll still want to specify an android:fullBackupContent resource if the
+   default behavior is not right for your app.
+
+   https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   https://goo.gle/DataExtractionRules
+
+/home/runner/work/raahi/raahi/android/app/src/main/AndroidManifest.xml:6: Warning: Should explicitly set android:icon, there is no default [MissingApplicationIcon]
+    <application
+     ~~~~~~~~~~~
+
+   Explanation for issues of type "MissingApplicationIcon":
+   You should set an icon for the application as whole because there is no
+   default. This attribute must be set as a reference to a drawable resource
+   containing the image (for example @drawable/icon).
+
+   https://developer.android.com/studio/publish/preparing#publishing-configure
+
+0 errors, 2 warnings
+## android/core/data/build/reports/lint-results-debug.txt
+No issues found.
+## android/core/database/build/reports/lint-results-debug.txt
+No issues found.
+## android/core/designsystem/build/reports/lint-results-debug.txt
+No issues found.
+## android/feature/opportunities/build/reports/lint-results-debug.txt
+No issues found.
+## android/feature/planner/build/reports/lint-results-debug.txt
+No issues found.
+## android/feature/tools/build/reports/lint-results-debug.txt
+No issues found.
+
+== Artifacts
+android/app/build/outputs/apk/debug/app-debug.apk 14203836 bytes
+android/app/build/outputs/apk/release/app-release-unsigned.apk 1004107 bytes
+
+== Log tail
+> Task :core:designsystem:generateDebugAndroidTestLintModel
+> Task :core:designsystem:generateDebugUnitTestLintModel
+> Task :core:designsystem:lintAnalyzeDebugAndroidTest
+> Task :core:data:lintAnalyzeDebug
+> Task :feature:opportunities:generateDebugAndroidTestLintModel
+> Task :feature:opportunities:generateDebugUnitTestLintModel
+> Task :core:designsystem:lintAnalyzeDebug
+> Task :feature:opportunities:lintAnalyzeDebugAndroidTest
+> Task :core:designsystem:lintAnalyzeDebugUnitTest
+> Task :feature:planner:lintAnalyzeDebug
+> Task :feature:opportunities:lintAnalyzeDebugUnitTest
+> Task :feature:planner:generateDebugAndroidTestLintModel
+> Task :feature:planner:generateDebugUnitTestLintModel
+> Task :feature:planner:lintAnalyzeDebugAndroidTest
+> Task :feature:opportunities:lintAnalyzeDebug
+> Task :feature:tools:generateDebugAndroidTestLintModel
+> Task :feature:planner:lintAnalyzeDebugUnitTest
+> Task :feature:tools:lintAnalyzeDebug
+> Task :core:data:generateDebugLintReportModel
+> Task :feature:tools:generateDebugUnitTestLintModel
+> Task :core:database:generateDebugLintReportModel
+> Task :core:data:lintReportDebug
+> Task :feature:tools:lintAnalyzeDebugUnitTest
+> Task :core:data:lintDebug
+> Task :feature:tools:lintAnalyzeDebugAndroidTest
+> Task :core:designsystem:generateDebugLintReportModel
+> Task :core:database:lintReportDebug
+> Task :core:database:lintDebug
+> Task :feature:opportunities:generateDebugLintReportModel
+> Task :core:designsystem:lintReportDebug
+> Task :core:designsystem:lintDebug
+> Task :feature:planner:generateDebugLintReportModel
+> Task :feature:opportunities:lintReportDebug
+> Task :feature:opportunities:lintDebug
+> Task :feature:tools:generateDebugLintReportModel
+> Task :feature:planner:lintReportDebug
+> Task :feature:planner:lintDebug
+> Task :feature:tools:lintReportDebug
+> Task :feature:tools:lintDebug
+> Task :app:lintAnalyzeDebug
+
+> Task :app:lintReportDebug
+Wrote HTML report to file:///home/runner/work/raahi/raahi/android/app/build/reports/lint-results-debug.html
+Wrote SARIF report to file:///home/runner/work/raahi/raahi/android/app/build/reports/lint-results-debug.sarif
+
+> Task :app:lintDebug
+> Task :app:mergeReleaseComposeMapping
+> Task :app:convertShrunkResourcesToBinaryRelease
+> Task :app:optimizeReleaseResources
+> Task :app:compileReleaseArtProfile
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792052304464.json
+
+[Incubating] Problems report is available at: file:///home/runner/work/raahi/raahi/android/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 3m 58s
+669 actionable tasks: 560 executed, 109 from cache
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html
