@@ -34,7 +34,7 @@ class DeviceAuthenticatorTest {
     private fun authenticator(solve: suspend (String) -> String = { "7" }) = DeviceAuthenticator(auth, { "3f1c2b5e-8d6a-4f0e-9b21-0a7c5d4e6f10" }, { clock }, solve)
 
     @Test
-    fun `[REQ-AND-003] the first call registers; later calls reuse the cached token`() = runTest {
+    fun `REQ-AND-003 the first call registers, later calls reuse the cached token`() = runTest {
         val sut = authenticator()
         assertNull(sut.cached())
         assertEquals("token-1", sut.token())
@@ -44,7 +44,7 @@ class DeviceAuthenticatorTest {
     }
 
     @Test
-    fun `[REQ-AND-003] ten screens asking at once cause one registration (single flight)`() = runTest {
+    fun `REQ-AND-003 ten screens asking at once cause one registration (single flight)`() = runTest {
         val sut = authenticator()
         val tokens = (1..10).map { async { sut.token() } }.awaitAll()
         assertEquals(setOf("token-1"), tokens.toSet())
@@ -53,7 +53,7 @@ class DeviceAuthenticatorTest {
     }
 
     @Test
-    fun `[REQ-AND-003] the token is renewed shortly before it expires, not after`() = runTest {
+    fun `REQ-AND-003 the token is renewed shortly before it expires, not after`() = runTest {
         val sut = authenticator()
         sut.token()
         clock = clock.plus(Duration.ofMinutes(57))
@@ -64,7 +64,7 @@ class DeviceAuthenticatorTest {
     }
 
     @Test
-    fun `[REQ-AND-003] forcing a refresh registers again`() = runTest {
+    fun `REQ-AND-003 forcing a refresh registers again`() = runTest {
         val sut = authenticator()
         sut.token()
         assertEquals("token-2", sut.token(forceRefresh = true))
@@ -73,7 +73,7 @@ class DeviceAuthenticatorTest {
     }
 
     @Test
-    fun `[REQ-AND-003] a server with registration switched off puts the app in anonymous mode without hammering it`() = runTest {
+    fun `REQ-AND-003 a server with registration switched off puts the app in anonymous mode without hammering it`() = runTest {
         challengeResult = ApiResult.Failure(ApiError.Server(503, ProblemDto("t", "t", 503, "not_configured")))
         val sut = authenticator()
         assertNull(sut.token())
@@ -86,7 +86,7 @@ class DeviceAuthenticatorTest {
     }
 
     @Test
-    fun `[REQ-AND-003] an unsolvable challenge or a network failure yields no token instead of an exception`() = runTest {
+    fun `REQ-AND-003 an unsolvable challenge or a network failure yields no token instead of an exception`() = runTest {
         assertNull(authenticator(solve = { throw ProofOfWorkException("too hard") }).token())
         challengeResult = ApiResult.Failure(ApiError.Offline)
         assertNull(authenticator().token())

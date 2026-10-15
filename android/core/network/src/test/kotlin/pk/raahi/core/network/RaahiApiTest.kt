@@ -42,7 +42,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-002] the manifest is fetched conditionally and 304 means nothing changed`() = withApi { api, server ->
+    fun `REQ-AND-002 the manifest is fetched conditionally and 304 means nothing changed`() = withApi { api, server ->
         server.enqueue(json(Fixtures.text("sync/manifest.v1.json"), 200, "ETag" to "W/\"abc\""))
         server.enqueue(MockResponse.Builder().code(304).addHeader("ETag", "W/\"abc\"").build())
 
@@ -59,7 +59,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-API-001] every request identifies the app, asks for JSON and carries a distinct request id`() = withApi { api, server ->
+    fun `REQ-API-001 every request identifies the app, asks for JSON and carries a distinct request id`() = withApi { api, server ->
         repeat(2) { server.enqueue(json(Fixtures.text("guides.list.json"))) }
         api.guides("en")
         api.guides("ur")
@@ -74,7 +74,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-003] a cached token is attached to reads so limits are per install, not per shared address`() {
+    fun `REQ-AND-003 a cached token is attached to reads so limits are per install, not per shared address`() {
         val provider = object : TokenProvider {
             override fun cached() = "tok-123"
             override suspend fun token(forceRefresh: Boolean) = "tok-123"
@@ -87,7 +87,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-002] batch requests carry their ids and enforce the server's cap on the client`() = withApi { api, server ->
+    fun `REQ-AND-002 batch requests carry their ids and enforce the server's cap on the client`() = withApi { api, server ->
         server.enqueue(json(Fixtures.text("sync/items.v1.json").let { """{"data":$it,"missing":[],"meta":{"generatedAt":null,"dataVersion":"abcdefabcdef"}}""" }))
         val result = api.batch(listOf("a-0123456789", "b-0123456789"))
         assertIs<ApiResult.Success<BatchResponseDto>>(result)
@@ -97,7 +97,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-004] a 429 is retried after the time the server asks for, then reported with it`() = withApi(retry = fastRetry.copy(maxAttempts = 2)) { api, server ->
+    fun `REQ-AND-004 a 429 is retried after the time the server asks for, then reported with it`() = withApi(retry = fastRetry.copy(maxAttempts = 2)) { api, server ->
         server.enqueue(problem("problems.unknown-parameter.json", 429, "Retry-After" to "0"))
         server.enqueue(problem("problems.unknown-parameter.json", 429, "Retry-After" to "2"))
         val result = api.guides("en")
@@ -107,7 +107,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-004] a transient 503 is retried and the request then succeeds`() = withApi { api, server ->
+    fun `REQ-AND-004 a transient 503 is retried and the request then succeeds`() = withApi { api, server ->
         server.enqueue(MockResponse.Builder().code(503).body("{}").build())
         server.enqueue(json(Fixtures.text("guides.list.json")))
         assertIs<ApiResult.Success<GuideListDto>>(api.guides("en"))
@@ -115,7 +115,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-004] a persistent 500 gives up after the attempt budget and reports a server error`() = withApi { api, server ->
+    fun `REQ-AND-004 a persistent 500 gives up after the attempt budget and reports a server error`() = withApi { api, server ->
         repeat(5) { server.enqueue(MockResponse.Builder().code(500).body("{}").build()) }
         val failure = assertIs<ApiResult.Failure>(api.guides("en"))
         assertEquals(ApiError.Server(500), failure.error)
@@ -123,7 +123,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-004] contract errors are not retried`() = withApi { api, server ->
+    fun `REQ-AND-004 contract errors are not retried`() = withApi { api, server ->
         server.enqueue(MockResponse.Builder().code(404).body("{}").build())
         assertEquals(ApiError.NotFound, assertIs<ApiResult.Failure>(api.guides("en")).error)
         assertEquals(1, server.requestCount)
@@ -135,7 +135,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-004] undecodable and oversized bodies are reported as malformed, never crash`() = withApi { api, server ->
+    fun `REQ-AND-004 undecodable and oversized bodies are reported as malformed, never crash`() = withApi { api, server ->
         server.enqueue(json("{not json"))
         assertIs<ApiError.Malformed>(assertIs<ApiResult.Failure>(api.guides("en")).error)
         server.enqueue(json("""{"unexpected":true}"""))
@@ -146,7 +146,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-004] a server that never answers becomes a timeout`() {
+    fun `REQ-AND-004 a server that never answers becomes a timeout`() {
         val impatient = { server: MockWebServer -> HttpClientFactory.create(allowedCleartextHosts = setOf(server.hostName)).newBuilder().readTimeout(Duration.ofMillis(150)).build() }
         withApi(retry = fastRetry.copy(maxAttempts = 1), client = impatient) { api, server ->
             server.enqueue(MockResponse.Builder().socketPolicy(SocketPolicy.NoResponse).build())
@@ -155,7 +155,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-004] cleartext HTTP is refused unless the host is explicitly allowed`() {
+    fun `REQ-AND-004 cleartext HTTP is refused unless the host is explicitly allowed`() {
         withApi(client = { HttpClientFactory.create() }) { api, server ->
             server.enqueue(json(Fixtures.text("guides.list.json")))
             val failure = assertIs<ApiResult.Failure>(api.guides("en"))
@@ -165,7 +165,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-004] a TLS handshake failure is an insecure-connection error and is never retried`() = runTest {
+    fun `REQ-AND-004 a TLS handshake failure is an insecure-connection error and is never retried`() = runTest {
         // MockWebServer speaks plain HTTP; an https:// request to it fails the handshake.
         MockWebServer().use { server ->
             server.start()
@@ -179,7 +179,7 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-003] the scam check refreshes an expired token once and then succeeds`() {
+    fun `REQ-AND-003 the scam check refreshes an expired token once and then succeeds`() {
         val issued = AtomicInteger()
         val provider = object : TokenProvider {
             override fun cached() = null
@@ -197,13 +197,13 @@ class RaahiApiTest {
     }
 
     @Test
-    fun `[REQ-AND-003] the scam check without any token fails as unauthorised without touching the network`() = withApi(tokens = null) { api, server ->
+    fun `REQ-AND-003 the scam check without any token fails as unauthorised without touching the network`() = withApi(tokens = null) { api, server ->
         assertEquals(ApiError.Unauthorized(false), assertIs<ApiResult.Failure>(api.scamCheck(ScamRequestDto(text = "x"))).error)
         assertEquals(0, server.requestCount)
     }
 
     @Test
-    fun `[REQ-AND-004] request bodies omit absent fields (the server's schemas are strict)`() = withApi(object : TokenProvider {
+    fun `REQ-AND-004 request bodies omit absent fields (the server's schemas are strict)`() = withApi(object : TokenProvider {
         override fun cached() = "t"
         override suspend fun token(forceRefresh: Boolean) = "t"
     }) { api, server ->

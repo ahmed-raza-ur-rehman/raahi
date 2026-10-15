@@ -27,7 +27,7 @@ class SyncEngineTest {
     private fun synthetic(count: Int): List<OpportunityDto> = fixtureItems(1).first().let { template -> List(count) { template.copy(id = "gen-%04d-0123456789".format(it), rev = "%012x".format(it + 1)) } }
 
     @Test
-    fun `[REQ-AND-002] the first sync downloads everything and stores exactly the server's revisions`() = runTest {
+    fun `REQ-AND-002 the first sync downloads everything and stores exactly the server's revisions`() = runTest {
         val outcome = engine().sync()
         assertEquals(12, assertIs<SyncOutcome.Updated>(outcome).added)
         assertEquals(revisions(fixtureItems(1)), store.revisions())
@@ -37,7 +37,7 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-AND-002] a second sync is a single conditional request and changes nothing (idempotent)`() = runTest {
+    fun `REQ-AND-002 a second sync is a single conditional request and changes nothing (idempotent)`() = runTest {
         engine().sync()
         val batchesBefore = api.batches.size
         assertEquals(SyncOutcome.UpToDate, engine().sync())
@@ -46,7 +46,7 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-API-009] v1 to v2 applies exactly the documented changes and converges to the server state`() = runTest {
+    fun `REQ-API-009 v1 to v2 applies exactly the documented changes and converges to the server state`() = runTest {
         engine().sync()
         api.publish(fixtureItems(2))
         val outcome = assertIs<SyncOutcome.Updated>(engine().sync())
@@ -62,7 +62,7 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-AND-002] an interrupted sync changes nothing and the next attempt converges (crash-safe, resumable)`() = runTest {
+    fun `REQ-AND-002 an interrupted sync changes nothing and the next attempt converges (crash-safe, resumable)`() = runTest {
         api.publish(synthetic(120))
         api.failBatchNumber = 2
         val failed = assertIs<SyncOutcome.Failed>(engine().sync())
@@ -79,7 +79,7 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-AND-002] a crash while applying leaves the stored data and the sync state untouched`() = runTest {
+    fun `REQ-AND-002 a crash while applying leaves the stored data and the sync state untouched`() = runTest {
         engine().sync()
         api.publish(fixtureItems(2))
         store.failNextApply = true
@@ -91,7 +91,7 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-AND-002] one malformed record is skipped, the rest are stored, and the sync is retried in full next time`() = runTest {
+    fun `REQ-AND-002 one malformed record is skipped, the rest are stored, and the sync is retried in full next time`() = runTest {
         val broken = fixtureItems(1).first().copy(deadline = "2026-13-45")
         api.publish(listOf(broken) + fixtureItems(1).drop(1))
         val outcome = assertIs<SyncOutcome.Updated>(engine().sync())
@@ -102,7 +102,7 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-AND-002] an item the manifest did not announce is never stored`() = runTest {
+    fun `REQ-AND-002 an item the manifest did not announce is never stored`() = runTest {
         val stray = fixtureItems(1).first().copy(id = "stray-0123456789")
         val rogue = object : pk.raahi.core.network.RaahiApi by api {
             override suspend fun batch(ids: List<String>) = (api.batch(ids) as pk.raahi.core.network.ApiResult.Success).let { ok -> pk.raahi.core.network.ApiResult.Success(ok.value.copy(data = ok.value.data + stray), ok.etag) }
@@ -113,7 +113,7 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-AND-009] a server that demands a newer app stops the sync before any data is touched`() = runTest {
+    fun `REQ-AND-009 a server that demands a newer app stops the sync before any data is touched`() = runTest {
         api.minimumClient = "2.0.0"
         val outcome = engine("1.4.0").sync()
         assertEquals(SyncOutcome.UpdateRequired("2.0.0"), outcome)
@@ -124,13 +124,13 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-AND-004] the update gate is advisory: if meta cannot be reached the sync still proceeds`() = runTest {
+    fun `REQ-AND-004 the update gate is advisory - if meta cannot be reached the sync still proceeds`() = runTest {
         api.metaFails = true
         assertIs<SyncOutcome.Updated>(engine().sync())
     }
 
     @Test
-    fun `[REQ-AND-004] network failures are reported with the cause and recorded, without losing the previous good state`() = runTest {
+    fun `REQ-AND-004 network failures are reported with the cause and recorded, without losing the previous good state`() = runTest {
         engine().sync()
         val goodTag = state.current.manifestEtag
         api.manifestFails = ApiError.Offline
@@ -141,7 +141,7 @@ class SyncEngineTest {
     }
 
     @Test
-    fun `[REQ-AND-002] ids the server reports as missing are removed locally`() = runTest {
+    fun `REQ-AND-002 ids the server reports as missing are removed locally`() = runTest {
         engine().sync()
         val vanished = fixtureItems(1)[3]
         val flaky = object : pk.raahi.core.network.RaahiApi by api {

@@ -101,6 +101,8 @@ data class Opportunity(
     val eligibilityNote: String? = null,
     val languages: List<String> = emptyList(),
     val alsoOn: List<AlsoOn> = emptyList(),
+    /** The server no longer lists it; kept only because the person saved it. */
+    val stale: Boolean = false,
 )
 
 data class AlsoOn(val sourceName: String, val url: String)

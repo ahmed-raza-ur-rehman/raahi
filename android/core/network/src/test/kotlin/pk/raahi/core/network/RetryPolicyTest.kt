@@ -12,7 +12,7 @@ class RetryPolicyTest {
     private val policy = RetryPolicy(maxAttempts = 4, baseDelayMs = 400, maxDelayMs = 8_000, random = Random(42))
 
     @Test
-    fun `[REQ-AND-004] only transient failures are retried`() {
+    fun `REQ-AND-004 only transient failures are retried`() {
         for (transient in listOf(ApiError.Offline, ApiError.Timeout, ApiError.RateLimited(5), ApiError.RateLimited(null), ApiError.Server(503), ApiError.Server(502), ApiError.Server(504))) {
             assertTrue(policy.isTransient(transient), "$transient")
         }
@@ -22,7 +22,7 @@ class RetryPolicyTest {
     }
 
     @Test
-    fun `[REQ-AND-004] backoff grows exponentially, never exceeds its ceiling and is jittered`() {
+    fun `REQ-AND-004 backoff grows exponentially, never exceeds its ceiling and is jittered`() {
         val first = List(200) { policy.delayBeforeRetryMs(ApiError.Offline, 1) }
         val later = List(200) { policy.delayBeforeRetryMs(ApiError.Offline, 5) }
         assertTrue(first.all { it in 0..400 } && later.all { it in 0..8_000 })
@@ -32,7 +32,7 @@ class RetryPolicyTest {
     }
 
     @Test
-    fun `[REQ-AND-004] execute stops at the attempt budget and waits between attempts`() = runTest {
+    fun `REQ-AND-004 execute stops at the attempt budget and waits between attempts`() = runTest {
         var calls = 0
         val result = policy.execute<Unit> {
             calls += 1
@@ -44,7 +44,7 @@ class RetryPolicyTest {
     }
 
     @Test
-    fun `[REQ-AND-004] execute returns immediately on success or on a permanent error`() = runTest {
+    fun `REQ-AND-004 execute returns immediately on success or on a permanent error`() = runTest {
         var calls = 0
         policy.execute { calls += 1; ApiResult.Success(1) }
         assertEquals(1, calls)

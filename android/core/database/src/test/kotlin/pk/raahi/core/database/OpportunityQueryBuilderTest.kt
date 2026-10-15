@@ -34,7 +34,7 @@ class OpportunityQueryBuilderTest {
     }
 
     @Test
-    fun `[REQ-AND-001] the default query hides notices and closed listings and binds today as an argument`() {
+    fun `REQ-AND-001 the default query hides notices and closed listings and binds today as an argument`() {
         val query = build(OpportunityFilter())
         assertTrue(query.sql.contains("kind != 'notice'"))
         assertTrue(query.sql.contains("(deadline IS NULL OR deadline >= ?)"))
@@ -42,7 +42,7 @@ class OpportunityQueryBuilderTest {
     }
 
     @Test
-    fun `[REQ-AND-001] every filter adds a bound condition and the argument order matches the placeholders`() {
+    fun `REQ-AND-001 every filter adds a bound condition and the argument order matches the placeholders`() {
         val query = build(
             OpportunityFilter(
                 query = "fully funded", kinds = setOf(OpportunityKind.SCHOLARSHIP, OpportunityKind.FELLOWSHIP), scope = Scope.INTERNATIONAL,
@@ -58,7 +58,7 @@ class OpportunityQueryBuilderTest {
     }
 
     @Test
-    fun `[REQ-SEC-009] hostile text never reaches the SQL string`() {
+    fun `REQ-SEC-009 hostile text never reaches the SQL string`() {
         val hostile = listOf("'; DROP TABLE opportunities; --", "\" OR 1=1 --", "x') UNION SELECT * FROM saved --", "NEAR(a b)", "title:secret")
         for (text in hostile) {
             val query = build(OpportunityFilter(query = text))
@@ -68,7 +68,7 @@ class OpportunityQueryBuilderTest {
     }
 
     @Test
-    fun `[REQ-AND-001] the closing-soon window is clamped`() {
+    fun `REQ-AND-001 the closing-soon window is clamped`() {
         val args = build(OpportunityFilter(closingWithinDays = 100_000)).arguments()
         assertEquals("2027-10-15", args.last())
     }

@@ -96,6 +96,7 @@ fun Opportunity.toEntity(): OpportunityEntity = OpportunityEntity(
     eligibilityNote = eligibilityNote,
     languages = json.encodeToString(stringList, languages),
     alsoOn = json.encodeToString(stringList, alsoOn.flatMap { listOf(it.sourceName, it.url) }),
+    stale = stale,
 )
 
 fun Opportunity.toFts(): OpportunityFts =
@@ -132,6 +133,7 @@ fun OpportunityEntity.toDomain(): Opportunity = Opportunity(
     eligibilityNote = eligibilityNote,
     languages = decodeList(languages),
     alsoOn = decodeList(alsoOn).chunked(2).filter { it.size == 2 }.map { AlsoOn(it[0], it[1]) },
+    stale = stale,
 )
 
 private fun decodeList(text: String): List<String> = runCatching { json.decodeFromString(stringList, text) }.getOrDefault(emptyList())

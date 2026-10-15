@@ -16,6 +16,7 @@ dependencies {
     api(libs.compose.material.icons.core)
     api(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
+
     testImplementation(platform(libs.compose.bom))
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test.junit)

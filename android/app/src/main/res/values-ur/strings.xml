@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Urdu strings are machine-assisted and still need a native-speaker review (see docs/mobile/localization.md). -->
+<resources>
+    <string name="app_name">راہی</string>
+    <string name="nav_home">مواقع</string>
+    <string name="nav_plan">منصوبہ</string>
+    <string name="nav_tools">اوزار</string>
+    <string name="nav_saved">محفوظ</string>
+    <string name="nav_settings">ترتیبات</string>
+
+    <string name="settings_title">ترتیبات</string>
+    <string name="settings_language">زبان</string>
+    <string name="lang_system">فون کی زبان</string>
+    <string name="lang_english">English</string>
+    <string name="lang_urdu">اردو</string>
+    <string name="settings_notifications">آخری تاریخ کی یاد دہانی</string>
+    <string name="settings_notifications_body">محفوظ شدہ فہرست بند ہونے سے پہلے اطلاع پائیں۔</string>
+    <string name="settings_reminder_days">پہلے یاد دلائیں</string>
+    <plurals name="reminder_days_chip">
+        <item quantity="one">%d دن</item>
+        <item quantity="other">%d دن</item>
+    </plurals>
+    <string name="settings_data_saver">ڈیٹا سیور</string>
+    <string name="settings_data_saver_body">پس منظر میں صرف وائی فائی پر اپ ڈیٹ کریں۔</string>
+    <string name="settings_sync">اپ ڈیٹس</string>
+    <string name="settings_sync_now">ابھی اپ ڈیٹ کریں</string>
+    <string name="settings_sync_never">ابھی اپ ڈیٹ نہیں ہوا</string>
+    <string name="settings_sync_last">آخری اپ ڈیٹ: %s</string>
+    <string name="settings_sync_failed">آخری اپ ڈیٹ کی کوشش کامیاب نہیں ہوئی۔</string>
+    <string name="settings_privacy">رازداری</string>
+    <string name="settings_privacy_body">راہی میں کوئی اکاؤنٹ نہیں اور ذاتی ڈیٹا جمع نہیں کیا جاتا۔ محفوظ کی گئی چیزیں اسی فون پر رہتی ہیں۔ فراڈ کی جانچ میں آپ کا پیسٹ کیا ہوا متن میموری میں تجزیے کے لیے راہی کو بھیجا جاتا ہے؛ اسے محفوظ نہیں کیا جاتا۔</string>
+    <string name="settings_privacy_policy">رازداری کی پالیسی</string>
+    <string name="settings_about">تعارف</string>
+    <string name="settings_version">ورژن %s</string>
+    <string name="settings_disclaimer">معلومات سرکاری اور عوامی ذرائع سے لی گئی ہیں۔ درخواست دینے یا کوئی رقم دینے سے پہلے ہمیشہ سرکاری صفحے پر تصدیق کریں۔</string>
+    <string name="settings_listings_stored">اس فون پر %d فہرستیں</string>
+
+    <string name="notif_channel_deadlines">آخری تاریخ کی یاد دہانی</string>
+    <string name="notif_channel_deadlines_description">جب کوئی محفوظ شدہ فہرست بند ہونے والی ہو تو آپ کو بتاتی ہے۔</string>
+    <string name="notif_title_today">آج بند ہو رہا ہے</string>
+    <plurals name="notif_title_days">
+        <item quantity="one">%d دن میں بند</item>
+        <item quantity="other">%d دن میں بند</item>
+    </plurals>
+</resources>

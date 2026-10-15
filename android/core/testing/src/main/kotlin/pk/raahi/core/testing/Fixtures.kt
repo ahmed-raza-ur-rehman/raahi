@@ -1,6 +1,6 @@
 package pk.raahi.core.testing
 
-/** Reads the golden contract fixtures (`contract/v1/**` at the repository root). */
+/** Reads the golden contract fixtures (the `contract/v1` directory at the repository root, every file below it). */
 object Fixtures {
     fun text(path: String): String {
         val stream = checkNotNull(Fixtures::class.java.getResourceAsStream("/v1/$path")) {

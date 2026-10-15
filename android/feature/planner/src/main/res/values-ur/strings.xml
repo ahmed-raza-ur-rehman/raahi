@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Urdu strings are machine-assisted and still need a native-speaker review (see docs/mobile/localization.md). -->
+<resources>
+    <string name="plan_title">منصوبہ</string>
+    <string name="tab_programmes">پروگرام</string>
+    <string name="tab_guides">رہنما</string>
+    <string name="tab_links">سرکاری لنکس</string>
+    <string name="plan_intro">اہم وظائف اور امتحانات: عموماً کب کھلتے ہیں، کیا تیاری کرنی ہے اور کہاں درخواست دینی ہے۔</string>
+    <string name="section_act">کھلے ہیں یا جلد بند ہوں گے</string>
+    <string name="section_soon">جلد کھلنے والے</string>
+    <string name="section_prepare">تیاری شروع کریں</string>
+    <string name="section_later">سال کے آئندہ حصے میں</string>
+    <string name="phase_closing_soon">جلد بند ہو رہا ہے</string>
+    <string name="phase_open">اب کھلا ہے</string>
+    <string name="phase_typically_open">عموماً اب کھلا ہوتا ہے</string>
+    <string name="phase_upcoming">جلد کھلے گا</string>
+    <string name="phase_closed">بند</string>
+    <string name="phase_off_season">موسم نہیں</string>
+    <plurals name="days_left">
+        <item quantity="one">%d دن باقی</item>
+        <item quantity="other">%d دن باقی</item>
+    </plurals>
+    <string name="programme_closes">بند ہونے کی تاریخ: %s</string>
+    <string name="programme_opens">کھلنے کی تاریخ: %s</string>
+    <string name="confidence_official">سرکاری تاریخ</string>
+    <string name="confidence_reported">اطلاعاً — سرکاری صفحے پر تصدیق کریں</string>
+    <string name="programme_checked">جانچ: %s</string>
+    <string name="programme_route">درخواست کیسے دیں</string>
+    <string name="programme_usual_window">عام طور پر کب</string>
+    <string name="programme_prepare">تیاری</string>
+    <string name="programme_prepare_now">ابھی تیاری شروع کریں</string>
+    <string name="programme_official_page">سرکاری صفحہ کھولیں</string>
+    <string name="programme_expand">تفصیل دکھائیں</string>
+    <string name="programme_collapse">تفصیل چھپائیں</string>
+    <string name="plan_empty_title">دکھانے کے لیے کوئی پروگرام نہیں</string>
+    <string name="plan_empty_body">منصوبہ لوڈ کرنے کے لیے ایک بار انٹرنیٹ سے جڑیں۔</string>
+    <string name="plan_search_hint">پروگرام تلاش کریں…</string>
+    <string name="plan_search_clear">تلاش صاف کریں</string>
+    <string name="plan_offline_note">%s کی محفوظ معلومات دکھائی جا رہی ہیں۔ تاریخیں بدل چکی ہو سکتی ہیں۔</string>
+    <string name="plan_load_error">لوڈ نہیں ہو سکا۔ انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="action_retry">دوبارہ کوشش کریں</string>
+    <string name="plan_no_matches">اس تلاش سے کوئی پروگرام نہیں ملا۔</string>
+    <string name="guide_steps">%d مراحل</string>
+    <string name="guide_reviewed">جائزہ: %s</string>
+    <string name="guide_audience">یہ کن کے لیے ہے</string>
+    <string name="guide_steps_title">مراحل</string>
+    <string name="guide_checklist">تیار رکھیں</string>
+    <string name="guide_pitfalls">غلطیاں اور فراڈ جن سے بچیں</string>
+    <string name="guide_resources">سرکاری لنکس</string>
+    <string name="guide_back">واپس</string>
+    <string name="guide_not_found">یہ رہنما دستیاب نہیں۔</string>
+    <string name="links_official">سرکاری</string>
+    <string name="links_open">کھولیں</string>
+    <string name="links_free">مفت</string>
+    <string name="links_note">ذاتی تفصیلات درج کرنے سے پہلے ویب ایڈریس خود ٹائپ کریں یا دیکھ لیں۔</string>
+</resources>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plan_title">Plan</string>
+    <string name="tab_programmes">Programmes</string>
+    <string name="tab_guides">Guides</string>
+    <string name="tab_links">Official links</string>
+    <string name="plan_intro">Major scholarships and exams: when they usually open, what to prepare, and where to apply.</string>
+    <string name="section_act">Open now or closing soon</string>
+    <string name="section_soon">Opening soon</string>
+    <string name="section_prepare">Start preparing</string>
+    <string name="section_later">Later in the year</string>
+    <string name="phase_closing_soon">Closing soon</string>
+    <string name="phase_open">Open now</string>
+    <string name="phase_typically_open">Usually open now</string>
+    <string name="phase_upcoming">Opens soon</string>
+    <string name="phase_closed">Closed</string>
+    <string name="phase_off_season">Off-season</string>
+    <plurals name="days_left">
+        <item quantity="one">%d day left</item>
+        <item quantity="other">%d days left</item>
+    </plurals>
+    <string name="programme_closes">Closes %s</string>
+    <string name="programme_opens">Opens %s</string>
+    <string name="confidence_official">Official date</string>
+    <string name="confidence_reported">Reported - confirm on the official page</string>
+    <string name="programme_checked">Checked %s</string>
+    <string name="programme_route">How to apply</string>
+    <string name="programme_usual_window">Usual window</string>
+    <string name="programme_prepare">Prepare</string>
+    <string name="programme_prepare_now">Start preparing now</string>
+    <string name="programme_official_page">Open the official page</string>
+    <string name="programme_expand">Show details</string>
+    <string name="programme_collapse">Hide details</string>
+    <string name="plan_empty_title">No programmes to show</string>
+    <string name="plan_empty_body">Connect to the internet once to load the planner.</string>
+    <string name="plan_search_hint">Search programmes…</string>
+    <string name="plan_search_clear">Clear search</string>
+    <string name="plan_offline_note">Showing saved information from %s. Dates may have changed.</string>
+    <string name="plan_load_error">Could not load. Check your connection and try again.</string>
+    <string name="action_retry">Try again</string>
+    <string name="plan_no_matches">No programme matches that search.</string>
+    <string name="guide_steps">%d steps</string>
+    <string name="guide_reviewed">Reviewed %s</string>
+    <string name="guide_audience">Who this is for</string>
+    <string name="guide_steps_title">Steps</string>
+    <string name="guide_checklist">Have ready</string>
+    <string name="guide_pitfalls">Mistakes and scams to avoid</string>
+    <string name="guide_resources">Official links</string>
+    <string name="guide_back">Back</string>
+    <string name="guide_not_found">This guide is not available.</string>
+    <string name="links_official">Official</string>
+    <string name="links_open">Open</string>
+    <string name="links_free">Free</string>
+    <string name="links_note">Always type or check the web address yourself before entering personal details.</string>
+</resources>

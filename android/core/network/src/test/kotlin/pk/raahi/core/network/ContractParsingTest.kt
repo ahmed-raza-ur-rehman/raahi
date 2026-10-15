@@ -30,7 +30,7 @@ class ContractParsingTest {
     private data class RateLimited(val headers: Map<String, String?>, val body: ProblemDto)
 
     @Test
-    fun `[REQ-API-007] list pages decode, including facets and the cursor`() {
+    fun `REQ-API-007 list pages decode, including facets and the cursor`() {
         val list = parse("opportunities.list.json", ListResponseDto.serializer())
         assertEquals(5, list.data.size)
         assertNotNull(list.page.nextCursor)
@@ -41,7 +41,7 @@ class ContractParsingTest {
     }
 
     @Test
-    fun `[REQ-API-007] detail, programmes, guides and resources decode`() {
+    fun `REQ-API-007 detail, programmes, guides and resources decode`() {
         val detail = parse("opportunities.detail.json", DetailResponseDto.serializer())
         assertTrue(detail.data.id.isNotBlank())
         val programmes = parse("programmes.list.json", ProgrammeListDto.serializer())
@@ -59,7 +59,7 @@ class ContractParsingTest {
     }
 
     @Test
-    fun `[REQ-API-007] tools and problem documents decode`() {
+    fun `REQ-API-007 tools and problem documents decode`() {
         val scam = parse("tools.scam-check.json", ToolEnvelope.serializer(ScamRequestDto.serializer(), ScamResponseDto.serializer()))
         assertTrue(scam.response.data.signals.isNotEmpty() && scam.response.data.level in setOf("high", "medium"))
         for (name in listOf("unknown-parameter", "validation-failed", "unauthorized", "token-expired")) {
@@ -73,7 +73,7 @@ class ContractParsingTest {
     }
 
     @Test
-    fun `[REQ-API-009] the sync fixtures decode and agree with each other`() {
+    fun `REQ-API-009 the sync fixtures decode and agree with each other`() {
         val manifest1 = parse("sync/manifest.v1.json", ManifestResponseDto.serializer())
         val items1 = parse("sync/items.v1.json", ListSerializer(OpportunityDto.serializer()))
         assertEquals(manifest1.data.map { it.id to it.rev }, items1.map { it.id to it.rev })
@@ -84,7 +84,7 @@ class ContractParsingTest {
     }
 
     @Test
-    fun `[REQ-API-007] a newer server that adds fields does not break the tolerant runtime reader`() {
+    fun `REQ-API-007 a newer server that adds fields does not break the tolerant runtime reader`() {
         val withExtra = Fixtures.text("sync/manifest.v1.json").replaceFirst("{", "{\"futureField\":{\"a\":1},")
         val parsed = ApiJson.decodeFromString(ManifestResponseDto.serializer(), withExtra)
         assertTrue(parsed.data.isNotEmpty())

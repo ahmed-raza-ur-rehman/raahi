@@ -27,7 +27,7 @@ class ServerVectorsTest {
     private fun vectors(name: String) = Json.parseToJsonElement(Fixtures.text("vectors/$name")).jsonArray
 
     @Test
-    fun `[REQ-AND-007] age arithmetic reproduces every server vector`() {
+    fun `REQ-AND-007 age arithmetic reproduces every server vector`() {
         val all = vectors("age.json")
         assertTrue(all.size >= 70, "expected the full vector set, got ${all.size}")
         var rejected = 0
@@ -59,7 +59,7 @@ class ServerVectorsTest {
     }
 
     @Test
-    fun `[REQ-AND-007] deadline status reproduces every server vector including the Pakistan midnight boundary`() {
+    fun `REQ-AND-007 deadline status reproduces every server vector including the Pakistan midnight boundary`() {
         val all = vectors("status.json")
         assertTrue(all.size >= 90)
         for (vector in all) {
@@ -76,7 +76,7 @@ class ServerVectorsTest {
     }
 
     @Test
-    fun `[REQ-AND-007] the new badge reproduces the server vectors`() {
+    fun `REQ-AND-007 the new badge reproduces the server vectors`() {
         for (vector in vectors("is-new.json")) {
             val v = vector.jsonObject
             val now = Instant.parse(v.getValue("now").jsonPrimitive.content)

@@ -24,6 +24,17 @@ data class DocState<out T>(
     val fetchedAt: Instant? = null,
 )
 
+/** Programmes, guides and the resource directory as the screens consume them. */
+interface DocumentSource {
+    fun programmes(language: String): Flow<DocState<ProgrammeListDto>>
+
+    fun guides(language: String): Flow<DocState<GuideListDto>>
+
+    fun guide(id: String, language: String): Flow<DocState<GuideDetailResponseDto>>
+
+    fun resources(language: String): Flow<DocState<ResourceListDto>>
+}
+
 /**
  * Programmes, guides and the resource directory: stale-while-revalidate. The cached copy is shown immediately (so the
  * screen works offline and never starts blank), a refresh runs in the background, and a failed refresh keeps the cached
@@ -34,14 +45,14 @@ class DocumentRepository(
     private val dao: DocumentDao,
     private val clock: TimeSource,
     private val json: Json = ApiJson,
-) {
-    fun programmes(language: String): Flow<DocState<ProgrammeListDto>> = cached("programmes:$language", ProgrammeListDto.serializer()) { api.programmes(language) }
+) : DocumentSource {
+    override fun programmes(language: String): Flow<DocState<ProgrammeListDto>> = cached("programmes:$language", ProgrammeListDto.serializer()) { api.programmes(language) }
 
-    fun guides(language: String): Flow<DocState<GuideListDto>> = cached("guides:$language", GuideListDto.serializer()) { api.guides(language) }
+    override fun guides(language: String): Flow<DocState<GuideListDto>> = cached("guides:$language", GuideListDto.serializer()) { api.guides(language) }
 
-    fun guide(id: String, language: String): Flow<DocState<GuideDetailResponseDto>> = cached("guide:$id:$language", GuideDetailResponseDto.serializer()) { api.guide(id, language) }
+    override fun guide(id: String, language: String): Flow<DocState<GuideDetailResponseDto>> = cached("guide:$id:$language", GuideDetailResponseDto.serializer()) { api.guide(id, language) }
 
-    fun resources(language: String): Flow<DocState<ResourceListDto>> = cached("resources:$language", ResourceListDto.serializer()) { api.resources(language) }
+    override fun resources(language: String): Flow<DocState<ResourceListDto>> = cached("resources:$language", ResourceListDto.serializer()) { api.resources(language) }
 
     private fun <T> cached(key: String, serializer: KSerializer<T>, fetch: suspend () -> ApiResult<T>): Flow<DocState<T>> = flow {
         val stored = dao.get(key)

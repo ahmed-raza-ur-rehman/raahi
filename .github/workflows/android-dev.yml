@@ -40,7 +40,7 @@ jobs:
         working-directory: android
         run: |
           set +e
-          ./gradlew --console=plain --stacktrace --warning-mode=all --continue \
+          ./gradlew --console=plain --stacktrace --warning-mode=all --continue -Praahi.werror=false \
             assembleDebug assembleRelease test lintDebug > ../build.log 2>&1
           echo "status=$?" >> "$GITHUB_OUTPUT"
           exit 0

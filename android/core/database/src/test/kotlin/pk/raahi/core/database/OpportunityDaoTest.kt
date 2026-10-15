@@ -41,7 +41,7 @@ class OpportunityDaoTest {
     private suspend fun ids(filter: OpportunityFilter) = db.opportunities().observe(OpportunityQueryBuilder.build(filter, today)).first().map { it.id }.sorted()
 
     @Test
-    fun `[REQ-AND-001] full-text search finds Latin and Urdu text and ranks nothing it should not`() = runBlocking {
+    fun `REQ-AND-001 full-text search finds Latin and Urdu text and ranks nothing it should not`() = runBlocking {
         load(
             entity("a", title = "Chevening Scholarships for Pakistan", organization = "FCDO", country = "United Kingdom"),
             entity("b", title = "DAAD fully funded masters", summary = "Germany", country = "Germany"),
@@ -58,7 +58,7 @@ class OpportunityDaoTest {
     }
 
     @Test
-    fun `[REQ-SEC-009] hostile search text is just text: it matches nothing and breaks nothing`() = runBlocking {
+    fun `REQ-SEC-009 hostile search text is just text - it matches nothing and breaks nothing`() = runBlocking {
         load(entity("a", title = "Chevening Scholarships"), entity("b", title = "Plain listing"))
         for (hostile in listOf("'; DROP TABLE opportunities; --", "\"", "NEAR(a b, 5)", "title:chevening", "* * *", "(((", "a OR b", "\u0000", "-chevening")) {
             ids(OpportunityFilter(query = hostile))
@@ -68,7 +68,7 @@ class OpportunityDaoTest {
     }
 
     @Test
-    fun `[REQ-AND-001] filters combine: kind, scope, level, funding, openness, remote, deadlines`() = runBlocking {
+    fun `REQ-AND-001 filters combine - kind, scope, level, funding, openness, remote, deadlines`() = runBlocking {
         load(
             entity("open-pk", scope = "pakistan", deadline = "2026-11-01", openToPakistan = true, funding = "full", levels = ",masters,phd,"),
             entity("excluded", deadline = "2026-11-01", openToPakistan = false),
@@ -90,7 +90,7 @@ class OpportunityDaoTest {
     }
 
     @Test
-    fun `[REQ-AND-002] a sync result is applied atomically and replaces the search index entry`() = runBlocking {
+    fun `REQ-AND-002 a sync result is applied atomically and replaces the search index entry`() = runBlocking {
         load(entity("a", title = "Old title about chemistry"))
         db.opportunities().applyChanges(listOf(entity("a", title = "New title about physics").copy(rev = "rev-2")), listOf(entity("a", title = "New title about physics").toFts()), emptyList())
         assertEquals("rev-2", db.opportunities().getById("a")?.rev)
@@ -100,7 +100,7 @@ class OpportunityDaoTest {
     }
 
     @Test
-    fun `[REQ-AND-002] removed listings are deleted unless saved, in which case they are kept and marked stale`() = runBlocking {
+    fun `REQ-AND-002 removed listings are deleted unless saved, in which case they are kept and marked stale`() = runBlocking {
         load(entity("keep-me"), entity("drop-me"), entity("gone-too"))
         db.saved().save(SavedEntity("keep-me", T0.toEpochMilli(), "7,1"))
         val removed = db.opportunities().applyChanges(emptyList(), emptyList(), listOf("keep-me", "drop-me", "gone-too", "never-existed"))
@@ -113,7 +113,7 @@ class OpportunityDaoTest {
     }
 
     @Test
-    fun `[REQ-AND-012] saving, listing and reminders work on top of the same rows`() = runBlocking {
+    fun `REQ-AND-012 saving, listing and reminders work on top of the same rows`() = runBlocking {
         load(entity("a", deadline = "2026-12-01"), entity("b"), entity("c", deadline = "2026-11-20"))
         db.saved().save(SavedEntity("a", 1_000, "7,1"))
         db.saved().save(SavedEntity("c", 2_000, "3"))
@@ -127,7 +127,7 @@ class OpportunityDaoTest {
     }
 
     @Test
-    fun `[REQ-AND-001] revisions, sync state, cached documents and the notification log round-trip`() = runBlocking {
+    fun `REQ-AND-001 revisions, sync state, cached documents and the notification log round-trip`() = runBlocking {
         load(entity("a"), entity("b"))
         assertEquals(mapOf("a" to "rev-a", "b" to "rev-b"), db.opportunities().revisions().associate { it.id to it.rev })
         assertNull(db.syncState().get())
