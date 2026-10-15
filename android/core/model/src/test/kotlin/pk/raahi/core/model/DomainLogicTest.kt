@@ -48,6 +48,8 @@ class DomainLogicTest {
         }
         assertEquals("fully* funded* masters* germany*", SearchTerms.toMatch("Fully funded, MASTERS in Germany!!"))
         assertEquals("اسکالرشپ* برائے* طلبہ*", SearchTerms.toMatch("اسکالرشپ برائے طلبہ"))
+        assertEquals("masters* germany*", SearchTerms.toMatch("masters IN the Germany"), "filler words are not required matches")
+        assertEquals("in* the*", SearchTerms.toMatch("in the"), "a query made only of filler words is kept as typed")
         assertNull(SearchTerms.toMatch("   !!! ---  "))
         assertEquals(8, SearchTerms.tokens("a b c d e f g h i j k l").size, "the number of tokens is bounded")
     }
@@ -96,10 +98,11 @@ class DomainLogicTest {
         val relaxed = item("relaxed", deadline = "2027-03-01")
         val excluded = item("excluded", deadline = "2026-10-20", openToPakistan = false)
         val old = item("old", postedDaysAgo = 200)
-        val ordered = listOf(old, excluded, relaxed, urgent).sortedWith(Ranking.comparator(SortOrder.RECOMMENDED, now)).map { it.id }
+        val twin = item("twin", deadline = "2026-10-20")
+        val ordered = listOf(old, excluded, relaxed, urgent, twin).sortedWith(Ranking.comparator(SortOrder.RECOMMENDED, now)).map { it.id }
         assertEquals("urgent", ordered.first())
-        assertEquals("excluded", ordered.last(), "a listing that excludes Pakistan sinks")
-        assertEquals(ordered, listOf(old, excluded, relaxed, urgent).sortedWith(Ranking.comparator(SortOrder.RECOMMENDED, now)).map { it.id }, "the order is deterministic")
+        assertTrue(ordered.indexOf("twin") < ordered.indexOf("excluded"), "a listing that excludes Pakistan ranks below an identical one that does not: $ordered")
+        assertEquals(ordered, listOf(twin, urgent, relaxed, excluded, old).sortedWith(Ranking.comparator(SortOrder.RECOMMENDED, now)).map { it.id }, "the order does not depend on the input order")
     }
 
     @Test

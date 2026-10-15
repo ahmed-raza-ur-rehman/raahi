@@ -198,7 +198,7 @@ private fun ListContent(items: List<Opportunity>, state: OpportunitiesUiState, o
                     Text(stringResource(R.string.banner_last_updated, relative), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            if (state.syncState.lastError == "update required") Banner(stringResource(R.string.snack_update_required), pk.raahi.core.designsystem.Tone.Warning, Modifier.padding(top = 8.dp))
+            if (state.syncState.lastError == "update required") Banner(stringResource(R.string.snack_update_required), Modifier.padding(top = 8.dp), pk.raahi.core.designsystem.Tone.Warning)
         }
         items(items, key = { it.id }) { item ->
             OpportunityCard(

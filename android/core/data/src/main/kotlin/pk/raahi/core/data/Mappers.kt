@@ -81,7 +81,7 @@ fun Opportunity.toEntity(): OpportunityEntity = OpportunityEntity(
     country = country,
     location = location,
     remote = remote,
-    levels = levels.joinToString(separator = ",", prefix = ",", postfix = ",") { it.wire },
+    levels = if (levels.isEmpty()) "," else levels.joinToString(separator = ",", prefix = ",", postfix = ",") { it.wire },
     fields = json.encodeToString(stringList, fields),
     tags = json.encodeToString(stringList, tags),
     funding = funding?.wire,

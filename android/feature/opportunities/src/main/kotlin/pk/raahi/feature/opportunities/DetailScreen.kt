@@ -113,7 +113,7 @@ private fun DetailContent(item: Opportunity, onOpenLink: (String) -> Unit, modif
                 null -> Unit
             }
         }
-        if (item.stale) Banner(stringResource(R.string.detail_stale), Tone.Warning)
+        if (item.stale) Banner(stringResource(R.string.detail_stale), tone = Tone.Warning)
 
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -129,12 +129,19 @@ private fun DetailContent(item: Opportunity, onOpenLink: (String) -> Unit, modif
             Text(it, style = MaterialTheme.typography.bodyLarge)
         }
 
-        val rows = buildList {
-            if (item.levels.isNotEmpty()) add(stringResource(R.string.detail_level) to item.levels.joinToString(", ") { stringResource(it.labelRes()) })
-            item.funding?.labelRes()?.let { add(stringResource(R.string.detail_funding) to stringResource(it)) }
-            listOfNotNull(item.location, item.country).distinct().joinToString(", ").takeIf { it.isNotBlank() }?.let { add(stringResource(R.string.detail_where) to it) }
-            if (item.languages.isNotEmpty()) add(stringResource(R.string.detail_languages) to item.languages.joinToString(", "))
-        }
+        val levelLabels = item.levels.map { stringResource(it.labelRes()) }
+        val fundingLabel = item.funding?.labelRes()?.let { stringResource(it) }
+        val levelTitle = stringResource(R.string.detail_level)
+        val fundingTitle = stringResource(R.string.detail_funding)
+        val whereTitle = stringResource(R.string.detail_where)
+        val languagesTitle = stringResource(R.string.detail_languages)
+        val place = listOfNotNull(item.location, item.country).distinct().joinToString(", ").takeIf { it.isNotBlank() }
+        val rows = listOfNotNull(
+            if (levelLabels.isNotEmpty()) levelTitle to levelLabels.joinToString(", ") else null,
+            fundingLabel?.let { fundingTitle to it },
+            place?.let { whereTitle to it },
+            if (item.languages.isNotEmpty()) languagesTitle to item.languages.joinToString(", ") else null,
+        )
         if (rows.isNotEmpty()) {
             SectionHeader(stringResource(R.string.detail_details))
             Card(Modifier.fillMaxWidth()) {

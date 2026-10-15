@@ -84,7 +84,7 @@ class ContractParsingTest {
     }
 
     @Test
-    fun `REQ-API-007 a newer server that adds fields does not break the tolerant runtime reader`() {
+    fun `REQ-API-008 a newer server that adds fields does not break the tolerant runtime reader`() {
         val withExtra = Fixtures.text("sync/manifest.v1.json").replaceFirst("{", "{\"futureField\":{\"a\":1},")
         val parsed = ApiJson.decodeFromString(ManifestResponseDto.serializer(), withExtra)
         assertTrue(parsed.data.isNotEmpty())

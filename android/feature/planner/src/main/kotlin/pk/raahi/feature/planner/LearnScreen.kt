@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -86,7 +87,7 @@ private fun StaleNote(state: DocState<*>) {
     val at = state.fetchedAt
     if (state.error != null && state.data != null && at != null) {
         val text = at.formatDate()
-        Banner(stringResource(R.string.plan_offline_note, text), Tone.Warning, Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+        Banner(stringResource(R.string.plan_offline_note, text), modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), tone = Tone.Warning)
     }
 }
 
@@ -160,9 +161,13 @@ private fun phaseBadge(programme: ProgrammeDto): BadgeModel = when (programme.ph
 }
 
 @Composable
-private fun String.asDate(): String = runCatching {
-    LocalDate.parse(this).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(LocalConfiguration.current.locales[0]))
-}.getOrDefault(this)
+private fun String.asDate(): String {
+    val locale = LocalConfiguration.current.locales[0]
+    val text = this
+    return remember(text, locale) {
+        runCatching { LocalDate.parse(text).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)) }.getOrDefault(text)
+    }
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

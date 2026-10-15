@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -170,7 +171,7 @@ fun ScamCheckScreen(
                 value = state.text,
                 onValueChange = onText,
                 label = { Text(stringResource(R.string.scam_paste_label)) },
-                supportingText = { Text(stringResource(R.string.scam_chars_left, state.charsLeft)) },
+                supportingText = { Text(pluralStringResource(R.plurals.scam_chars_left, state.charsLeft.coerceAtLeast(0), state.charsLeft)) },
                 minLines = 5,
                 maxLines = 10,
                 modifier = Modifier.fillMaxWidth(),
@@ -186,7 +187,7 @@ fun ScamCheckScreen(
                     Text(stringResource(ScamAnswers.label(key)), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 8.dp))
                 }
             }
-            state.error?.let { Banner(stringResource(it.messageRes()), Tone.Danger) }
+            state.error?.let { Banner(stringResource(it.messageRes()), tone = Tone.Danger) }
             Button(onClick = onSubmit, enabled = !state.loading, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(if (state.loading) R.string.scam_checking else R.string.scam_check_button))
             }

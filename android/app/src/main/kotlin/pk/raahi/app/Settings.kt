@@ -186,7 +186,7 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(stringResource(R.string.settings_listings_stored, state.storedCount), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (state.syncState.lastError != null) Banner(stringResource(R.string.settings_sync_failed), Tone.Warning)
+                if (state.syncState.lastError != null) Banner(stringResource(R.string.settings_sync_failed), tone = Tone.Warning)
                 OutlinedButton(onClick = onSyncNow, enabled = !state.syncing) { Text(stringResource(R.string.settings_sync_now)) }
             }
         }

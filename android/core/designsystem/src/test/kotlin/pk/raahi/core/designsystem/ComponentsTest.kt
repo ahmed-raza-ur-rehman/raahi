@@ -48,24 +48,26 @@ class ComponentsTest {
         rule.onNodeWithContentDescription("Save").assertIsDisplayed().performClick()
         assertEquals(1, toggled)
         assertEquals(0, opened, "tapping the heart must not open the listing")
+    }
 
+    @Test
+    fun `REQ-AND-008 a saved card announces the opposite action`() {
         rule.setContent { RaahiTheme { OpportunityCard(model(saved = true), "Save", "Remove from saved", {}, {}) } }
         rule.onNodeWithContentDescription("Remove from saved").assertIsDisplayed()
     }
 
     @Test
-    fun `REQ-AND-008 the error state offers a retry and the empty state an action`() {
+    fun `REQ-AND-008 the error state offers a retry`() {
         var retried = 0
-        var cleared = 0
-        rule.setContent {
-            RaahiTheme {
-                ErrorState("You are offline", "Try again", { retried += 1 })
-            }
-        }
+        rule.setContent { RaahiTheme { ErrorState("You are offline", "Try again", { retried += 1 }) } }
         rule.onNodeWithText("You are offline").assertIsDisplayed()
         rule.onNode(hasClickAction()).performClick()
         assertEquals(1, retried)
+    }
 
+    @Test
+    fun `REQ-AND-008 the empty state offers its action`() {
+        var cleared = 0
         rule.setContent { RaahiTheme { EmptyState("No matches", "Try other words", actionLabel = "Clear filters", onAction = { cleared += 1 }) } }
         rule.onNodeWithText("Clear filters").performClick()
         assertEquals(1, cleared)

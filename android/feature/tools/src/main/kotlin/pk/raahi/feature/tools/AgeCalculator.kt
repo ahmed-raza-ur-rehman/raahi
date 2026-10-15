@@ -28,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -125,7 +126,7 @@ fun AgeCalculatorScreen(today: LocalDate, onBack: () -> Unit) {
             NumberField(R.string.age_min, form.minYears) { form = form.copy(minYears = it) }
             Button(onClick = { calculated = true }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.age_calculate)) }
             when (evaluated) {
-                is AgeFormResult.Invalid -> evaluated.errors.forEach { Banner(stringResource(it.messageRes()), Tone.Danger) }
+                is AgeFormResult.Invalid -> evaluated.errors.forEach { Banner(stringResource(it.messageRes()), tone = Tone.Danger) }
                 is AgeFormResult.Ok -> AgeResult(evaluated.check)
                 null -> Unit
             }
@@ -169,7 +170,10 @@ private fun AgeResult(check: AgeCheck) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(stringResource(R.string.age_result_age), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(stringResource(R.string.age_result_value, check.age.years, check.age.months, check.age.days), style = MaterialTheme.typography.titleLarge)
+            Text(
+                "${pluralStringResource(R.plurals.age_years, check.age.years, check.age.years)}, ${pluralStringResource(R.plurals.age_months, check.age.months, check.age.months)}, ${pluralStringResource(R.plurals.age_days, check.age.days, check.age.days)}",
+                style = MaterialTheme.typography.titleLarge,
+            )
             check.withinByCompletedYears?.let { Text("${stringResource(R.string.age_within_years)}: ${stringResource(if (it) R.string.age_yes else R.string.age_no)}", style = MaterialTheme.typography.bodyLarge) }
             check.withinToTheDay?.let { Text("${stringResource(R.string.age_within_day)}: ${stringResource(if (it) R.string.age_yes else R.string.age_no)}", style = MaterialTheme.typography.bodyLarge) }
             check.lastDayByCompletedYears?.let { Text(stringResource(R.string.age_last_day_years, it.format(formatter)), style = MaterialTheme.typography.bodyMedium) }

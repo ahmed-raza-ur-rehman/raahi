@@ -8,7 +8,10 @@
     <string name="tools_back">Back</string>
 
     <string name="scam_paste_label">Paste the message or offer</string>
-    <string name="scam_chars_left">%d characters left</string>
+    <plurals name="scam_chars_left">
+        <item quantity="one">%d character left</item>
+        <item quantity="other">%d characters left</item>
+    </plurals>
     <string name="scam_checklist_title">Does any of this apply?</string>
     <string name="scam_check_button">Check it</string>
     <string name="scam_checking">Checking…</string>
@@ -51,7 +54,18 @@
     <string name="age_error_order">The date of birth must be before the closing date.</string>
     <string name="age_error_number">Enter whole numbers only.</string>
     <string name="age_result_age">Your age on that date</string>
-    <string name="age_result_value">%1$d years, %2$d months, %3$d days</string>
+    <plurals name="age_years">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="age_months">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="age_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
     <string name="age_within_years">Within the limit (counting completed years)</string>
     <string name="age_within_day">Within the limit (counted to the day)</string>
     <string name="age_yes">Yes</string>

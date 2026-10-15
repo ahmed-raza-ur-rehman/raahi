@@ -14,7 +14,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
-import mockwebserver3.SocketPolicy
 import okhttp3.OkHttpClient
 import pk.raahi.core.testing.Fixtures
 
@@ -149,7 +148,7 @@ class RaahiApiTest {
     fun `REQ-AND-004 a server that never answers becomes a timeout`() {
         val impatient = { server: MockWebServer -> HttpClientFactory.create(allowedCleartextHosts = setOf(server.hostName)).newBuilder().readTimeout(Duration.ofMillis(150)).build() }
         withApi(retry = fastRetry.copy(maxAttempts = 1), client = impatient) { api, server ->
-            server.enqueue(MockResponse.Builder().socketPolicy(SocketPolicy.NoResponse).build())
+            server.enqueue(MockResponse.Builder().headersDelay(5, java.util.concurrent.TimeUnit.SECONDS).build())
             assertEquals(ApiError.Timeout, assertIs<ApiResult.Failure>(api.guides("en")).error)
         }
     }

@@ -9,8 +9,20 @@ package pk.raahi.core.model
 object SearchTerms {
     private val separators = Regex("[^\\p{L}\\p{N}]+")
 
-    fun tokens(query: String, maxTokens: Int = 8): List<String> =
-        separators.split(query.lowercase()).filter { it.isNotEmpty() }.distinct().take(maxTokens)
+    /**
+     * Filler words of a natural sentence ("masters IN germany", "jobs FOR women"). Matched as required prefixes they would
+     * wrongly exclude good listings, so they are dropped - unless the whole query is filler, in which case it is kept.
+     */
+    private val filler = setOf(
+        "a", "an", "the", "in", "on", "at", "of", "for", "to", "and", "or", "with", "from", "by", "is", "are", "me", "my", "i", "near", "about",
+        "کے", "کی", "کا", "میں", "سے", "کو", "اور", "ہے", "پر", "لیے", "لئے",
+    )
+
+    fun tokens(query: String, maxTokens: Int = 8): List<String> {
+        val all = separators.split(query.lowercase()).filter { it.isNotEmpty() }.distinct()
+        val meaningful = all.filterNot { it in filler }
+        return (meaningful.ifEmpty { all }).take(maxTokens)
+    }
 
     /** `null` when there is nothing to search for. */
     fun toMatch(query: String): String? {

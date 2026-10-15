@@ -9,7 +9,10 @@
     <string name="tools_back">واپس</string>
 
     <string name="scam_paste_label">پیغام یا پیشکش یہاں پیسٹ کریں</string>
-    <string name="scam_chars_left">%d حروف باقی</string>
+    <plurals name="scam_chars_left">
+        <item quantity="one">%d حرف باقی</item>
+        <item quantity="other">%d حروف باقی</item>
+    </plurals>
     <string name="scam_checklist_title">کیا ان میں سے کوئی بات درست ہے؟</string>
     <string name="scam_check_button">جانچیں</string>
     <string name="scam_checking">جانچ ہو رہی ہے…</string>
@@ -52,7 +55,18 @@
     <string name="age_error_order">تاریخ پیدائش آخری تاریخ سے پہلے کی ہونی چاہیے۔</string>
     <string name="age_error_number">صرف پورے اعداد درج کریں۔</string>
     <string name="age_result_age">اس تاریخ پر آپ کی عمر</string>
-    <string name="age_result_value">%1$d سال، %2$d ماہ، %3$d دن</string>
+    <plurals name="age_years">
+        <item quantity="one">%d سال</item>
+        <item quantity="other">%d سال</item>
+    </plurals>
+    <plurals name="age_months">
+        <item quantity="one">%d ماہ</item>
+        <item quantity="other">%d ماہ</item>
+    </plurals>
+    <plurals name="age_days">
+        <item quantity="one">%d دن</item>
+        <item quantity="other">%d دن</item>
+    </plurals>
     <string name="age_within_years">حد کے اندر (مکمل سال گن کر)</string>
     <string name="age_within_day">حد کے اندر (دن تک گن کر)</string>
     <string name="age_yes">جی ہاں</string>

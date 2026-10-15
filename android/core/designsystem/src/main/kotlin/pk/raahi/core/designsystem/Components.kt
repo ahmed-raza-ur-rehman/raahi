@@ -148,7 +148,7 @@ fun ErrorState(message: String, retryLabel: String, onRetry: () -> Unit, modifie
 }
 
 @Composable
-fun Banner(text: String, tone: Tone = Tone.Info, modifier: Modifier = Modifier) {
+fun Banner(text: String, modifier: Modifier = Modifier, tone: Tone = Tone.Info) {
     val scheme = MaterialTheme.colorScheme
     val (container, content) = when (tone) {
         Tone.Warning -> scheme.tertiaryContainer to scheme.onTertiaryContainer

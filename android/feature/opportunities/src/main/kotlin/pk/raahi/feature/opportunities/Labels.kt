@@ -69,15 +69,14 @@ internal fun statusBadge(info: StatusInfo): BadgeModel = when (info.status) {
 
 @Composable
 internal fun Opportunity.toCardModel(now: Instant, saved: Boolean): OpportunityCardModel {
-    val badges = buildList {
-        add(statusBadge(statusAt(now)))
-        if (isNew(firstSeen, now)) add(BadgeModel(stringResource(R.string.badge_new), Tone.Highlight))
-        funding?.labelRes()?.let { add(BadgeModel(stringResource(it), Tone.Positive)) }
-        when (openToPakistan) {
-            true -> add(BadgeModel(stringResource(R.string.badge_open_pk), Tone.Info))
-            false -> add(BadgeModel(stringResource(R.string.badge_excludes_pk), Tone.Danger))
-            null -> Unit
-        }
+    val status = statusBadge(statusAt(now))
+    val newBadge = if (isNew(firstSeen, now)) BadgeModel(stringResource(R.string.badge_new), Tone.Highlight) else null
+    val fundingBadge = funding?.labelRes()?.let { BadgeModel(stringResource(it), Tone.Positive) }
+    val pakistanBadge = when (openToPakistan) {
+        true -> BadgeModel(stringResource(R.string.badge_open_pk), Tone.Info)
+        false -> BadgeModel(stringResource(R.string.badge_excludes_pk), Tone.Danger)
+        null -> null
     }
-    return OpportunityCardModel(id, title, stringResource(kind.labelRes()), organization, country ?: location, badges, saved)
+    val kindLabel = stringResource(kind.labelRes())
+    return OpportunityCardModel(id, title, kindLabel, organization, country ?: location, listOfNotNull(status, newBadge, fundingBadge, pakistanBadge), saved)
 }

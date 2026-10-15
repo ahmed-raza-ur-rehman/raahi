@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.time.LocalDate
 import kotlin.test.AfterTest
@@ -203,10 +204,10 @@ class ScamScreenEnglishTest {
     fun `REQ-AND-011 the result is shown in English with its warning signs and a safe official link`() {
         var opened: String? = null
         rule.setContent { RaahiTheme { ScamCheckScreen(ScamUiState(text = "x", result = analysis), {}, {}, {}, {}, { opened = it }) } }
-        rule.onNodeWithText("High risk").assertIsDisplayed()
-        rule.onNodeWithText("This looks like a scam").assertIsDisplayed()
-        rule.onNodeWithText("• Asks for money first").assertIsDisplayed()
-        rule.onNodeWithText("Open the BE&OE list").performClick()
+        rule.onNodeWithText("High risk").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("This looks like a scam").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("• Asks for money first").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Open the BE&OE list").performScrollTo().performClick()
         assertEquals("https://beoe.gov.pk/list-of-oeps?show=active", opened)
     }
 
@@ -226,8 +227,8 @@ class ScamScreenUrduTest {
     @Test
     fun `REQ-AND-005 in an Urdu locale the server's Urdu text is chosen`() {
         rule.setContent { RaahiTheme { ScamCheckScreen(ScamUiState(text = "x", result = analysis), {}, {}, {}, {}, {}) } }
-        rule.onNodeWithText("یہ فراڈ لگتا ہے").assertIsDisplayed()
-        rule.onNodeWithText("• پہلے رقم مانگتا ہے").assertIsDisplayed()
-        rule.onNodeWithText("زیادہ خطرہ").assertIsDisplayed()
+        rule.onNodeWithText("یہ فراڈ لگتا ہے").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("• پہلے رقم مانگتا ہے").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("زیادہ خطرہ").performScrollTo().assertIsDisplayed()
     }
 }
