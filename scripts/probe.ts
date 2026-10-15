@@ -78,12 +78,10 @@ const API_TARGETS: ApiTarget[] = [
 
 /** Listing / detail pages whose real HTML is needed to write or fix a parser. */
 const PAGES: Array<{ id: string; url: string; follow?: RegExp }> = [
-  { id: "kppsc-advertisement", url: "https://www.kppsc.gov.pk/advertisement" },
-  { id: "bpsc-jobs", url: "https://bpsc.gob.pk/BPSC/pages?jobs" },
-  { id: "pts-projects", url: "https://www.pts.org.pk/Projects/" },
-  { id: "spsc-advertisements", url: "https://spsc.gos.pk/advertisement.php" },
-  { id: "mlh-events", url: "https://mlh.io/seasons/2026/events" },
-  { id: "etea-home", url: "https://www.etea.edu.pk/" },
+  { id: "gopunjab-jobs", url: "https://gopunjab.pk/jobs/" },
+  { id: "pjb-day-2026-10-14", url: "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-14/" },
+  { id: "pjb-day-2026-10-11", url: "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-11/" },
+  { id: "pjb-day-2026-10-04", url: "https://www.pakistanjobsbank.com/Jobs-in-Pakistan/2026-10-04/" },
 ];
 
 const sleepless = createHttpClient({ timeoutMs: 15_000, retries: 0, hostDelayMs: 1_000 });
