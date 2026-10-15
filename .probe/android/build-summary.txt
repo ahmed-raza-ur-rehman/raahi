@@ -1,9 +1,140 @@
-gradle exit status: 0
+gradle exit status: 1
 
 == Kotlin / javac errors and warnings (first 80)
 (none)
 
 == Gradle failures
+  Kotlin compiler error
+    Unresolved reference 'Ping'.
+    Location: /home/runner/work/raahi/raahi/android/core/data/src/main/kotlin/pk/raahi/core/data/Skeleton.kt:3
+
+> Task :core:data:compileReleaseKotlin FAILED
+Problem found: Kotlin compiler: UNRESOLVED_IMPORT (id: kotlin:compiler:error:UNRESOLVED_IMPORT)
+  Kotlin compiler error
+--
+    Unresolved reference 'Ping'.
+    Location: /home/runner/work/raahi/raahi/android/core/data/src/main/kotlin/pk/raahi/core/data/Skeleton.kt:3
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792055019717.json
+
+[Incubating] Problems report is available at: file:///home/runner/work/raahi/raahi/android/build/reports/problems/problems-report.html
+
+--
+FAILURE: Build completed with 3 failures.
+
+1: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':core:designsystem:compileDebugUnitTestKotlin' (registered by plugin 'com.android.internal.library').
+--
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+   > Kotlin compiler error
+       Kotlin compiler error
+         warnings found and -Werror specified
+--
+
+--
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':core:designsystem:compileDebugUnitTestKotlin' (registered by plugin 'com.android.internal.library').
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
+--
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:273)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:132)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withoutLocksBlocking$0(DefaultWorkerLeaseService.java:406)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+--
+	... 55 more
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: warnings found and -Werror specified
+	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
+	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
+	at org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork.execute(BuildToolsApiCompilationWork.kt:251)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+--
+-----------
+* What went wrong:
+Execution failed for task ':core:data:compileDebugKotlin' (registered by plugin 'com.android.internal.library').
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+   > Kotlin compiler: UNRESOLVED_IMPORT
+       Kotlin compiler error
+         Unresolved reference 'Ping'.
+--
+         Location: /home/runner/work/raahi/raahi/android/core/data/src/main/kotlin/pk/raahi/core/data/Skeleton.kt:3
+--
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+--
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':core:data:compileDebugKotlin' (registered by plugin 'com.android.internal.library').
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
+--
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:273)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:132)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withoutLocksBlocking$0(DefaultWorkerLeaseService.java:406)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+--
+	... 28 more
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Unresolved reference 'Ping'.
+	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
+	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
+	at org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork.execute(BuildToolsApiCompilationWork.kt:251)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+--
+-----------
+* What went wrong:
+Execution failed for task ':core:data:compileReleaseKotlin' (registered by plugin 'com.android.internal.library').
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+   > Kotlin compiler: UNRESOLVED_IMPORT
+       Kotlin compiler error
+         Unresolved reference 'Ping'.
+--
+         Location: /home/runner/work/raahi/raahi/android/core/data/src/main/kotlin/pk/raahi/core/data/Skeleton.kt:3
+--
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+--
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':core:data:compileReleaseKotlin' (registered by plugin 'com.android.internal.library').
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.lambda$doExecute$1(DefaultTaskNodeExecutor.java:367)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:365)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeTrackingTaskIdentity(DefaultTaskNodeExecutor.java:332)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.executeFinalizingProperties(DefaultTaskNodeExecutor.java:318)
+--
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:273)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:132)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withoutLocksBlocking$0(DefaultWorkerLeaseService.java:406)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+--
+	... 28 more
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Unresolved reference 'Ping'.
+	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
+	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
+	at org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork.execute(BuildToolsApiCompilationWork.kt:251)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+--
 
 == Deprecation / warning lines (first 25)
 The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
@@ -33,121 +164,75 @@ The Configuration.setVisible(boolean) method has been deprecated. This is schedu
 The Configuration.setVisible(boolean) method has been deprecated. This is scheduled to be removed in Gradle 11. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
 
 == Unit tests
-pk.raahi.app.SkeletonTest: tests=1 failures=0 errors=0 skipped=0
-pk.raahi.core.data.SkeletonTest: tests=2 failures=0 errors=0 skipped=0
 pk.raahi.core.database.SkeletonTest: tests=1 failures=0 errors=0 skipped=0
-pk.raahi.core.designsystem.SkeletonTest: tests=1 failures=0 errors=0 skipped=0
-TOTAL tests=5 failed=0 skipped=0
+TOTAL tests=1 failed=0 skipped=0
 
 == Lint
-## android/app/build/reports/lint-results-debug.txt
-/home/runner/work/raahi/raahi/android/app/src/main/AndroidManifest.xml:7: Warning: The attribute android:allowBackup is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute android:dataExtractionRules specifying an @xml resource which configures cloud backups and device transfers on Android 12 and higher. [DataExtractionRules]
-        android:allowBackup="false"
-                             ~~~~~
-
-   Explanation for issues of type "DataExtractionRules":
-   Before Android 12, the attributes android:allowBackup and
-   android:fullBackupContent were used to configure all forms of backup,
-   including cloud backups, device-to-device transfers and adb backup.
-
-   In Android 12 and higher, these attributes have been deprecated and will
-   only apply to cloud backups. You should instead use the attribute
-   android:dataExtractionRules, specifying an @xml resource that configures
-   which files to back up, for cloud backups and for device-to-device
-   transfers, separately. If your minSdkVersion supports older versions,
-   you'll still want to specify an android:fullBackupContent resource if the
-   default behavior is not right for your app.
-
-   https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   https://goo.gle/DataExtractionRules
-
-/home/runner/work/raahi/raahi/android/app/src/main/AndroidManifest.xml:6: Warning: Should explicitly set android:icon, there is no default [MissingApplicationIcon]
-    <application
-     ~~~~~~~~~~~
-
-   Explanation for issues of type "MissingApplicationIcon":
-   You should set an icon for the application as whole because there is no
-   default. This attribute must be set as a reference to a drawable resource
-   containing the image (for example @drawable/icon).
-
-   https://developer.android.com/studio/publish/preparing#publishing-configure
-
-0 errors, 2 warnings
-## android/core/data/build/reports/lint-results-debug.txt
-No issues found.
 ## android/core/database/build/reports/lint-results-debug.txt
 No issues found.
 ## android/core/designsystem/build/reports/lint-results-debug.txt
 No issues found.
-## android/feature/opportunities/build/reports/lint-results-debug.txt
-No issues found.
-## android/feature/planner/build/reports/lint-results-debug.txt
-No issues found.
-## android/feature/tools/build/reports/lint-results-debug.txt
-No issues found.
 
 == Artifacts
-android/app/build/outputs/apk/debug/app-debug.apk 14203836 bytes
-android/app/build/outputs/apk/release/app-release-unsigned.apk 1004107 bytes
 
 == Log tail
-> Task :core:designsystem:generateDebugAndroidTestLintModel
-> Task :core:designsystem:generateDebugUnitTestLintModel
-> Task :core:designsystem:lintAnalyzeDebugAndroidTest
-> Task :core:data:lintAnalyzeDebug
-> Task :feature:opportunities:generateDebugAndroidTestLintModel
-> Task :feature:opportunities:generateDebugUnitTestLintModel
-> Task :core:designsystem:lintAnalyzeDebug
-> Task :feature:opportunities:lintAnalyzeDebugAndroidTest
-> Task :core:designsystem:lintAnalyzeDebugUnitTest
-> Task :feature:planner:lintAnalyzeDebug
-> Task :feature:opportunities:lintAnalyzeDebugUnitTest
-> Task :feature:planner:generateDebugAndroidTestLintModel
-> Task :feature:planner:generateDebugUnitTestLintModel
-> Task :feature:planner:lintAnalyzeDebugAndroidTest
-> Task :feature:opportunities:lintAnalyzeDebug
-> Task :feature:tools:generateDebugAndroidTestLintModel
-> Task :feature:planner:lintAnalyzeDebugUnitTest
-> Task :feature:tools:lintAnalyzeDebug
-> Task :core:data:generateDebugLintReportModel
-> Task :feature:tools:generateDebugUnitTestLintModel
-> Task :core:database:generateDebugLintReportModel
-> Task :core:data:lintReportDebug
-> Task :feature:tools:lintAnalyzeDebugUnitTest
-> Task :core:data:lintDebug
-> Task :feature:tools:lintAnalyzeDebugAndroidTest
-> Task :core:designsystem:generateDebugLintReportModel
-> Task :core:database:lintReportDebug
-> Task :core:database:lintDebug
-> Task :feature:opportunities:generateDebugLintReportModel
-> Task :core:designsystem:lintReportDebug
-> Task :core:designsystem:lintDebug
-> Task :feature:planner:generateDebugLintReportModel
-> Task :feature:opportunities:lintReportDebug
-> Task :feature:opportunities:lintDebug
-> Task :feature:tools:generateDebugLintReportModel
-> Task :feature:planner:lintReportDebug
-> Task :feature:planner:lintDebug
-> Task :feature:tools:lintReportDebug
-> Task :feature:tools:lintDebug
-> Task :app:lintAnalyzeDebug
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$executeMutable$0(AssignMutableWorkspaceStep.java:34)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:314)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:30)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:21)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:56)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:38)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
+	at org.gradle.api.internal.tasks.execution.DefaultTaskNodeExecutor.doExecute(DefaultTaskNodeExecutor.java:364)
+	... 28 more
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Unresolved reference 'Ping'.
+	at org.jetbrains.kotlin.gradle.plugin.diagnostics.DefaultCompilerDiagnosticsProblemsReporter.reportCompilerMessage(CompilerDiagnosticsProblemsReporter.kt:63)
+	at org.jetbrains.kotlin.compilerRunner.btapi.ProblemsApiCompilerMessageRenderer.replayTo(ProblemsApiCompilerMessageRenderer.kt:88)
+	at org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork.execute(BuildToolsApiCompilationWork.kt:251)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
+	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:103)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)
+	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$1(DefaultWorkerExecutor.java:169)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$600(DefaultConditionalExecutionQueue.java:112)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:296)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:294)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:290)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:282)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:138)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
 
-> Task :app:lintReportDebug
-Wrote HTML report to file:///home/runner/work/raahi/raahi/android/app/build/reports/lint-results-debug.html
-Wrote SARIF report to file:///home/runner/work/raahi/raahi/android/app/build/reports/lint-results-debug.sarif
+==============================================================================
 
-> Task :app:lintDebug
-> Task :app:mergeReleaseComposeMapping
-> Task :app:convertShrunkResourcesToBinaryRelease
-> Task :app:optimizeReleaseResources
-> Task :app:compileReleaseArtProfile
-> Task :app:packageRelease
-> Task :app:createReleaseApkListingFileRedirect
-> Task :app:assembleRelease
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792052304464.json
-
-[Incubating] Problems report is available at: file:///home/runner/work/raahi/raahi/android/build/reports/problems/problems-report.html
-
-BUILD SUCCESSFUL in 3m 58s
-669 actionable tasks: 560 executed, 109 from cache
-Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html
+BUILD FAILED in 54s
+475 actionable tasks: 263 executed, 212 from cache
