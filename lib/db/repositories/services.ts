@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type {
   EligibilityRule,
   ProcedureStep,
@@ -231,3 +232,74 @@ export function createService(service: ServiceRecord) {
   return findServiceById(service.id)!;
 }
 
+// ─── Partner submissions (moderated) ─────────────────────────────────────────
+
+/**
+ * Anyone may SUBMIT a service through the partner portal; nobody may publish one without review. A submission is
+ * stored inactive, at the lowest authority tier, under a server-generated id (so it can never overwrite an existing
+ * service), and only an administrator can approve it. See docs/security/threat-model.md (T-03).
+ */
+export const SUBMISSION_PREFIX = "submission-";
+export const MAX_PENDING_SUBMISSIONS = 200;
+export const UNVERIFIED_TIER = 5;
+
+export function pendingSubmissionCount(): number {
+  const row = getSqlite().prepare("SELECT COUNT(*) AS n FROM services WHERE active = 0 AND id LIKE ?").get(`${SUBMISSION_PREFIX}%`) as { n: number };
+  return row.n;
+}
+
+/** Store a submission for review. Returns its id, or undefined when the review queue is full. */
+export function submitService(input: Omit<ServiceRecord, "id" | "active" | "sourceAuthorityTier">): string | undefined {
+  if (pendingSubmissionCount() >= MAX_PENDING_SUBMISSIONS) return undefined;
+  const id = `${SUBMISSION_PREFIX}${randomUUID()}`;
+  createService({ ...input, id, active: false, sourceAuthorityTier: UNVERIFIED_TIER } as ServiceRecord);
+  return id;
+}
+
+export interface SubmissionSummary {
+  id: string;
+  name: string;
+  nameUr: string;
+  organizationId: string;
+  domain: string;
+  sourceUrl: string;
+  sourceTitle: string;
+  description: string;
+  submittedAt: string;
+}
+
+export function listSubmissions(): SubmissionSummary[] {
+  const rows = getSqlite()
+    .prepare("SELECT id, name, name_ur, organization_id, domain, source_url, source_title, description, created_at FROM services WHERE active = 0 AND id LIKE ? ORDER BY created_at ASC")
+    .all(`${SUBMISSION_PREFIX}%`) as Array<{ id: string; name: string; name_ur: string; organization_id: string; domain: string; source_url: string; source_title: string; description: string; created_at: string }>;
+  return rows.map((row) => ({ id: row.id, name: row.name, nameUr: row.name_ur, organizationId: row.organization_id, domain: row.domain, sourceUrl: row.source_url, sourceTitle: row.source_title, description: row.description.slice(0, 400), submittedAt: row.created_at }));
+}
+
+/** Publish a pending submission at the authority tier the reviewer decides (1 = government ... 4). */
+export function approveSubmission(id: string, authorityTier: number, today: string = new Date().toISOString().slice(0, 10)): boolean {
+  const db = getSqlite();
+  const now = new Date().toISOString();
+  const result = db
+    .prepare("UPDATE services SET active = 1, source_authority_tier = ?, last_verified = ?, updated_at = ? WHERE id = ? AND id LIKE ? AND active = 0")
+    .run(Math.min(4, Math.max(1, Math.trunc(authorityTier))), today, now, id, `${SUBMISSION_PREFIX}%`);
+  if (result.changes === 0) return false;
+  try {
+    const row = db.prepare("SELECT name, name_ur, description, description_ur FROM services WHERE id = ?").get(id) as { name: string; name_ur: string; description: string; description_ur: string };
+    db.prepare("INSERT INTO service_search (service_id, content) VALUES (?, ?)").run(id, `${row.name} ${row.name_ur} ${row.description} ${row.description_ur}`);
+  } catch {
+    // Search indexing is best effort; the service is published either way.
+  }
+  return true;
+}
+
+/** Discard a pending submission and everything stored with it. */
+export function rejectSubmission(id: string): boolean {
+  const db = getSqlite();
+  return db.transaction(() => {
+    const exists = db.prepare("SELECT 1 FROM services WHERE id = ? AND id LIKE ? AND active = 0").get(id, `${SUBMISSION_PREFIX}%`);
+    if (!exists) return false;
+    for (const table of ["eligibility_rules", "requirements", "procedure_steps", "knowledge_chunks"]) db.prepare(`DELETE FROM ${table} WHERE service_id = ?`).run(id);
+    db.prepare("DELETE FROM services WHERE id = ?").run(id);
+    return true;
+  })();
+}

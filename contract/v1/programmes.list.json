@@ -1,0 +1,117 @@
+{
+  "data": [
+    {
+      "id": "commonwealth-masters-phd",
+      "kind": "scholarship",
+      "title": "Commonwealth Master's & PhD Scholarships (UK) — through HEC",
+      "provider": "Commonwealth Scholarship Commission (CSC) with HEC Pakistan",
+      "where": "United Kingdom",
+      "levels": [
+        "masters",
+        "phd"
+      ],
+      "funding": "full",
+      "summary": "Fully funded master's and PhD study in the UK for people from developing Commonwealth countries. Pakistan applies through HEC, its nominating agency.",
+      "route": "hec",
+      "routeNote": "Apply on BOTH the HEC scholarship portal and the Commission's online system. The Commission takes no direct applications for these awards, and HEC cannot accept you unless both are submitted. HEC can nominate only a limited number (26 master's and 30 PhD candidates were reported for the 2027 call).",
+      "usualWindow": "Opens in early September and closes around 20 October (2027/28 call: 8 September – 20 October 2026).",
+      "variable": false,
+      "phase": "closing-soon",
+      "daysLeft": 5,
+      "monthsToOpen": 0,
+      "prepareNow": false,
+      "prepare": [
+        "A valid HEC HAT score — HEC ranks nominees by it (the HAT of 25 October 2026 was reported as accepted for this call)",
+        "Transcripts, degree certificates and ID documents",
+        "References, and a research proposal for PhD",
+        "For PhD: a first-division master's/MS/MPhil (17–18 years of education), as reported from HEC's announcement"
+      ],
+      "cycle": {
+        "label": "2027/28 call (HEC)",
+        "opens": "2026-09-08",
+        "closes": "2026-10-20",
+        "closesNote": "HEC: 4:00 pm Pakistan time; the Commission's own system closes at 16:00 UK time (8:00 pm Pakistan time) the same day",
+        "note": "HEC sends its nominations to the Commission in December 2026; results come by July 2027.",
+        "confidence": "reported",
+        "checked": "2026-10-15",
+        "source": "https://scholarship.hec.gov.pk/"
+      },
+      "official": "https://scholarship.hec.gov.pk/",
+      "reviewed": "2026-10-15"
+    },
+    {
+      "id": "nasa-space-apps",
+      "kind": "competition",
+      "title": "NASA International Space Apps Challenge",
+      "provider": "NASA and partner space agencies",
+      "where": "Local events or online, worldwide",
+      "levels": [
+        "any"
+      ],
+      "funding": "free",
+      "summary": "A free, two-day global hackathon using NASA and partner-agency data. Join a local event or the online universal event; teams of up to six.",
+      "route": "direct",
+      "routeNote": "Register on the Space Apps website, choose a local event (or the online universal event if none is near you), form a team and pick a challenge when the statements are published.",
+      "usualWindow": "Registration opens in late August and the event weekend is in autumn (2026: registration from 26 August; event 14–15 November).",
+      "variable": false,
+      "phase": "open",
+      "daysLeft": 30,
+      "monthsToOpen": 0,
+      "prepareNow": false,
+      "prepare": [
+        "Form a team of up to six with mixed skills (code, data, design, writing)",
+        "Read the challenge statements when they are published (28 October)",
+        "Check whether a local event is held in your city"
+      ],
+      "cycle": {
+        "label": "2026 challenge",
+        "opens": "2026-08-26",
+        "closes": "2026-11-14",
+        "closesNote": "Event weekend 14–15 November 2026 — register before it",
+        "note": "Full challenge statements are released on 28 October 2026.",
+        "confidence": "reported",
+        "checked": "2026-10-15",
+        "source": "https://www.spaceappschallenge.org/"
+      },
+      "official": "https://www.spaceappschallenge.org/",
+      "reviewed": "2026-10-15"
+    },
+    {
+      "id": "gates-cambridge",
+      "kind": "scholarship",
+      "title": "Gates Cambridge Scholarships (Cambridge, UK)",
+      "provider": "Gates Cambridge Trust",
+      "where": "United Kingdom (Cambridge)",
+      "levels": [
+        "masters",
+        "phd"
+      ],
+      "funding": "full",
+      "summary": "Full-cost scholarships for PhD, MLitt and one-year postgraduate courses at the University of Cambridge, for students from outside the UK.",
+      "route": "university",
+      "routeNote": "There is no separate form: apply to Cambridge for your course by its funding deadline, tick the Gates Cambridge box and answer the extra Gates questions. A Gates reference is also needed.",
+      "usualWindow": "Applications open in the autumn; for most applicants the deadline is 8 December or 6 January, set by the course's funding deadline in the Cambridge Course Directory.",
+      "variable": false,
+      "phase": "typically-open",
+      "daysLeft": 54,
+      "monthsToOpen": 0,
+      "prepareNow": false,
+      "prepare": [
+        "A very strong academic record and a clear reason for the course",
+        "A research proposal (PhD applicants)",
+        "Referees briefed well before the deadline"
+      ],
+      "cycle": {
+        "label": "2027 entry (applicants outside the US)",
+        "closes": "2026-12-08",
+        "closesNote": "or 6 January 2027, depending on the course",
+        "confidence": "reported",
+        "checked": "2026-10-15",
+        "source": "https://www.gatescambridge.org/"
+      },
+      "official": "https://www.gatescambridge.org/",
+      "reviewed": "2026-10-15"
+    }
+  ],
+  "today": "2026-10-15"
+}

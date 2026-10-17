@@ -1,0 +1,92 @@
+diff --git a/index.html b/index.html
+index b0c98a8..fd78672 100644
+--- a/index.html
++++ b/index.html
+@@ -263,6 +263,13 @@
+           <div class="queue-metric glass"><strong id="mastered-count">0</strong><span>crystallized</span><small>Box 4–5 stable</small></div>
+         </div>
+       </div>
++
++      <!-- Live government jobs and PSC advertisements from RAAHI. The widget is fetched only when this block scrolls into view while online (see raahi-live.js). -->
++      <div class="raahi-live" id="raahi-live">
++        <div class="section-head-row"><div><p class="eyebrow">From RAAHI • opportunities</p><h2 class="section-title">Latest government jobs &amp; PSC advertisements</h2><p class="section-subtitle">Preparing for an exam? See what is open right now. Listings come from official portals and trusted sites through RAAHI — always confirm on the official page.</p></div></div>
++        <div data-raahi-slot><a class="btn btn-ghost" href="https://raahi-phi.vercel.app/opportunities?kind=job&amp;scope=pakistan&amp;utm_source=neuroprep&amp;utm_medium=link" target="_blank" rel="noopener">Open RAAHI opportunities ↗</a></div>
++        <p class="section-subtitle"><a href="https://raahi-phi.vercel.app/opportunities/guides/css-pms-prep?utm_source=neuroprep&amp;utm_medium=link" target="_blank" rel="noopener">Guide: preparing for CSS, PMS and PSC exams ↗</a> · <a href="https://raahi-phi.vercel.app/opportunities/guides/apply-government-job?utm_source=neuroprep&amp;utm_medium=link" target="_blank" rel="noopener">How to apply for a government job ↗</a></p>
++      </div>
+     </section>
+ 
+     <!-- STUDY -->
+@@ -495,5 +502,6 @@
+ 
+   <script src="app.js" type="module"></script>
+   <script src="features.js" defer></script>
++  <script src="raahi-live.js" defer></script>
+ </body>
+ </html>
+diff --git a/raahi-live.js b/raahi-live.js
+new file mode 100644
+index 0000000..21961ad
+--- /dev/null
++++ b/raahi-live.js
+@@ -0,0 +1,49 @@
++/*
++ * Live government jobs and PSC advertisements from RAAHI (https://raahi-phi.vercel.app) on the dashboard.
++ *
++ * Privacy / offline: NeuroPrep otherwise runs entirely on this device. This block contacts raahi-phi.vercel.app
++ * only when it scrolls into view while the device is online; nothing about your study data is sent. Offline, or if
++ * the request fails, the plain "Open RAAHI opportunities" link stays in place.
++ */
++(function () {
++  'use strict';
++  var section = document.getElementById('raahi-live');
++  if (!section) return;
++  var RAAHI = 'https://raahi-phi.vercel.app';
++  var started = false;
++
++  function mount() {
++    var slot = section.querySelector('[data-raahi-slot]');
++    if (!slot || !customElements.get('raahi-opportunities')) return;
++    var widget = document.createElement('raahi-opportunities');
++    widget.setAttribute('kind', 'job');
++    widget.setAttribute('scope', 'pakistan');
++    widget.setAttribute('limit', '5');
++    widget.setAttribute('theme', 'dark');
++    widget.setAttribute('heading', 'Live from RAAHI');
++    slot.replaceChildren(widget);
++  }
++
++  function load() {
++    if (started || !navigator.onLine) return;
++    started = true;
++    var script = document.createElement('script');
++    script.src = RAAHI + '/embed/raahi-opportunities.js';
++    script.async = true;
++    script.onload = mount;
++    script.onerror = function () { started = false; };
++    document.head.appendChild(script);
++  }
++
++  if ('IntersectionObserver' in window) {
++    new IntersectionObserver(function (entries, observer) {
++      if (entries.some(function (entry) { return entry.isIntersecting; })) {
++        observer.disconnect();
++        load();
++      }
++    }, { rootMargin: '200px' }).observe(section);
++  } else {
++    load();
++  }
++  window.addEventListener('online', load);
++})();
+diff --git a/styles.css b/styles.css
+index 8a76236..1382541 100644
+--- a/styles.css
++++ b/styles.css
+@@ -683,3 +683,7 @@ body.focus-mode .question-card{box-shadow:0 0 0 2px var(--accent), var(--shadow-
+   .shell{padding:0;max-width:100%}
+   .question-card{break-inside:avoid;box-shadow:none;border:1px solid #ccc}
+ }
++
++/* RAAHI opportunities block on the dashboard */
++.raahi-live { margin-top: 36px; }
++.raahi-live raahi-opportunities { margin: 14px 0; }

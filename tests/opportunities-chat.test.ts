@@ -1,0 +1,295 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { join } from "node:path";
+
+process.env.OPPORTUNITIES_BUNDLED = "off";
+process.env.RAAHI_DB_PATH = join(process.cwd(), "data", "raahi.opps-chat.test.db");
+delete process.env.DASHSCOPE_API_KEY;
+process.env.OPPORTUNITIES_SNAPSHOT_URL = "off";
+
+import { TOOLS, executeTool, getOrCreateConversation, runOrchestrator } from "@/lib/ai/orchestrator";
+import { ORCHESTRATOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
+import { guideForMessage, opportunityIntent, programmesForMessage, type OpportunityToolResult } from "@/lib/ai/opportunity-tools";
+import { seedDatabase } from "@/lib/db/seed";
+import { setClock } from "@/lib/opportunities/clock";
+import { searchResources } from "@/lib/opportunities/directory";
+import { runScrapers } from "@/lib/opportunities/scrapers/run";
+import { loadSnapshotIntoDb, searchOpportunities } from "@/lib/opportunities/store";
+import { allSourceRoutes, createFixtureHttp, fixtureSources } from "./helpers/fixture-http";
+
+const NOW = new Date("2026-10-11T06:00:00Z");
+setClock(() => NOW);
+
+interface SseEvent {
+  type: string;
+  [key: string]: unknown;
+}
+
+async function ask(message: string, language = "en"): Promise<SseEvent[]> {
+  // One session owns the conversation it runs (the orchestrator refuses a conversation that belongs to another session).
+  const sessionId = `chat-test-${Math.random().toString(36).slice(2)}`;
+  const conversationId = getOrCreateConversation(sessionId);
+  const events: SseEvent[] = [];
+  for await (const chunk of runOrchestrator({ message, conversationId, sessionId, language })) {
+    events.push(JSON.parse(chunk.replace(/^data: /, "").trim()) as SseEvent);
+  }
+  return events;
+}
+
+test("setup: seed the citizen-service catalog and load opportunities", async () => {
+  seedDatabase();
+  const snapshot = await runScrapers({ sources: fixtureSources(), region: "pk", http: createFixtureHttp(allSourceRoutes()), now: NOW, force: true });
+  loadSnapshotIntoDb(snapshot, NOW);
+  assert.ok(searchOpportunities({}, NOW).total > 40);
+  // Re-seeding the catalog must never wipe scraped opportunities.
+  seedDatabase();
+  assert.ok(searchOpportunities({}, NOW).total > 40, "seedDatabase() leaves the opportunity tables alone");
+});
+
+test("the assistant exposes the five opportunity tools next to the four citizen-service tools", () => {
+  const names = TOOLS.map((tool) => tool.function.name);
+  assert.deepEqual(names, ["search_knowledge", "check_eligibility", "create_case", "extract_profile", "search_opportunities", "find_resources", "check_offer_risk", "find_guides", "find_programmes"]);
+  for (const tool of TOOLS) assert.ok(tool.function.description.length > 40);
+  assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /NEVER invent a deadline/);
+  assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /BE&OE list of licensed OEPs/);
+  assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /never logs in to Udemy/i);
+  assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /citizen navigation assistant/i, "the original prompt is preserved");
+});
+
+test("search_opportunities returns compact cited records with freshness and no restricted listings", async () => {
+  const result = JSON.parse(await executeTool("search_opportunities", { query: "commonwealth masters scholarship", kind: "scholarship" }, "s")) as OpportunityToolResult;
+  assert.equal(result.found, true);
+  assert.match(result.results[0].title, /Commonwealth/);
+  assert.match(result.results[0].url, /^https:\/\//);
+  assert.match(result.results[0].raahi_url, /^\/opportunities\/scholarshiptab-/);
+  assert.equal(result.results[0].days_left, 9);
+  assert.match(result.freshness, /refreshed about 0 hour/);
+  assert.equal(result.generated_at, NOW.toISOString());
+  assert.ok(result.results.length <= 6);
+
+  const africa = JSON.parse(await executeTool("search_opportunities", { query: "mastercard foundation scholars", kind: "scholarship" }, "s")) as OpportunityToolResult;
+  assert.ok(africa.results.every((item) => item.open_to_pakistan !== false), "listings restricted to other nationalities are hidden by default");
+
+  const jobs = JSON.parse(await executeTool("search_opportunities", { query: "government jobs", scope: "pakistan", kind: "job", deadline_within_days: 12 }, "s")) as OpportunityToolResult;
+  assert.ok(jobs.results.length > 0 && jobs.results.every((item) => item.days_left !== null && item.days_left <= 12));
+
+  const none = JSON.parse(await executeTool("search_opportunities", { query: "zzzz qqqq", kind: "scholarship" }, "s")) as OpportunityToolResult;
+  assert.equal(none.found, false);
+  assert.match(none.note ?? "", /do not guess/);
+
+  const badArgs = JSON.parse(await executeTool("search_opportunities", { query: 42, kind: "dragons", scope: 7, deadline_within_days: "soon" }, "s")) as OpportunityToolResult;
+  assert.ok(badArgs.count >= 0, "malformed model arguments never crash the tool");
+});
+
+test("find_resources and check_offer_risk answer from the directory and the rule set", async () => {
+  const resources = JSON.parse(await executeTool("find_resources", { query: "overseas employment agent verification", official_only: true }, "s")) as { found: boolean; results: Array<{ id: string; run_by: string; link_confirmed_on?: string }> };
+  assert.ok(resources.found);
+  assert.ok(resources.results.some((r) => r.id === "beoe-oep-list"));
+  assert.ok(resources.results.every((r) => /government|institution/.test(r.run_by)));
+
+  const risk = JSON.parse(await executeTool("check_offer_risk", { text: "Guaranteed Qatar visa, send advance fee via JazzCash to my personal account, WhatsApp only" }, "s")) as { risk_level: string; warning_signs: string[]; what_to_do: Array<{ url?: string }>; disclaimer: string };
+  assert.equal(risk.risk_level, "high");
+  assert.ok(risk.warning_signs.length >= 3);
+  assert.ok(risk.what_to_do.some((entry) => entry.url?.includes("beoe.gov.pk")));
+  assert.match(risk.disclaimer, /cannot confirm/);
+
+  assert.deepEqual(JSON.parse(await executeTool("nonexistent_tool", {}, "s")), { error: "Unknown tool: nonexistent_tool" });
+});
+
+test("directory search lifts resources about the destination country", () => {
+  const germany = searchResources({ q: "scholarships in germany" }).items.slice(0, 3).map((item) => item.id);
+  assert.ok(germany.includes("daad"), `DAAD should lead for Germany, got ${germany.join(", ")}`);
+  const uk = searchResources({ q: "scholarship uk" }).items.slice(0, 4).map((item) => item.id);
+  assert.ok(uk.includes("chevening") || uk.includes("commonwealth-uk"));
+});
+
+test("intent detection routes opportunity questions, not citizen-service ones", () => {
+  for (const yes of ["scholarships in germany", "I want a government job", "is this overseas agent genuine?", "free python course", "mdcat preparation", "سعودی عرب میں نوکری", "بیرون ملک اسکالرشپ", "ویزا کے لیے ایجنٹ", "CSS exam syllabus"]) {
+    assert.equal(opportunityIntent(yes), true, yes);
+  }
+  for (const no of ["I need a domicile certificate", "میرے والد کو ڈائیلاسز چاہیے", "BISP registration", "ڈومیسائل سرٹیفکیٹ کیسے بنے", "my child needs school fee help", "سیلاب سے گھر متاثر ہوا ہے"]) {
+    assert.equal(opportunityIntent(no), false, no);
+  }
+});
+
+test("offline assistant (no API key) answers an opportunity question with cited cards and official portals", async () => {
+  const events = await ask("سرکاری نوکری", "ur");
+  const types = events.map((e) => e.type);
+  assert.ok(types.includes("opportunity_results"));
+  const cards = events.find((e) => e.type === "opportunity_results")!.results as Array<{ url: string; kind: string; raahi_url: string }>;
+  assert.ok(cards.length > 0 && cards.every((card) => card.kind === "job" && card.url.startsWith("https://") && card.raahi_url.startsWith("/opportunities/")));
+  assert.equal(types.at(-1), "done");
+  const content = events.find((e) => e.type === "content")!.content as string;
+  assert.match(content, /تصدیق/, "reminds the user to confirm on the official page (Urdu)");
+});
+
+test("offline assistant shows the scam warning before anything else when an offer looks risky", async () => {
+  const events = await ask("Agent says Saudi visa guaranteed, pay Rs 200000 advance on JazzCash to his personal account, WhatsApp only", "en");
+  const types = events.map((e) => e.type);
+  assert.ok(types.includes("risk_result"));
+  assert.ok(types.indexOf("risk_result") < types.indexOf("content"));
+  const risk = events.find((e) => e.type === "risk_result")!.result as { level: string; advice: Array<{ url?: string }> };
+  assert.equal(risk.level, "high");
+  assert.ok(risk.advice.some((advice) => advice.url?.includes("beoe.gov.pk")));
+  assert.match(events.find((e) => e.type === "content")!.content as string, /looks risky/);
+  assert.ok(types.includes("resource_results"), "official verification portals are offered too");
+  assert.ok(!types.includes("service"), "loosely matched citizen-service cards must not dilute a scam warning");
+  const portals = events.find((e) => e.type === "resource_results")!.results as Array<{ id: string }>;
+  assert.ok(portals.some((p) => p.id === "beoe-oep-list" || p.id === "beoe"), "the BE&OE verification route comes first");
+});
+
+test("offline assistant keeps answering citizen-service questions exactly as before", async () => {
+  const events = await ask("I need a domicile certificate", "en");
+  const types = events.map((e) => e.type);
+  assert.ok(types.includes("service"));
+  assert.ok(!types.includes("opportunity_results") && !types.includes("risk_result") && !types.includes("resource_results"));
+  assert.equal(types.at(-1), "done");
+});
+
+test("emergencies still short-circuit before any opportunity logic", async () => {
+  const events = await ask("my child is choking, also looking for a job", "en");
+  assert.equal(events[0].type, "content");
+  assert.equal(events[0].emergency, true);
+  assert.deepEqual(events.map((e) => e.type), ["content", "done"]);
+});
+
+// ─── Step-by-step guides in the assistant ────────────────────────────────────
+
+test("find_guides returns the steps, the official links and a guide page — and admits when nothing matches", async () => {
+  const result = JSON.parse(await executeTool("find_guides", { query: "apostille kaise" }, "s")) as {
+    found: boolean;
+    results: Array<{ id: string; guide_url: string; steps: Array<{ title: string; detail: string }>; official_links: Array<{ name: string; url: string }>; last_reviewed: string; based_on?: string[] }>;
+    ui_cards: Array<{ id: string; url: string; title: { en: string; ur: string } }>;
+    note: string;
+  };
+  assert.equal(result.found, true);
+  assert.equal(result.results[0].id, "documents-attestation");
+  assert.equal(result.results[0].guide_url, "/opportunities/guides/documents-attestation");
+  assert.ok(result.results[0].steps.length >= 5);
+  assert.match(result.results[0].steps.map((step) => step.detail).join(" "), /apostille\.mofa\.gov\.pk/);
+  assert.ok(result.results[0].official_links.some((link) => link.url.includes("mofa.gov.pk")));
+  assert.match(result.results[0].last_reviewed, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(result.results[0].based_on?.some((url) => url.includes("mofa.gov.pk")));
+  assert.equal(result.ui_cards[0].url, "/opportunities/guides/documents-attestation");
+  assert.match(result.note, /Do not add figures/);
+
+  const nothing = JSON.parse(await executeTool("find_guides", { query: "xqzvbn plmokn" }, "s")) as { found: boolean; results: unknown[]; note: string };
+  assert.equal(nothing.found, false);
+  assert.equal(nothing.results.length, 0);
+  assert.match(nothing.note, /do not guess/i);
+  assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /find_guides/);
+  assert.match(ORCHESTRATOR_SYSTEM_PROMPT, /Never add fees, age limits, quotas or dates that the guide does not contain/);
+});
+
+test("guideForMessage offers a guide for how-to questions and clear topics, not for unrelated messages", () => {
+  const first = (message: string) => guideForMessage(message)[0]?.id;
+  assert.equal(first("fsc ke baad kya karein"), "after-matric-intermediate");
+  assert.equal(first("apostille kaise karwayen"), "documents-attestation");
+  assert.equal(first("how do I verify an OEP licence before paying an agent"), "work-abroad-safely");
+  assert.equal(first("میں سرکاری نوکری کے لیے درخواست کیسے دوں"), "apply-government-job");
+  assert.equal(first("css"), undefined, "a bare topic word is a search, not a how-to question");
+  assert.deepEqual(guideForMessage("my CNIC was lost, what is the procedure"), [], "citizen-service questions stay with the service catalog");
+  assert.deepEqual(guideForMessage("hello, how are you"), []);
+  assert.deepEqual(guideForMessage("شناختی کارڈ کھو گیا ہے"), []);
+});
+
+test("offline: a how-to question gets a guide card (plus listings and portals when relevant); a CNIC question does not", async () => {
+  const events = await ask("how do I apply for a government job");
+  const guides = events.find((event) => event.type === "guide_results") as { results: Array<{ id: string; url: string; steps: number }> } | undefined;
+  assert.ok(guides, "a guide_results event is sent");
+  assert.equal(guides.results[0].id, "apply-government-job");
+  assert.equal(guides.results[0].url, "/opportunities/guides/apply-government-job");
+  assert.ok(events.some((event) => event.type === "opportunity_results"), "live listings still come with it");
+
+  const urdu = await ask("apostille kaise karein");
+  assert.ok(urdu.some((event) => event.type === "guide_results"));
+
+  const cnic = await ask("my CNIC was lost, what is the procedure");
+  assert.ok(!cnic.some((event) => event.type === "guide_results"), "no guide card for a citizen-service question");
+});
+
+// ─── Yearly planner (find_programmes) ────────────────────────────────────────
+
+test("find_programmes returns the dates with how sure we are, the route for Pakistan, and a planner link", async () => {
+  const result = JSON.parse(await executeTool("find_programmes", { query: "chevening" }, "s")) as {
+    found: boolean;
+    results: Array<{ id: string; phase: string; routeNote: string; usualWindow: string; prepare: string[]; planner_url: string; official: string; cycle?: { confidence: string; checked: string; closes: string } }>;
+    ui_cards: Array<{ id: string; url: string }>;
+    note: string;
+  };
+  assert.equal(result.found, true);
+  assert.equal(result.results[0].id, "chevening");
+  assert.equal(result.results[0].phase, "closed", "Chevening closed on 6 October; today is 11 October in this test");
+  assert.equal(result.results[0].cycle?.confidence, "reported");
+  assert.equal(result.results[0].cycle?.checked, "2026-10-15");
+  assert.equal(result.results[0].cycle?.closes, "2026-10-06");
+  assert.match(result.results[0].usualWindow, /early August/);
+  assert.equal(result.results[0].planner_url, "/opportunities/calendar#chevening");
+  assert.match(result.results[0].official, /^https:\/\/www\.chevening\.org/);
+  assert.ok(result.results[0].prepare.length >= 3);
+  assert.equal(result.ui_cards[0].url, "/opportunities/calendar#chevening");
+  assert.match(result.note, /official' or 'reported'/);
+  assert.match(result.note, /never invent|instead of inventing/i);
+
+  const hec = JSON.parse(await executeTool("find_programmes", { query: "commonwealth" }, "s")) as { results: Array<{ routeNote: string; phase: string; daysLeft: number }> };
+  assert.match(hec.results[0].routeNote, /BOTH the HEC scholarship portal/, "the step people miss is stated");
+  assert.equal(hec.results[0].phase, "closing-soon");
+  assert.equal(hec.results[0].daysLeft, 9);
+
+  const none = JSON.parse(await executeTool("find_programmes", { query: "zzzz qqqq" }, "s")) as { found: boolean; results: unknown[]; note: string };
+  assert.equal(none.found, false);
+  assert.equal(none.results.length, 0);
+  assert.match(none.note, /do not guess dates/);
+});
+
+test("find_programmes with only_now keeps what is open, opening soon, or worth preparing for", async () => {
+  const result = JSON.parse(await executeTool("find_programmes", { only_now: true }, "s")) as { results: Array<{ id: string; phase: string; prepareNow: boolean }> };
+  assert.ok(result.results.length > 0 && result.results.length <= 4);
+  assert.equal(result.results[0].id, "commonwealth-masters-phd", "the call closing soonest comes first");
+  assert.ok(result.results.every((entry) => ["closing-soon", "open", "typically-open", "upcoming"].includes(entry.phase) || entry.prepareNow));
+});
+
+test("programmesForMessage offers a card for a named programme with a timing question, or just its name — not for generic talk", () => {
+  const ids = (message: string) => programmesForMessage(message).map((card) => card.id);
+  assert.deepEqual(ids("when does chevening open"), ["chevening"]);
+  assert.deepEqual(ids("chevening"), ["chevening"]);
+  assert.deepEqual(ids("fulbright kab khulta hai"), ["fulbright-pakistan"]);
+  assert.ok(ids("css exam kab hai").includes("css-fpsc"));
+  assert.ok(ids("what is the last date for the commonwealth scholarship").includes("commonwealth-masters-phd"));
+  assert.deepEqual(ids("jobs in uk"), [], "a country word alone is not a programme");
+  assert.deepEqual(ids("scholarship in germany"), ["daad-germany"], "only one programme is named for Germany, so its planner entry is offered");
+  assert.deepEqual(ids("scholarship in uk"), [], "three programmes are named for the UK: that is a search, not a programme");
+  assert.deepEqual(ids("when does it open"), [], "timing words alone name nothing");
+  assert.deepEqual(ids("chevening vs fulbright").sort(), ["chevening", "fulbright-pakistan"], "two named programmes, both offered");
+  assert.deepEqual(ids("how do I get a CNIC"), []);
+  assert.deepEqual(ids("tell me about free python courses please and also some coupons"), []);
+});
+
+test("offline: naming a programme gets its planner card and a neutral line — not 'no verified information'", async () => {
+  const events = await ask("chevening");
+  const card = events.find((event) => event.type === "programme_results");
+  assert.ok(card, "a programme card is streamed");
+  const results = card.results as Array<{ id: string; phase: string; closes?: string; confidence?: string; url: string }>;
+  assert.equal(results[0].id, "chevening");
+  assert.equal(results[0].closes, "2026-10-06");
+  assert.equal(results[0].confidence, "reported");
+  const text = events.filter((event) => event.type === "content").map((event) => String(event.content)).join(" ");
+  assert.match(text, /yearly-planner entry/);
+  assert.ok(!/don't have verified information|No verified/i.test(text));
+  assert.ok(!events.some((event) => event.type === "service"), "no loosely matched citizen-service cards next to the answer");
+});
+
+test("offline: a timing question about a scholarship shows the planner card next to live listings", async () => {
+  const events = await ask("when does the commonwealth scholarship close?");
+  const card = events.find((event) => event.type === "programme_results");
+  assert.ok(card);
+  assert.equal((card.results as Array<{ id: string }>)[0].id, "commonwealth-masters-phd");
+  assert.equal((card.results as Array<{ phase: string }>)[0].phase, "closing-soon");
+  assert.ok(events.some((event) => event.type === "opportunity_results"), "live listings are still offered");
+});
+
+test("offline: unrelated questions get no planner card", async () => {
+  const events = await ask("how do I renew my CNIC?");
+  assert.ok(!events.some((event) => event.type === "programme_results"));
+});
+

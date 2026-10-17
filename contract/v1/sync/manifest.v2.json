@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "id": "gopunjab-00927c2d0d",
+      "rev": "6853d75c36b9"
+    },
+    {
+      "id": "gopunjab-17d787f786",
+      "rev": "9567ecd77369"
+    },
+    {
+      "id": "devpost-13b8ecda7d",
+      "rev": "cf3948add08c"
+    },
+    {
+      "id": "devpost-16f09be25c",
+      "rev": "42c0ba2c2ef9"
+    },
+    {
+      "id": "devpost-147848bbd7",
+      "rev": "e44eedf24b4b"
+    },
+    {
+      "id": "ctftime-1ba64b65ba",
+      "rev": "4357c9f91162"
+    },
+    {
+      "id": "ctftime-1da45414a9",
+      "rev": "8353fa7fca4c"
+    },
+    {
+      "id": "ctftime-0e14f49f88",
+      "rev": "962415104251"
+    },
+    {
+      "id": "codeforces-023e4fa8d2",
+      "rev": "ff3ee115763d"
+    },
+    {
+      "id": "gopunjab-00ce1ae601",
+      "rev": "42498c0ee5f7"
+    },
+    {
+      "id": "demo-0123456789",
+      "rev": "01c6359d0e6c"
+    }
+  ],
+  "meta": {
+    "generatedAt": "2026-10-15T04:38:08.851Z",
+    "dataVersion": "v2v2v2v2v2v2",
+    "count": 11
+  }
+}

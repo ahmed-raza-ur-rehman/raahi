@@ -1,0 +1,21 @@
+{
+ "success": true,
+ "data": [
+  {
+   "id": 101,
+   "category": "GR",
+   "title": "Consolidated Advertisement No. 4/2026 (fixture)",
+   "date": "2026-10-05",
+   "description": "<p><strong>To view Advertisement,&nbsp;<a title=\"fixture.pdf\" href=\"/uploads/content/fixture_advertisement_4-2026.pdf\" target=\"_blank\">Click here</a><br>To Apply Online,&nbsp;<a href=\"https://cp.fpsc.gov.pk/gr_one/index_gr.php\">Click here</a></strong></p>",
+   "expiryDate": "2026-10-30",
+   "isAlert": false,
+   "isImageAlert": false,
+   "alertImage": null,
+   "isLatestUpdate": true,
+   "isTicker": true,
+   "createdAt": "2026-10-05T08:00:00.000Z",
+   "updatedAt": "2026-10-05T08:00:00.000Z",
+   "pdfs": []
+  }
+ ]
+}

@@ -1,3 +1,4 @@
+import { claimConversation, newConversationId } from "@/lib/db/repositories/conversations";
 import { searchServicesHybrid } from "@/lib/rag/search";
 import { eligibilityEngine } from "@/lib/eligibility/engine";
 import { listActiveServices } from "@/lib/db/repositories/services";
@@ -7,6 +8,17 @@ import { getDashScopeClient } from "@/lib/ai/client";
 import { ORCHESTRATOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { detectSafetySignals } from "@/lib/safety/detect";
 import {
+  OPPORTUNITY_TOOLS,
+  executeOpportunityTool,
+  guideForMessage,
+  isOpportunityTool,
+  opportunityIntent,
+  programmesForMessage,
+  resourceQueryFor,
+  runOpportunitySearch,
+} from "@/lib/ai/opportunity-tools";
+import { analyzeOffer } from "@/lib/opportunities/scam";
+import {
   sanitizeUserInput,
   maskPii,
   appendDomainSafetyDisclaimer,
@@ -14,7 +26,7 @@ import {
 
 // ─── Tool definitions ──────────────────────────────────────────────────────
 
-export const TOOLS = [
+const CORE_TOOLS = [
   {
     type: "function" as const,
     function: {
@@ -135,6 +147,9 @@ export const TOOLS = [
   },
 ];
 
+/** Citizen-service tools plus the opportunities hub tools (scholarships, jobs, courses, scam checks). */
+export const TOOLS = [...CORE_TOOLS, ...OPPORTUNITY_TOOLS];
+
 // ─── Tool execution handlers ────────────────────────────────────────────────
 
 export async function executeTool(
@@ -142,6 +157,7 @@ export async function executeTool(
   toolArgs: Record<string, unknown>,
   sessionId: string,
 ): Promise<string> {
+  if (isOpportunityTool(toolName)) return executeOpportunityTool(toolName, toolArgs);
   switch (toolName) {
     case "search_knowledge": {
       const query = String(toolArgs.query ?? "");
@@ -376,13 +392,102 @@ export function getOrCreateConversation(sessionId: string, caseId?: string): str
       .get(sessionId, caseId) as { id: string } | undefined;
     if (existing) return existing.id;
   }
-  const convId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const convId = newConversationId();
   db.prepare(`INSERT INTO conversations (id, session_id, case_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`)
     .run(convId, sessionId, caseId ?? null, now, now);
   return convId;
 }
 
 // ─── Main streaming orchestrator ─────────────────────────────────────────────
+
+// ─── Opportunity events + offline fallback ────────────────────────────────
+
+type Lang = "en" | "ur" | "ps";
+const sse = (payload: Record<string, unknown>) => `data: ${JSON.stringify(payload)}\n\n`;
+
+function riskEvent(text: string): string | undefined {
+  const analysis = analyzeOffer({ text });
+  if (analysis.level !== "high" && analysis.level !== "medium") return undefined;
+  return sse({
+    type: "risk_result",
+    result: {
+      level: analysis.level,
+      score: analysis.score,
+      headline: analysis.headline,
+      signals: analysis.signals.slice(0, 4).map((signal) => ({ en: signal.en, ur: signal.ur })),
+      advice: analysis.advice.slice(0, 4),
+    },
+  });
+}
+
+function fallbackText(language: Lang, parts: { services: boolean; opportunities: boolean; resources: boolean; risk: boolean; cards?: boolean }): string {
+  const lines: string[] = [];
+  if (parts.cards && !parts.risk) {
+    lines.push(
+      language === "en"
+        ? "I found a step-by-step guide or yearly-planner entry for this — see the card below. Dates and rules change: confirm them on the official page it links to before you act."
+        : language === "ps"
+        ? "ما د دې لپاره لارښود یا د کلني پلان کارت وموند — لاندې یې وګورئ. نیټې او اصول بدلیږي: مخکې له عمل په رسمي پاڼه یې تایید کړئ."
+        : "اس کے لیے مجھے مرحلہ وار رہنمائی یا سالانہ منصوبہ ساز کا اندراج ملا ہے — نیچے کارڈ دیکھیں۔ تاریخیں اور اصول بدلتے رہتے ہیں: عمل سے پہلے اس میں دیے گئے سرکاری صفحے پر تصدیق کریں۔",
+    );
+  }
+  if (parts.risk) {
+    lines.push(
+      language === "en"
+        ? "⚠️ **This looks risky.** Do not pay anyone or share OTPs or documents until you verify the offer on the official website. See the warning signs and official links below."
+        : language === "ps"
+        ? "⚠️ **دا خطرناک ښکاري.** مخکې له تایید تر مخه پیسې مه ورکوئ او OTP یا اسناد مه شریکوئ."
+        : "⚠️ **یہ پیشکش خطرناک لگتی ہے۔** سرکاری ویب سائٹ پر تصدیق سے پہلے کسی کو رقم، او ٹی پی یا دستاویزات نہ دیں۔ نیچے انتباہی علامات اور سرکاری لنک دیکھیں۔",
+    );
+  }
+  if (parts.opportunities) {
+    lines.push(
+      language === "en"
+        ? "Here are live listings that match. Deadlines and eligibility can change — confirm each one on its official page before applying."
+        : language === "ps"
+        ? "دلته ورته ژوندۍ لیستونه دي. مخکې له غوښتنې هره یوه په رسمي پاڼه تایید کړئ."
+        : "آپ کی تلاش سے ملتی جلتی تازہ فہرست یہ ہے۔ آخری تاریخ اور اہلیت بدل سکتی ہے — درخواست سے پہلے ہر ایک کو سرکاری صفحے پر تصدیق کریں۔",
+    );
+  }
+  if (parts.resources) {
+    lines.push(
+      language === "en"
+        ? "These official portals and trusted sites are the best places to continue."
+        : language === "ps"
+        ? "دا رسمي پورتالونه او باوري سایټونه د دوام لپاره غوره ځایونه دي."
+        : "یہ سرکاری پورٹلز اور معتبر سائٹس آگے بڑھنے کے لیے بہترین جگہیں ہیں۔",
+    );
+  }
+  if (parts.services) {
+    lines.push(
+      language === "en"
+        ? "These verified services may help. Please confirm details with each official source."
+        : language === "ps"
+        ? "دا تایید شوي خدمتونه مرسته کولای شي. جزئیات له رسمي سرچینې تایید کړئ."
+        : "یہ تصدیق شدہ خدمات آپ کے لیے مددگار ہو سکتی ہیں۔ تفصیلات ہر ذریعے سے ضرور تصدیق کریں۔",
+    );
+  }
+  return lines.join("\n\n");
+}
+
+/** Opportunity cards + directory links + risk warning for a plain message (used when no model is available). */
+async function* opportunityFallback(message: string): AsyncGenerator<string, { opportunities: boolean; resources: boolean; risk: boolean; cards: boolean; programmes: boolean }> {
+  // A message that names a yearly programme and asks about timing gets its planner entry (usual months, latest dates).
+  const programmes = programmesForMessage(message);
+  if (programmes.length > 0) yield sse({ type: "programme_results", results: programmes });
+  // A "how do I…" question gets the matching step-by-step guide, even when no listing keyword is present.
+  const guides = guideForMessage(message);
+  if (guides.length > 0) yield sse({ type: "guide_results", results: guides });
+  const cards = programmes.length > 0 || guides.length > 0;
+  if (!opportunityIntent(message)) return { opportunities: false, resources: false, risk: false, cards, programmes: programmes.length > 0 };
+  const search = await runOpportunitySearch({ q: message, openToPakistan: true }, 5);
+  const risk = riskEvent(message);
+  const resources = JSON.parse(await executeOpportunityTool("find_resources", { query: resourceQueryFor(message, Boolean(risk)) })) as { results: unknown[] };
+  if (risk) yield risk;
+  if (search.results.length > 0) yield sse({ type: "opportunity_results", results: search.results, generated_at: search.generated_at });
+  if (resources.results.length > 0) yield sse({ type: "resource_results", results: resources.results.slice(0, 4) });
+  return { opportunities: search.results.length > 0, resources: resources.results.length > 0, risk: Boolean(risk), cards, programmes: programmes.length > 0 };
+}
 
 export interface OrchestratorOptions {
   message: string;
@@ -395,6 +500,12 @@ export interface OrchestratorOptions {
 export async function* runOrchestrator(options: OrchestratorOptions): AsyncGenerator<string> {
   const { message, conversationId, sessionId, language } = options;
   const client = getDashScopeClient();
+
+  // Defence in depth: never read or append to a conversation that belongs to another session (the route also checks).
+  if (!claimConversation(conversationId, sessionId, options.caseId)) {
+    yield `data: ${JSON.stringify({ type: "error", error: "That conversation is not available." })}\n\n`;
+    return;
+  }
 
   // Guardrail 1: Sanitize user input against prompt injection
   const { sanitized, flagged } = sanitizeUserInput(message);
@@ -417,18 +528,18 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
   }
 
   if (!client) {
-    // Fallback to RAG-only if no API key
-    const results = await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
-    if (results.length === 0) {
-      yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔" : "I do not have verified information for this request. Please contact the relevant organization directly." })}\n\n`;
+    // No API key: verified-service RAG plus the deterministic opportunity search, with the same safeguards.
+    const extras = yield* opportunityFallback(effectiveMessage);
+    // A scam warning must stand alone, and so must the answer about a named programme ("when does Chevening open?"):
+    // loosely matched citizen-service cards (domicile, CNIC, Benazir …) would only dilute it.
+    const results = extras.risk || extras.programmes ? [] : await searchServicesHybrid({ query: effectiveMessage, limit: 4 });
+    if (results.length === 0 && !extras.opportunities && !extras.resources && !extras.risk && !extras.cards) {
+      yield `data: ${JSON.stringify({ type: "content", content: language === "ur" ? "اس درخواست کے لیے میرے پاس تصدیق شدہ معلومات نہیں ہیں۔ براہ کرم متعلقہ ادارے سے براہ راست رابطہ کریں۔" : language === "ps" ? "د دې غوښتنې لپاره زما سره تایید شوې معلومات نشته. مهرباني وکړئ اړوند ادارې سره مستقیم اړیکه ونیسئ." : "I do not have verified information for this request. Please contact the relevant organization directly." })}\n\n`;
     } else {
       for (const result of results) {
         yield `data: ${JSON.stringify({ type: "service", service: result.service, citation: result.citation })}\n\n`;
       }
-      let contentText =
-        language === "ur"
-          ? "یہ تصدیق شدہ خدمات آپ کے لیے مددگار ہو سکتی ہیں۔ تفصیلات ہر ذریعے سے ضرور تصدیق کریں۔"
-          : "These verified services may help. Please confirm details with each official source.";
+      let contentText = fallbackText((language as Lang) || "ur", { services: results.length > 0, ...extras });
       if (safetyCheck.medical) {
         contentText = appendDomainSafetyDisclaimer(contentText, "health", (language as any) || "ur");
       } else if (safetyCheck.legal) {
@@ -477,6 +588,7 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
     } catch (apiErr) {
       console.warn("Qwen API call failed, falling back to verified RAG services:", apiErr);
       const results = await searchServicesHybrid({ query: message, limit: 5 });
+      yield* opportunityFallback(message);
       if (results.length > 0) {
         yield `data: ${JSON.stringify({ type: "search_results", results: results.map((r) => r.service) })}\n\n`;
         const summaryText =
@@ -610,6 +722,42 @@ export async function* runOrchestrator(options: OrchestratorOptions): AsyncGener
               }
             }
           }
+        } catch {
+          // ignore
+        }
+      }
+
+      // Structured data for the opportunity cards, directory links and risk banner
+      if (toolCall.function.name === "search_opportunities" || toolCall.function.name === "find_resources") {
+        try {
+          const parsed = JSON.parse(toolResult) as { results?: unknown[]; generated_at?: string };
+          if (parsed.results && parsed.results.length > 0) {
+            yield sse({
+              type: toolCall.function.name === "search_opportunities" ? "opportunity_results" : "resource_results",
+              results: parsed.results.slice(0, 6),
+              generated_at: parsed.generated_at,
+            });
+          }
+        } catch {
+          // ignore
+        }
+      }
+      if (toolCall.function.name === "check_offer_risk") {
+        const risk = riskEvent(String(toolArgs.text ?? ""));
+        if (risk) yield risk;
+      }
+      if (toolCall.function.name === "find_guides") {
+        try {
+          const parsed = JSON.parse(toolResult) as { ui_cards?: unknown[] };
+          if (parsed.ui_cards && parsed.ui_cards.length > 0) yield sse({ type: "guide_results", results: parsed.ui_cards.slice(0, 3) });
+        } catch {
+          // ignore
+        }
+      }
+      if (toolCall.function.name === "find_programmes") {
+        try {
+          const parsed = JSON.parse(toolResult) as { ui_cards?: unknown[] };
+          if (parsed.ui_cards && parsed.ui_cards.length > 0) yield sse({ type: "programme_results", results: parsed.ui_cards.slice(0, 3) });
         } catch {
           // ignore
         }

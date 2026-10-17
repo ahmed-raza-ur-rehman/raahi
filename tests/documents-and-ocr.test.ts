@@ -50,7 +50,9 @@ test("adds and hydrates documents with OCR metadata on a citizen case", () => {
   assert.equal(hydrated.documents[0].ocrData?.["Full Name"], "Ali Ahmad");
 
   // Test deletion
-  deleteDocument(doc.id, caseItem.id);
+  assert.equal(deleteDocument(doc.id, caseItem.id, "someone-else").changes, 0, "another session cannot delete the document");
+  assert.equal(findCase(caseItem.id, sessionId)?.documents?.length, 1);
+  deleteDocument(doc.id, caseItem.id, sessionId);
   const afterDelete = findCase(caseItem.id, sessionId);
   assert.equal(afterDelete?.documents?.length, 0);
 });

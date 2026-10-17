@@ -4,6 +4,9 @@ import React from "react";
 import { ServiceCard } from "./ServiceCard";
 import { ActionPlan, ActionItem } from "./ActionPlan";
 import { CitationChip } from "./CitationChip";
+import type { ChatGuideCard, ChatProgrammeCard } from "@/lib/ai/opportunity-tools";
+import { ChatOpportunityBlocks, type ChatResource, type ChatRisk } from "./OpportunityBlocks";
+import type { CompactOpportunity } from "@/lib/ai/opportunity-tools";
 
 export interface MessageBubbleProps {
   role: "user" | "assistant" | "system";
@@ -11,6 +14,11 @@ export interface MessageBubbleProps {
   streaming?: boolean;
   activeTool?: string | null;
   services?: any[];
+  opportunities?: CompactOpportunity[];
+  resources?: ChatResource[];
+  risk?: ChatRisk;
+  guides?: ChatGuideCard[];
+  programmes?: ChatProgrammeCard[];
   actionItems?: ActionItem[];
   citations?: { sourceUrl: string; sourceTitle: string; authorityTier?: number; lastVerified?: string }[];
   language?: "en" | "ur" | "ps";
@@ -76,6 +84,11 @@ export function MessageBubble({
   streaming = false,
   activeTool,
   services = [],
+  opportunities = [],
+  resources = [],
+  risk,
+  guides = [],
+  programmes = [],
   actionItems = [],
   citations = [],
   language = "ur",
@@ -142,6 +155,26 @@ export function MessageBubble({
     extract_profile: {
       en: "Updating citizen profile...",
       ur: "شہری پروفائل اپ ڈیٹ کی جا رہی ہے...",
+    },
+    search_opportunities: {
+      en: "Searching live scholarships, jobs and courses...",
+      ur: "تازہ وظائف، نوکریاں اور کورسز تلاش کیے جا رہے ہیں...",
+    },
+    find_resources: {
+      en: "Finding official portals and trusted sites...",
+      ur: "سرکاری پورٹلز اور معتبر سائٹس تلاش کی جا رہی ہیں...",
+    },
+    find_guides: {
+      en: "Finding a step-by-step guide...",
+      ur: "مرحلہ وار رہنمائی تلاش کی جا رہی ہے...",
+    },
+    find_programmes: {
+      en: "Checking the yearly planner...",
+      ur: "سالانہ منصوبہ ساز دیکھا جا رہا ہے...",
+    },
+    check_offer_risk: {
+      en: "Checking the offer for warning signs...",
+      ur: "پیشکش میں انتباہی علامات جانچی جا رہی ہیں...",
     },
   };
 
@@ -250,6 +283,9 @@ export function MessageBubble({
           </div>
         )}
       </div>
+
+      {/* Opportunities, official portals and scam warnings */}
+      <ChatOpportunityBlocks opportunities={opportunities} resources={resources} risk={risk} guides={guides} programmes={programmes} language={language} />
 
       {/* Attached Services Cards */}
       {services.length > 0 && (

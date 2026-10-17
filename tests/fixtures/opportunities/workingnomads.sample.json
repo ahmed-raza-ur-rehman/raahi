@@ -1,0 +1,42 @@
+[
+ {
+  "url": "https://www.workingnomads.com/job/go/1925654/",
+  "title": "Senior Backend Developer (Node.js / Nest.js)",
+  "description": "<h3><strong>About us:</strong></h3>\n<p> </p>\n<p>Talent has no borders. Proxify's mission is to connect top developers around the world with the opportunities they deserve. So, it doesn't matter where you are; we are here to help you fast-track your independent career in the right direction. 🙂</p>\n<p>Since our launch, Proxify's developers have successfully worked with 1200+ happy clients to build their products and g…",
+  "company_name": "Proxify",
+  "category_name": "Development",
+  "tags": "back-end,nodejs,typescript,javascript,graphql",
+  "location": "Time zone: CET (+/- 3 hours)",
+  "pub_date": "2026-10-08T12:54:14-04:00"
+ },
+ {
+  "url": "https://www.workingnomads.com/job/go/1925652/",
+  "title": "Senior Backend Developer (Python)",
+  "description": "<h2><strong>About us:</strong></h2>\n<p> </p>\n<p>Talent has no borders. Proxify's mission is to connect top developers around the world with the opportunities they deserve. So, it doesn't matter where you are; we are here to help you fast-track your independent career in the right direction. 🙂</p>\n<p>Since our launch, Proxify's developers have successfully worked with 1200+ happy clients to build their products and g…",
+  "company_name": "Proxify",
+  "category_name": "Development",
+  "tags": "python,django,sql,docker,aws",
+  "location": "Time zone: CET (+/- 3 hours)",
+  "pub_date": "2026-10-08T12:53:42-04:00"
+ },
+ {
+  "url": "https://www.workingnomads.com/job/go/1925645/",
+  "title": "Senior Business Central Developer",
+  "description": "<h3><strong>About us:</strong></h3>\n<p> </p>\n<p>Talent has no borders. Proxify's mission is to connect top developers around the world with the opportunities they deserve. So, it doesn't matter where you are; we are here to help you fast-track your independent career in the right direction. 🙂</p>\n<p>Since our launch, Proxify's developers have successfully worked with 1200+ happy clients to build their products and g…",
+  "company_name": "Proxify",
+  "category_name": "Development",
+  "tags": "erp,azure,sql,power bi",
+  "location": "CET (+/- 3 hours)",
+  "pub_date": "2026-10-08T12:53:14-04:00"
+ },
+ {
+  "url": "https://www.workingnomads.com/job/go/1925640/",
+  "title": "Senior Cloud Engineer (Azure)",
+  "description": "<h3><strong>About us:</strong></h3>\n<p> </p>\n<p>Talent has no borders. Proxify's mission is to connect top developers around the world with opportunities they deserve. So, it doesn't matter where you are; we are here to help you fast-track your independent career in the right direction. 🙂</p>\n<p>Since our launch, Proxify's developers have successfully worked with 1200+ happy clients to build their products and growt…",
+  "company_name": "Proxify",
+  "category_name": "Development",
+  "tags": "devops,azure,kubernetes,architecture,automation",
+  "location": "Time zone: CET (+/- 3 hours)",
+  "pub_date": "2026-10-08T12:52:05-04:00"
+ }
+]

@@ -1,3 +1,4 @@
+import { guardLegacy } from "@/lib/platform/legacy";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -37,7 +38,7 @@ function detectDomain(query: string): Domain | undefined {
   return undefined;
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const parsed = requestSchema.safeParse(await request.json().catch(() => undefined));
   if (!parsed.success) {
     return NextResponse.json({ error: "Please share a little more about what you need." }, { status: 400 });
@@ -74,3 +75,5 @@ export async function POST(request: Request) {
     })),
   });
 }
+
+export const POST = guardLegacy(handlePOST, { name: "navigate", limits: [{ policy: "search", by: "ip" }], maxBodyBytes: 16384 });

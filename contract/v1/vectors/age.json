@@ -1,0 +1,1336 @@
+[
+  {
+    "input": {
+      "dob": "1998-03-15",
+      "asOn": "2026-10-15"
+    },
+    "expected": {
+      "age": {
+        "years": 28,
+        "months": 7,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1998-03-15",
+      "asOn": "2026-10-15",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 28,
+        "months": 7,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2029-03-14",
+      "lastDayToTheDay": "2028-03-15"
+    }
+  },
+  {
+    "input": {
+      "dob": "1998-03-15",
+      "asOn": "2026-10-15",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 28,
+        "months": 7,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2032-03-14",
+      "lastDayToTheDay": "2031-03-15"
+    }
+  },
+  {
+    "input": {
+      "dob": "1998-03-15",
+      "asOn": "2026-10-15",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 28,
+        "months": 7,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2024-03-14",
+      "lastDayToTheDay": "2023-03-15",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1998-03-15",
+      "asOn": "2026-10-15",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 28,
+        "months": 7,
+        "days": 0
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-02-28"
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 11,
+        "days": 30
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-02-28",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 11,
+        "days": 30
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2031-02-28",
+      "lastDayToTheDay": "2030-03-01"
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-02-28",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 11,
+        "days": 30
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2034-02-28",
+      "lastDayToTheDay": "2033-03-01"
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-02-28",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 11,
+        "days": 30
+      },
+      "limit": 25,
+      "withinByCompletedYears": true,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2026-02-28",
+      "lastDayToTheDay": "2025-03-01",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-02-28",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 11,
+        "days": 30
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-03-01"
+    },
+    "expected": {
+      "age": {
+        "years": 26,
+        "months": 0,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-03-01",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 26,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2031-02-28",
+      "lastDayToTheDay": "2030-03-01"
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-03-01",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 26,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2034-02-28",
+      "lastDayToTheDay": "2033-03-01"
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-03-01",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 26,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2026-02-28",
+      "lastDayToTheDay": "2025-03-01",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2026-03-01",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 26,
+        "months": 0,
+        "days": 0
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2024-02-29"
+    },
+    "expected": {
+      "age": {
+        "years": 24,
+        "months": 0,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2024-02-29",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 24,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2031-02-28",
+      "lastDayToTheDay": "2030-03-01"
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2024-02-29",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 24,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2034-02-28",
+      "lastDayToTheDay": "2033-03-01"
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2024-02-29",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 24,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2026-02-28",
+      "lastDayToTheDay": "2025-03-01",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-02-29",
+      "asOn": "2024-02-29",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 24,
+        "months": 0,
+        "days": 0
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2026-02-28"
+    },
+    "expected": {
+      "age": {
+        "years": 27,
+        "months": 1,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2026-02-28",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 27,
+        "months": 1,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2030-01-30",
+      "lastDayToTheDay": "2029-01-31"
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2026-02-28",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 27,
+        "months": 1,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2033-01-30",
+      "lastDayToTheDay": "2032-01-31"
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2026-02-28",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 27,
+        "months": 1,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2025-01-30",
+      "lastDayToTheDay": "2024-01-31",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2026-02-28",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 27,
+        "months": 1,
+        "days": 0
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2024-02-29"
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 1,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2024-02-29",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 1,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2030-01-30",
+      "lastDayToTheDay": "2029-01-31"
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2024-02-29",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 1,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2033-01-30",
+      "lastDayToTheDay": "2032-01-31"
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2024-02-29",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 1,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": true,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2025-01-30",
+      "lastDayToTheDay": "2024-01-31",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1999-01-31",
+      "asOn": "2024-02-29",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 1,
+        "days": 0
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-12-31",
+      "asOn": "2026-01-01"
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 0,
+        "days": 1
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-12-31",
+      "asOn": "2026-01-01",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 0,
+        "days": 1
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2031-12-30",
+      "lastDayToTheDay": "2030-12-31"
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-12-31",
+      "asOn": "2026-01-01",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 0,
+        "days": 1
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2034-12-30",
+      "lastDayToTheDay": "2033-12-31"
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-12-31",
+      "asOn": "2026-01-01",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 0,
+        "days": 1
+      },
+      "limit": 25,
+      "withinByCompletedYears": true,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2026-12-30",
+      "lastDayToTheDay": "2025-12-31",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2000-12-31",
+      "asOn": "2026-01-01",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 25,
+        "months": 0,
+        "days": 1
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2026-10-15",
+      "asOn": "2026-10-15"
+    },
+    "expected": {
+      "age": {
+        "years": 0,
+        "months": 0,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "2026-10-15",
+      "asOn": "2026-10-15",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 0,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2057-10-14",
+      "lastDayToTheDay": "2056-10-15"
+    }
+  },
+  {
+    "input": {
+      "dob": "2026-10-15",
+      "asOn": "2026-10-15",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 0,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2060-10-14",
+      "lastDayToTheDay": "2059-10-15"
+    }
+  },
+  {
+    "input": {
+      "dob": "2026-10-15",
+      "asOn": "2026-10-15",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 0,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2052-10-14",
+      "lastDayToTheDay": "2051-10-15",
+      "meetsMinimum": false
+    }
+  },
+  {
+    "input": {
+      "dob": "2026-10-15",
+      "asOn": "2026-10-15",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 0,
+        "months": 0,
+        "days": 0
+      },
+      "meetsMinimum": false
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-19"
+    },
+    "expected": {
+      "age": {
+        "years": 35,
+        "months": 11,
+        "days": 29
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-19",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 35,
+        "months": 11,
+        "days": 29
+      },
+      "limit": 30,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2021-05-19",
+      "lastDayToTheDay": "2020-05-20"
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-19",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 35,
+        "months": 11,
+        "days": 29
+      },
+      "limit": 33,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2024-05-19",
+      "lastDayToTheDay": "2023-05-20"
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-19",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 35,
+        "months": 11,
+        "days": 29
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2016-05-19",
+      "lastDayToTheDay": "2015-05-20",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-19",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 35,
+        "months": 11,
+        "days": 29
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-20"
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-20",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2021-05-19",
+      "lastDayToTheDay": "2020-05-20"
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-20",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2024-05-19",
+      "lastDayToTheDay": "2023-05-20"
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-20",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2016-05-19",
+      "lastDayToTheDay": "2015-05-20",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-20",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 0
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-21"
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 1
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-21",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 1
+      },
+      "limit": 30,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2021-05-19",
+      "lastDayToTheDay": "2020-05-20"
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-21",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 1
+      },
+      "limit": 33,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2024-05-19",
+      "lastDayToTheDay": "2023-05-20"
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-21",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 1
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2016-05-19",
+      "lastDayToTheDay": "2015-05-20",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1990-05-20",
+      "asOn": "2026-05-21",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 36,
+        "months": 0,
+        "days": 1
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1985-07-04",
+      "asOn": "2026-07-04"
+    },
+    "expected": {
+      "age": {
+        "years": 41,
+        "months": 0,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1985-07-04",
+      "asOn": "2026-07-04",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 41,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2016-07-03",
+      "lastDayToTheDay": "2015-07-04"
+    }
+  },
+  {
+    "input": {
+      "dob": "1985-07-04",
+      "asOn": "2026-07-04",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 41,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2019-07-03",
+      "lastDayToTheDay": "2018-07-04"
+    }
+  },
+  {
+    "input": {
+      "dob": "1985-07-04",
+      "asOn": "2026-07-04",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 41,
+        "months": 0,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2011-07-03",
+      "lastDayToTheDay": "2010-07-04",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1985-07-04",
+      "asOn": "2026-07-04",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 41,
+        "months": 0,
+        "days": 0
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2004-11-30",
+      "asOn": "2026-03-31"
+    },
+    "expected": {
+      "age": {
+        "years": 21,
+        "months": 4,
+        "days": 1
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "2004-11-30",
+      "asOn": "2026-03-31",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 21,
+        "months": 4,
+        "days": 1
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2035-11-29",
+      "lastDayToTheDay": "2034-11-30"
+    }
+  },
+  {
+    "input": {
+      "dob": "2004-11-30",
+      "asOn": "2026-03-31",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 21,
+        "months": 4,
+        "days": 1
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2038-11-29",
+      "lastDayToTheDay": "2037-11-30"
+    }
+  },
+  {
+    "input": {
+      "dob": "2004-11-30",
+      "asOn": "2026-03-31",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 21,
+        "months": 4,
+        "days": 1
+      },
+      "limit": 25,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2030-11-29",
+      "lastDayToTheDay": "2029-11-30",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2004-11-30",
+      "asOn": "2026-03-31",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 21,
+        "months": 4,
+        "days": 1
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1996-08-31",
+      "asOn": "2026-02-28"
+    },
+    "expected": {
+      "age": {
+        "years": 29,
+        "months": 6,
+        "days": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1996-08-31",
+      "asOn": "2026-02-28",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 29,
+        "months": 6,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2027-08-30",
+      "lastDayToTheDay": "2026-08-31"
+    }
+  },
+  {
+    "input": {
+      "dob": "1996-08-31",
+      "asOn": "2026-02-28",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 29,
+        "months": 6,
+        "days": 0
+      },
+      "limit": 33,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2030-08-30",
+      "lastDayToTheDay": "2029-08-31"
+    }
+  },
+  {
+    "input": {
+      "dob": "1996-08-31",
+      "asOn": "2026-02-28",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 29,
+        "months": 6,
+        "days": 0
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2022-08-30",
+      "lastDayToTheDay": "2021-08-31",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1996-08-31",
+      "asOn": "2026-02-28",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 29,
+        "months": 6,
+        "days": 0
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1970-01-01",
+      "asOn": "2026-12-31"
+    },
+    "expected": {
+      "age": {
+        "years": 56,
+        "months": 11,
+        "days": 30
+      }
+    }
+  },
+  {
+    "input": {
+      "dob": "1970-01-01",
+      "asOn": "2026-12-31",
+      "maxYears": 30
+    },
+    "expected": {
+      "age": {
+        "years": 56,
+        "months": 11,
+        "days": 30
+      },
+      "limit": 30,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2000-12-31",
+      "lastDayToTheDay": "2000-01-01"
+    }
+  },
+  {
+    "input": {
+      "dob": "1970-01-01",
+      "asOn": "2026-12-31",
+      "maxYears": 28,
+      "relaxationYears": 5
+    },
+    "expected": {
+      "age": {
+        "years": 56,
+        "months": 11,
+        "days": 30
+      },
+      "limit": 33,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "2003-12-31",
+      "lastDayToTheDay": "2003-01-01"
+    }
+  },
+  {
+    "input": {
+      "dob": "1970-01-01",
+      "asOn": "2026-12-31",
+      "maxYears": 25,
+      "minYears": 18
+    },
+    "expected": {
+      "age": {
+        "years": 56,
+        "months": 11,
+        "days": 30
+      },
+      "limit": 25,
+      "withinByCompletedYears": false,
+      "withinToTheDay": false,
+      "lastDayByCompletedYears": "1995-12-31",
+      "lastDayToTheDay": "1995-01-01",
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "1970-01-01",
+      "asOn": "2026-12-31",
+      "minYears": 21
+    },
+    "expected": {
+      "age": {
+        "years": 56,
+        "months": 11,
+        "days": 30
+      },
+      "meetsMinimum": true
+    }
+  },
+  {
+    "input": {
+      "dob": "2030-01-01",
+      "asOn": "2026-10-15"
+    },
+    "expected": null
+  },
+  {
+    "input": {
+      "dob": "2000-02-30",
+      "asOn": "2026-10-15"
+    },
+    "expected": null
+  }
+]

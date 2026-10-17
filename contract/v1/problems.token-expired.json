@@ -1,0 +1,9 @@
+{
+  "type": "urn:raahi:problem:token-expired",
+  "title": "The access token has expired",
+  "status": 401,
+  "code": "token_expired",
+  "detail": "The access token has expired; register the device again.",
+  "instance": "/api/v1/tools/scam-check",
+  "requestId": "fixture-request-0001"
+}

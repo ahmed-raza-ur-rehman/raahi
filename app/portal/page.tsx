@@ -150,8 +150,8 @@ export default function OrganizationPortalPage() {
       setStatusMessage({
         type: "success",
         text: language === "en"
-          ? "✓ Service successfully onboarded into RAAHI Knowledge Graph!"
-          : "✓ سروس کامیابی سے راہی نالج گراف میں شامل کر دی گئی ہے!",
+          ? "✓ Received. A RAAHI administrator will verify this service before it appears for citizens."
+          : "✓ موصول ہو گئی۔ شہریوں کو دکھانے سے پہلے راہی کا منتظم اس سروس کی تصدیق کرے گا۔",
       });
 
       // Reset Form

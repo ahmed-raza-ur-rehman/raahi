@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tools_title">Tools</string>
+    <string name="tools_scam_title">Is this offer a scam?</string>
+    <string name="tools_scam_body">Paste a job, visa or scholarship message and check it for warning signs.</string>
+    <string name="tools_age_title">Age-limit calculator</string>
+    <string name="tools_age_body">Check whether you meet the age limit in a job advertisement. Works offline.</string>
+    <string name="tools_back">Back</string>
+
+    <string name="scam_paste_label">Paste the message or offer</string>
+    <plurals name="scam_chars_left">
+        <item quantity="one">%d character left</item>
+        <item quantity="other">%d characters left</item>
+    </plurals>
+    <string name="scam_checklist_title">Does any of this apply?</string>
+    <string name="scam_check_button">Check it</string>
+    <string name="scam_checking">Checking…</string>
+    <string name="scam_privacy">Your text is sent securely to RAAHI to be checked in memory. It is not stored or logged. Do not paste passwords or OTPs.</string>
+    <string name="scam_need_input">Paste the message or tick at least one box.</string>
+    <string name="scam_signals">Warning signs found</string>
+    <string name="scam_advice">What to do</string>
+    <string name="scam_level_high">High risk</string>
+    <string name="scam_level_medium">Be careful</string>
+    <string name="scam_level_low">Some warning signs</string>
+    <string name="scam_level_none">No warning signs found</string>
+    <string name="scam_score">Risk score %d of 100</string>
+    <string name="scam_open_link">Open</string>
+    <string name="scam_error_offline">No connection. The scam check needs the internet.</string>
+    <string name="scam_error_unavailable">The scam check is not available right now. Please try again later.</string>
+    <string name="scam_error_rate_limited">Too many checks. Please wait a minute.</string>
+    <string name="scam_error_generic">Something went wrong. Please try again.</string>
+    <string name="scam_answer_askedToPay">I was asked to pay before getting the job, visa or award.</string>
+    <string name="scam_answer_paymentToPersonalAccount">Payment is requested to a personal account or wallet.</string>
+    <string name="scam_answer_contactOnlyMessaging">The only contact is WhatsApp, Telegram or social media.</string>
+    <string name="scam_answer_noInterview">There is no interview, test or qualification check.</string>
+    <string name="scam_answer_noLicenceNumber">No BE&amp;OE licence number was given, or it does not match the official list.</string>
+    <string name="scam_answer_pressureToDecide">I am being pressured to decide quickly.</string>
+    <string name="scam_answer_guaranteedResult">A guaranteed visa, job or admission is promised.</string>
+    <string name="scam_answer_visitVisaForWork">I would travel on a visit visa or skip the protector.</string>
+    <string name="scam_answer_askedForOtpOrPassword">I was asked for an OTP, PIN or password.</string>
+    <string name="scam_answer_verifiedOnOfficialSite">I verified the agent or organisation on the official website.</string>
+
+    <string name="age_dob">Date of birth</string>
+    <string name="age_as_on">Age counted on (closing date)</string>
+    <string name="age_day">Day</string>
+    <string name="age_month">Month</string>
+    <string name="age_year">Year</string>
+    <string name="age_max">Upper age limit (years)</string>
+    <string name="age_relaxation">Relaxation (years)</string>
+    <string name="age_min">Minimum age (years, optional)</string>
+    <string name="age_calculate">Calculate</string>
+    <string name="age_error_dob">Enter a real date of birth.</string>
+    <string name="age_error_as_on">Enter a real date for the closing date.</string>
+    <string name="age_error_order">The date of birth must be before the closing date.</string>
+    <string name="age_error_number">Enter whole numbers only.</string>
+    <string name="age_result_age">Your age on that date</string>
+    <plurals name="age_years">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="age_months">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="age_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="age_within_years">Within the limit (counting completed years)</string>
+    <string name="age_within_day">Within the limit (counted to the day)</string>
+    <string name="age_yes">Yes</string>
+    <string name="age_no">No</string>
+    <string name="age_last_day_years">Last day you still meet it (completed years): %s</string>
+    <string name="age_last_day_day">Last day you still meet it (to the day): %s</string>
+    <string name="age_meets_min">Meets the minimum age</string>
+    <string name="age_explain">Advertisements use either reading. If it says \"not exceeding N years\", the first usually applies. Read the advertisement, and ask the department if unsure.</string>
+</resources>

@@ -1,0 +1,30 @@
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+index f14dfda..5502434 100644
+--- a/src/app/layout.tsx
++++ b/src/app/layout.tsx
+@@ -81,6 +81,25 @@ export default function RootLayout({
+                   Educational only. Activities are not diagnostic tests or treatment, scores describe one task under one
+                   set of conditions, and progress stays on this device unless you copy or share it yourself.
+                 </p>
++                <p className="footer-note">
++                  Looking for free courses, scholarships or step-by-step guides? RAAHI lists them —{" "}
++                  <a
++                    href="https://raahi-phi.vercel.app/opportunities/guides/learn-free-90-days?utm_source=cognitive-fitness&utm_medium=link"
++                    target="_blank"
++                    rel="noopener noreferrer"
++                  >
++                    learn a skill for free in 90 days
++                  </a>
++                  {" · "}
++                  <a
++                    href="https://raahi-phi.vercel.app/opportunities?kind=course,coupon,training&utm_source=cognitive-fitness&utm_medium=link"
++                    target="_blank"
++                    rel="noopener noreferrer"
++                  >
++                    free courses
++                  </a>
++                  . A separate site: nothing is sent to it unless you click.
++                </p>
+                 <a href="#main-content" className="footer-top-link">
+                   Back to top <span aria-hidden="true">↑</span>
+                 </a>

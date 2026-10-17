@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "Retry-After": "20",
+    "RateLimit-Remaining": "0"
+  },
+  "body": {
+    "type": "urn:raahi:problem:rate-limited",
+    "title": "Too many requests",
+    "status": 429,
+    "code": "rate_limited",
+    "detail": "Too many requests. Wait for the time in Retry-After, then try again.",
+    "instance": "/api/v1/opportunities",
+    "requestId": "fixture-request-0001"
+  }
+}

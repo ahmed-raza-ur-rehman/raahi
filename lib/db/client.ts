@@ -166,6 +166,58 @@ export function initializeDatabase(database: Database.Database) {
       content,
       tokenize='unicode61 remove_diacritics 2'
     );
+
+    CREATE TABLE IF NOT EXISTS opportunities (
+      id TEXT PRIMARY KEY,
+      kind TEXT NOT NULL,
+      scope TEXT NOT NULL,
+      title TEXT NOT NULL,
+      organization TEXT,
+      summary TEXT,
+      url TEXT NOT NULL,
+      apply_url TEXT,
+      source_id TEXT NOT NULL,
+      source_name TEXT NOT NULL,
+      source_url TEXT NOT NULL,
+      country TEXT,
+      location TEXT,
+      remote INTEGER,
+      levels TEXT NOT NULL DEFAULT '[]',
+      fields TEXT NOT NULL DEFAULT '[]',
+      tags TEXT NOT NULL DEFAULT '[]',
+      funding TEXT,
+      deadline TEXT,
+      deadline_text TEXT,
+      rolling INTEGER,
+      posted_at TEXT,
+      starts_at TEXT,
+      first_seen TEXT NOT NULL,
+      last_seen TEXT NOT NULL,
+      open_to_pakistan INTEGER,
+      eligibility_note TEXT,
+      languages TEXT,
+      extra TEXT,
+      also_on TEXT,
+      dedupe_key TEXT NOT NULL,
+      expires_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS opportunities_kind_idx ON opportunities(kind);
+    CREATE INDEX IF NOT EXISTS opportunities_scope_idx ON opportunities(scope);
+    CREATE INDEX IF NOT EXISTS opportunities_deadline_idx ON opportunities(deadline);
+    CREATE INDEX IF NOT EXISTS opportunities_expires_idx ON opportunities(expires_at);
+    CREATE TABLE IF NOT EXISTS opportunity_meta (
+      name TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+    CREATE VIRTUAL TABLE IF NOT EXISTS opportunity_search USING fts5(
+      id UNINDEXED,
+      title,
+      organization,
+      summary,
+      tags,
+      country,
+      tokenize='unicode61 remove_diacritics 2'
+    );
   `);
 }
 

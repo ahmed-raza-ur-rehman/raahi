@@ -190,3 +190,56 @@ export const messages = sqliteTable(
   (table) => [index("messages_conversation_idx").on(table.conversationId)],
 );
 
+
+/**
+ * Scraped scholarships, jobs, courses etc. (see lib/opportunities). Unlike the catalog tables this data is
+ * reloaded from data/opportunities/snapshot.json, never wiped by seedDatabase().
+ */
+export const opportunities = sqliteTable(
+  "opportunities",
+  {
+    id: text("id").primaryKey(),
+    kind: text("kind").notNull(),
+    scope: text("scope").notNull(),
+    title: text("title").notNull(),
+    organization: text("organization"),
+    summary: text("summary"),
+    url: text("url").notNull(),
+    applyUrl: text("apply_url"),
+    sourceId: text("source_id").notNull(),
+    sourceName: text("source_name").notNull(),
+    sourceUrl: text("source_url").notNull(),
+    country: text("country"),
+    location: text("location"),
+    remote: integer("remote", { mode: "boolean" }),
+    levels: text("levels", { mode: "json" }).$type<string[]>().notNull(),
+    fields: text("fields", { mode: "json" }).$type<string[]>().notNull(),
+    tags: text("tags", { mode: "json" }).$type<string[]>().notNull(),
+    funding: text("funding"),
+    deadline: text("deadline"),
+    deadlineText: text("deadline_text"),
+    rolling: integer("rolling", { mode: "boolean" }),
+    postedAt: text("posted_at"),
+    startsAt: text("starts_at"),
+    firstSeen: text("first_seen").notNull(),
+    lastSeen: text("last_seen").notNull(),
+    openToPakistan: integer("open_to_pakistan", { mode: "boolean" }),
+    eligibilityNote: text("eligibility_note"),
+    languages: text("languages", { mode: "json" }).$type<string[]>(),
+    extra: text("extra", { mode: "json" }).$type<Record<string, string | number | boolean | null>>(),
+    alsoOn: text("also_on", { mode: "json" }).$type<Array<{ sourceName: string; url: string }>>(),
+    dedupeKey: text("dedupe_key").notNull(),
+    expiresAt: integer("expires_at").notNull(),
+  },
+  (table) => [
+    index("opportunities_kind_idx").on(table.kind),
+    index("opportunities_scope_idx").on(table.scope),
+    index("opportunities_deadline_idx").on(table.deadline),
+    index("opportunities_expires_idx").on(table.expiresAt),
+  ],
+);
+
+export const opportunityMeta = sqliteTable("opportunity_meta", {
+  name: text("name").primaryKey(),
+  value: text("value").notNull(),
+});

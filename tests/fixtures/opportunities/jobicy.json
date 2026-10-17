@@ -1,0 +1,27 @@
+{
+  "apiVersion": "2.2.19",
+  "jobCount": 1,
+  "lastUpdate": "2026-10-10T15:50:38+00:00",
+  "jobs": [
+    {
+      "id": 154977,
+      "url": "https://jobicy.com/jobs/154977-revops-analyst",
+      "jobSlug": "154977-revops-analyst",
+      "jobTitle": "RevOps Analyst",
+      "companyName": "Roboflow",
+      "jobIndustry": [
+        "Product & Operations"
+      ],
+      "jobType": [
+        "Full-Time"
+      ],
+      "jobGeo": "USA",
+      "jobLevel": "Senior",
+      "jobExcerpt": "Who We Are Our mission is to make the world programmable. Sight is one of the key ways we understand the world…",
+      "pubDate": "2026-10-09 14:20:00",
+      "salaryMin": 140000,
+      "salaryMax": 170000,
+      "salaryCurrency": "USD"
+    }
+  ]
+}

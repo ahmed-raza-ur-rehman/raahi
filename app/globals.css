@@ -506,3 +506,10 @@ img, video { max-width: 100%; }
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 .delay-500 { animation-delay: 0.5s; }
+
+/* Printing (the CV builder's "Save as PDF"): the page chrome is hidden with print: utilities; this only sets the paper. */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: #fff !important; }
+  .app-shell { padding: 0 !important; min-height: 0 !important; background: #fff !important; box-shadow: none !important; }
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "now": "2026-10-15T08:00:00Z",
+    "firstSeen": "2026-10-15T07:00:00Z",
+    "expected": true
+  },
+  {
+    "now": "2026-10-15T08:00:00Z",
+    "firstSeen": "2026-10-12T08:00:00Z",
+    "expected": true
+  },
+  {
+    "now": "2026-10-15T08:00:00Z",
+    "firstSeen": "2026-10-12T07:59:59Z",
+    "expected": false
+  },
+  {
+    "now": "2026-10-15T08:00:00Z",
+    "firstSeen": "2026-10-01T00:00:00Z",
+    "expected": false
+  }
+]

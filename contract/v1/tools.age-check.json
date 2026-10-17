@@ -1,0 +1,22 @@
+{
+  "request": {
+    "dob": "1998-03-15",
+    "asOn": "2026-10-15",
+    "maxYears": 28,
+    "relaxationYears": 2
+  },
+  "response": {
+    "data": {
+      "age": {
+        "years": 28,
+        "months": 7,
+        "days": 0
+      },
+      "limit": 30,
+      "withinByCompletedYears": true,
+      "withinToTheDay": true,
+      "lastDayByCompletedYears": "2029-03-14",
+      "lastDayToTheDay": "2028-03-15"
+    }
+  }
+}

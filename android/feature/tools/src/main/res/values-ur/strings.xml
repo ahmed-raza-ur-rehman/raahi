@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Urdu strings are machine-assisted and still need a native-speaker review (see docs/mobile/localization.md). -->
+<resources>
+    <string name="tools_title">اوزار</string>
+    <string name="tools_scam_title">کیا یہ پیشکش فراڈ ہے؟</string>
+    <string name="tools_scam_body">نوکری، ویزا یا وظیفے کا پیغام پیسٹ کریں اور خطرے کی علامات دیکھیں۔</string>
+    <string name="tools_age_title">عمر کی حد کا حساب</string>
+    <string name="tools_age_body">دیکھیں کہ کیا آپ اشتہار میں دی گئی عمر کی حد پر پورا اترتے ہیں۔ بغیر انٹرنیٹ بھی چلتا ہے۔</string>
+    <string name="tools_back">واپس</string>
+
+    <string name="scam_paste_label">پیغام یا پیشکش یہاں پیسٹ کریں</string>
+    <plurals name="scam_chars_left">
+        <item quantity="one">%d حرف باقی</item>
+        <item quantity="other">%d حروف باقی</item>
+    </plurals>
+    <string name="scam_checklist_title">کیا ان میں سے کوئی بات درست ہے؟</string>
+    <string name="scam_check_button">جانچیں</string>
+    <string name="scam_checking">جانچ ہو رہی ہے…</string>
+    <string name="scam_privacy">آپ کا متن محفوظ طریقے سے راہی کو بھیجا جاتا ہے اور صرف میموری میں جانچا جاتا ہے۔ اسے محفوظ یا ریکارڈ نہیں کیا جاتا۔ پاس ورڈ یا او ٹی پی پیسٹ نہ کریں۔</string>
+    <string name="scam_need_input">پیغام پیسٹ کریں یا کم از کم ایک خانہ منتخب کریں۔</string>
+    <string name="scam_signals">پائی گئی خطرے کی علامات</string>
+    <string name="scam_advice">کیا کریں</string>
+    <string name="scam_level_high">زیادہ خطرہ</string>
+    <string name="scam_level_medium">احتیاط کریں</string>
+    <string name="scam_level_low">کچھ علامات موجود ہیں</string>
+    <string name="scam_level_none">خطرے کی کوئی علامت نہیں ملی</string>
+    <string name="scam_score">خطرے کا اسکور: 100 میں سے %d</string>
+    <string name="scam_open_link">کھولیں</string>
+    <string name="scam_error_offline">انٹرنیٹ نہیں ہے۔ فراڈ کی جانچ کے لیے انٹرنیٹ درکار ہے۔</string>
+    <string name="scam_error_unavailable">فراڈ کی جانچ ابھی دستیاب نہیں۔ براہ کرم بعد میں کوشش کریں۔</string>
+    <string name="scam_error_rate_limited">بہت زیادہ جانچیں۔ ایک منٹ انتظار کریں۔</string>
+    <string name="scam_error_generic">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</string>
+    <string name="scam_answer_askedToPay">نوکری، ویزا یا وظیفہ ملنے سے پہلے مجھ سے ادائیگی مانگی گئی۔</string>
+    <string name="scam_answer_paymentToPersonalAccount">ادائیگی ذاتی اکاؤنٹ یا والیٹ میں مانگی گئی۔</string>
+    <string name="scam_answer_contactOnlyMessaging">رابطہ صرف واٹس ایپ، ٹیلیگرام یا سوشل میڈیا پر ہے۔</string>
+    <string name="scam_answer_noInterview">کوئی انٹرویو، ٹیسٹ یا اہلیت کی جانچ نہیں۔</string>
+    <string name="scam_answer_noLicenceNumber">بی ای او ای کا لائسنس نمبر نہیں دیا گیا یا سرکاری فہرست سے نہیں ملتا۔</string>
+    <string name="scam_answer_pressureToDecide">مجھ پر جلد فیصلے کا دباؤ ہے۔</string>
+    <string name="scam_answer_guaranteedResult">یقینی ویزا، نوکری یا داخلے کا وعدہ کیا گیا ہے۔</string>
+    <string name="scam_answer_visitVisaForWork">میں وزٹ ویزے پر جاؤں گا یا پروٹیکٹر چھوڑا جائے گا۔</string>
+    <string name="scam_answer_askedForOtpOrPassword">مجھ سے او ٹی پی، پن یا پاس ورڈ مانگا گیا۔</string>
+    <string name="scam_answer_verifiedOnOfficialSite">میں نے ایجنٹ یا ادارے کی سرکاری ویب سائٹ پر تصدیق کر لی ہے۔</string>
+
+    <string name="age_dob">تاریخ پیدائش</string>
+    <string name="age_as_on">عمر کا شمار اس تاریخ پر (آخری تاریخ)</string>
+    <string name="age_day">دن</string>
+    <string name="age_month">مہینہ</string>
+    <string name="age_year">سال</string>
+    <string name="age_max">عمر کی بالائی حد (سال)</string>
+    <string name="age_relaxation">رعایت (سال)</string>
+    <string name="age_min">کم از کم عمر (سال، اختیاری)</string>
+    <string name="age_calculate">حساب کریں</string>
+    <string name="age_error_dob">تاریخ پیدائش درست درج کریں۔</string>
+    <string name="age_error_as_on">آخری تاریخ درست درج کریں۔</string>
+    <string name="age_error_order">تاریخ پیدائش آخری تاریخ سے پہلے کی ہونی چاہیے۔</string>
+    <string name="age_error_number">صرف پورے اعداد درج کریں۔</string>
+    <string name="age_result_age">اس تاریخ پر آپ کی عمر</string>
+    <plurals name="age_years">
+        <item quantity="one">%d سال</item>
+        <item quantity="other">%d سال</item>
+    </plurals>
+    <plurals name="age_months">
+        <item quantity="one">%d ماہ</item>
+        <item quantity="other">%d ماہ</item>
+    </plurals>
+    <plurals name="age_days">
+        <item quantity="one">%d دن</item>
+        <item quantity="other">%d دن</item>
+    </plurals>
+    <string name="age_within_years">حد کے اندر (مکمل سال گن کر)</string>
+    <string name="age_within_day">حد کے اندر (دن تک گن کر)</string>
+    <string name="age_yes">جی ہاں</string>
+    <string name="age_no">نہیں</string>
+    <string name="age_last_day_years">آخری دن جب تک آپ شرط پوری کرتے ہیں (مکمل سال): %s</string>
+    <string name="age_last_day_day">آخری دن جب تک آپ شرط پوری کرتے ہیں (دن تک): %s</string>
+    <string name="age_meets_min">کم از کم عمر کی شرط پوری ہے</string>
+    <string name="age_explain">اشتہارات میں دونوں طرح کا مطلب لیا جاتا ہے۔ اگر لکھا ہو \"N سال سے زیادہ نہ ہو\" تو عموماً پہلا مطلب لاگو ہوتا ہے۔ اشتہار غور سے پڑھیں اور شک ہو تو محکمے سے پوچھیں۔</string>
+</resources>

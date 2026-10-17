@@ -1,0 +1,139 @@
+{
+ "comments": "21/08/2026: Cursor pagination is now available and is the preferred way to page through the feed. Pass the nextCursor value from each response back as ?cursor=. It is faster than offset and will never…",
+ "updatedAt": 1791679721,
+ "offset": 0,
+ "limit": 3,
+ "totalCount": 118576,
+ "nextCursor": "MjAyNi0xMC0xMVQwMDo0ODowMy43MTA0NzdafDIzODgzNzg",
+ "jobs": [
+  {
+   "title": "Analista de Demand Generation (Home Office)",
+   "excerpt": "Nós somos a BHS! Com mais de 30 anos de experiência no mercado, proporcionamos soluções modernas de TI.",
+   "companyName": "Somos BHS 💚",
+   "companySlug": "somos-bhs",
+   "companyLogo": "",
+   "employmentType": "Full Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "Brazil"
+   ],
+   "timezoneRestrictions": [
+    -5,
+    -4,
+    -3,
+    -2
+   ],
+   "categories": [
+    "Lead-Generation-Analyst",
+    "Marketing-Analyst",
+    "B2B-Marketing-Specialist",
+    "Growth-Marketing-Specialist",
+    "Performance-Marketing-Analyst",
+    "Demand-Gen-Specialist",
+    "Analista-De-Marketing",
+    "Demand-Generation-Specialist",
+    "Marketing"
+   ],
+   "parentCategories": [
+    "Marketing"
+   ],
+   "description": "<h3>Nós somos a BHS!</h3><p>Com mais de 30 anos de experiência no mercado, proporcionamos soluções modernas de TI. <strong>🚀</strong></p><p>Somos reconhecidos como a<strong>MELHOR</strong> empresa para se trabalhar em<strong>MG e TI do BRASIL pelo GPTW - Great Place to Work</strong>, e estamos classificados como a 4ª melhor empresa para se trabalhar na categoria <strong>LATAM</strong>.</p><h3>✨ O que a gente espera …",
+   "pubDate": 1791679721,
+   "expiryDate": 1796863720,
+   "applicationLink": "https://himalayas.app/companies/somos-bhs/jobs/analista-de-demand-generation-home-office",
+   "guid": "https://himalayas.app/companies/somos-bhs/jobs/analista-de-demand-generation-home-office"
+  },
+  {
+   "title": "Sales Recruiter -  Limited Term Employee",
+   "excerpt": "Duties and Responsibilities:• Lead detailed intake meetings with hiring managers to determine position specifications, providing relevant market data and recommendations.",
+   "companyName": "Cielo",
+   "companySlug": "cielo",
+   "companyLogo": "https://cdn-images.himalayas.app/lg0u55boql7ac4eaf4yynymcf4qo",
+   "employmentType": "Contractor",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Recruiter",
+    "Sales-Recruiter",
+    "Talent-Acquisition-Specialist",
+    "Staffing-Recruiter",
+    "Technical-Recruiter",
+    "Sales-Recruiting",
+    "Contract-Recruiter"
+   ],
+   "parentCategories": [
+    "Human Resources"
+   ],
+   "description": "<h3>Duties and Responsibilities:</h3><ul>\n<li>Lead detailed intake meetings with hiring managers to determine position specifications, providing relevant market data and recommendations.</li>\n<li>Collaborate with internal stakeholders and departments to develop and manage recruitment marketing and sourcing strategies.</li>\n<li>Evaluate candidate profiles against position requirements and deliver strong candidate slat…",
+   "pubDate": 1791679720,
+   "expiryDate": 1796863720,
+   "applicationLink": "https://himalayas.app/companies/cielo/jobs/sales-recruiter-limited-term-employee",
+   "guid": "https://himalayas.app/companies/cielo/jobs/sales-recruiter-limited-term-employee"
+  },
+  {
+   "title": "Assoc. Director, Analytical Development",
+   "excerpt": "COMPANY:At BioCryst, we share a deep commitment to improving the lives of people living with hereditary angioedema (HAE) and other rare diseases.",
+   "companyName": "BioCryst",
+   "companySlug": "biocryst",
+   "companyLogo": "https://cdn-images.himalayas.app/tnt28qnmphtozcvf2jaqbs5ccoj5",
+   "employmentType": "Full Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Director"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Analytical-Development-Director",
+    "Analytical-Scientist",
+    "Biologics-Research-Scientist",
+    "Pharmaceutical-Scientist",
+    "Quality-Control-Director",
+    "Remote-Associate-Director-of-Analytical-Development",
+    "Analytical-Development-Leadership"
+   ],
+   "parentCategories": [],
+   "description": "<h3>COMPANY:</h3><p><i>At <a href=\"https://himalayas.app/companies/biocryst\">BioCryst</a>, we share a deep commitment to improving the lives of people living with hereditary angioedema (HAE) and other rare diseases. </i><i>We leverage our expertise in structure-guided drug design to develop first-in-class or best-in-class oral small-molecule and injectable protein therapeutics. Our global headquarters is in Durham, N…",
+   "pubDate": 1791679683,
+   "expiryDate": 1796863682,
+   "applicationLink": "https://himalayas.app/companies/biocryst/jobs/assoc-director-analytical-development",
+   "guid": "https://himalayas.app/companies/biocryst/jobs/assoc-director-analytical-development"
+  }
+ ]
+}

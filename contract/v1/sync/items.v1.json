@@ -1,0 +1,421 @@
+[
+  {
+    "id": "gopunjab-00927c2d0d",
+    "rev": "2f84d837b913",
+    "kind": "job",
+    "scope": "pakistan",
+    "title": "Punjab Safe Cities Authority (PSCA) — PSCA Monitoring Officer Jobs 2026: Chief Implementation & Monitoring Officer (PSCA-04)",
+    "organization": "Punjab Safe Cities Authority (PSCA)",
+    "summary": "Punjab government advertisement explained in plain words (1 seat). Open it for eligibility and how to apply — and apply only on the department's official portal.",
+    "url": "https://gopunjab.pk/jobs/psca-monitoring-officer-jobs-2026",
+    "source": {
+      "id": "gopunjab",
+      "name": "GoPunjab jobs",
+      "url": "https://gopunjab.pk/"
+    },
+    "country": "Pakistan",
+    "location": "Punjab",
+    "levels": [],
+    "fields": [
+      "computer-science"
+    ],
+    "tags": [
+      "government job",
+      "punjab"
+    ],
+    "funding": "paid",
+    "deadline": "2026-10-15",
+    "deadlineText": "Last date: 15 October 2026",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "openToPakistan": true,
+    "status": "closing-soon",
+    "daysLeft": 0,
+    "isNew": true
+  },
+  {
+    "id": "gopunjab-17d787f786",
+    "rev": "2b455eea190a",
+    "kind": "job",
+    "scope": "pakistan",
+    "title": "Punjab Water and Sanitation Authority Jobs 2026: IT Expert (PPS-08), Last Date 15 October",
+    "organization": "Punjab Water and Sanitation Authority (PMU, Punjab Development Program, WASA Part)",
+    "summary": "Punjab government advertisement explained in plain words (1 seat). Open it for eligibility and how to apply — and apply only on the department's official portal.",
+    "url": "https://gopunjab.pk/jobs/punjab-water-and-sanitation-authority-jobs-2026",
+    "source": {
+      "id": "gopunjab",
+      "name": "GoPunjab jobs",
+      "url": "https://gopunjab.pk/"
+    },
+    "country": "Pakistan",
+    "location": "Punjab",
+    "levels": [],
+    "fields": [
+      "computer-science",
+      "agriculture-environment"
+    ],
+    "tags": [
+      "government job",
+      "punjab"
+    ],
+    "funding": "paid",
+    "deadline": "2026-10-15",
+    "deadlineText": "Last date: 15 October 2026",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "openToPakistan": true,
+    "status": "closing-soon",
+    "daysLeft": 0,
+    "isNew": true
+  },
+  {
+    "id": "devpost-13b8ecda7d",
+    "rev": "cf3948add08c",
+    "kind": "competition",
+    "scope": "international",
+    "title": "RESPAWN",
+    "organization": "MS Ramaiah University of Applied Science",
+    "summary": "Online hackathon hosted by MS Ramaiah University of Applied Science with ₹ 15,000 in prizes (43 registered). Check the official rules for country restrictions.",
+    "url": "https://respawn.devpost.com/",
+    "source": {
+      "id": "devpost",
+      "name": "Devpost hackathons",
+      "url": "https://devpost.com/hackathons"
+    },
+    "location": "Online",
+    "remote": true,
+    "levels": [],
+    "fields": [],
+    "tags": [
+      "hackathon",
+      "beginner friendly",
+      "design",
+      "gaming"
+    ],
+    "deadline": "2026-10-15",
+    "deadlineText": "Oct 12 - 15, 2026",
+    "startsAt": "2026-10-12",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "status": "closing-soon",
+    "daysLeft": 0,
+    "isNew": true
+  },
+  {
+    "id": "devpost-16f09be25c",
+    "rev": "42c0ba2c2ef9",
+    "kind": "competition",
+    "scope": "international",
+    "title": "Hack Apertus",
+    "organization": "aiLights Association",
+    "summary": "Hackathon in Grand Finals 2027 hosted by aiLights Association with €10,680 in prizes (900 registered). Check the official rules for country restrictions.",
+    "url": "https://hackapertus.devpost.com/",
+    "source": {
+      "id": "devpost",
+      "name": "Devpost hackathons",
+      "url": "https://devpost.com/hackathons"
+    },
+    "location": "Grand Finals 2027",
+    "remote": false,
+    "levels": [],
+    "fields": [],
+    "tags": [
+      "hackathon",
+      "education",
+      "machine learning/ai",
+      "social good"
+    ],
+    "deadline": "2026-10-16",
+    "deadlineText": "Oct 01 - 16, 2026",
+    "startsAt": "2026-10-01",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "status": "closing-soon",
+    "daysLeft": 1,
+    "isNew": true
+  },
+  {
+    "id": "devpost-147848bbd7",
+    "rev": "e44eedf24b4b",
+    "kind": "competition",
+    "scope": "international",
+    "title": "MLAI Hackathon 2026",
+    "organization": "Mạng Lưới AI",
+    "summary": "Online hackathon hosted by Mạng Lưới AI with $0 in prizes (992 registered). Check the official rules for country restrictions.",
+    "url": "https://mlai-hackathon.devpost.com/",
+    "source": {
+      "id": "devpost",
+      "name": "Devpost hackathons",
+      "url": "https://devpost.com/hackathons"
+    },
+    "location": "Online",
+    "remote": true,
+    "levels": [],
+    "fields": [
+      "computer-science"
+    ],
+    "tags": [
+      "hackathon",
+      "databases",
+      "machine learning/ai"
+    ],
+    "deadline": "2026-10-16",
+    "deadlineText": "Sep 18 - Oct 16, 2026",
+    "startsAt": "2026-09-18",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "status": "closing-soon",
+    "daysLeft": 1,
+    "isNew": true
+  },
+  {
+    "id": "ctftime-1ba64b65ba",
+    "rev": "4357c9f91162",
+    "kind": "competition",
+    "scope": "international",
+    "title": "DEADFACE CTF 2026",
+    "organization": "Cyber Hacktics",
+    "summary": "Jeopardy capture-the-flag, online, starts 2026-10-17 14:00 UTC, prizes: 1st Place - $300 2nd Place - $200 3rd Place - $100.",
+    "url": "https://ctftime.org/event/3279",
+    "applyUrl": "https://ctf.deadface.io/",
+    "source": {
+      "id": "ctftime",
+      "name": "CTFtime",
+      "url": "https://ctftime.org/"
+    },
+    "location": "Online",
+    "remote": true,
+    "levels": [],
+    "fields": [
+      "computer-science"
+    ],
+    "tags": [
+      "ctf",
+      "cybersecurity",
+      "jeopardy"
+    ],
+    "funding": "free",
+    "deadline": "2026-10-17",
+    "deadlineText": "Starts 2026-10-17 14:00 UTC",
+    "postedAt": "2026-10-15T04:38:08.851Z",
+    "startsAt": "2026-10-17",
+    "firstSeen": "2026-10-11T08:53:05.345Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "openToPakistan": true,
+    "status": "closing-soon",
+    "daysLeft": 2,
+    "isNew": false
+  },
+  {
+    "id": "ctftime-1da45414a9",
+    "rev": "8353fa7fca4c",
+    "kind": "competition",
+    "scope": "international",
+    "title": "Securinets CTF Quals 2026",
+    "organization": "Securinets",
+    "summary": "Jeopardy capture-the-flag, online, starts 2026-10-17 09:00 UTC.",
+    "url": "https://ctftime.org/event/3364",
+    "applyUrl": "https://ctf.securinets.tn/",
+    "source": {
+      "id": "ctftime",
+      "name": "CTFtime",
+      "url": "https://ctftime.org/"
+    },
+    "location": "Online",
+    "remote": true,
+    "levels": [],
+    "fields": [
+      "computer-science"
+    ],
+    "tags": [
+      "ctf",
+      "cybersecurity",
+      "jeopardy"
+    ],
+    "funding": "free",
+    "deadline": "2026-10-17",
+    "deadlineText": "Starts 2026-10-17 09:00 UTC",
+    "postedAt": "2026-10-15T04:38:08.851Z",
+    "startsAt": "2026-10-17",
+    "firstSeen": "2026-10-11T08:53:05.345Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "openToPakistan": true,
+    "status": "closing-soon",
+    "daysLeft": 2,
+    "isNew": false
+  },
+  {
+    "id": "ctftime-0e14f49f88",
+    "rev": "962415104251",
+    "kind": "competition",
+    "scope": "international",
+    "title": "SOLAR CTF 2026",
+    "organization": "SOLARCTF",
+    "summary": "Jeopardy capture-the-flag, online, starts 2026-10-17 09:00 UTC, prizes: The total prize pool is ₽300,000* plus limited-edition merchandise. You can participate if you are at least 18 years old.",
+    "url": "https://ctftime.org/event/3471",
+    "applyUrl": "https://solarctf.ru/",
+    "source": {
+      "id": "ctftime",
+      "name": "CTFtime",
+      "url": "https://ctftime.org/"
+    },
+    "location": "Online",
+    "remote": true,
+    "levels": [],
+    "fields": [
+      "computer-science"
+    ],
+    "tags": [
+      "ctf",
+      "cybersecurity",
+      "jeopardy"
+    ],
+    "funding": "free",
+    "deadline": "2026-10-17",
+    "deadlineText": "Starts 2026-10-17 09:00 UTC",
+    "postedAt": "2026-10-15T04:38:08.851Z",
+    "startsAt": "2026-10-17",
+    "firstSeen": "2026-10-11T08:53:05.345Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "eligibilityNote": "Restricted to students / academic teams — read the rules to confirm you qualify.",
+    "status": "closing-soon",
+    "daysLeft": 2,
+    "isNew": false
+  },
+  {
+    "id": "codeforces-023e4fa8d2",
+    "rev": "ff3ee115763d",
+    "kind": "competition",
+    "scope": "international",
+    "title": "WorldQuant Round 1 (Codeforces Round 1128, Div. 1 + Div. 2)",
+    "organization": "Codeforces",
+    "summary": "Rated online programming contest (CF rules), 3 hours. Starts 2026-10-17 14:35 UTC. Free to enter.",
+    "url": "https://codeforces.com/contests/2261",
+    "source": {
+      "id": "codeforces",
+      "name": "Codeforces contests",
+      "url": "https://codeforces.com/contests"
+    },
+    "location": "Online",
+    "remote": true,
+    "levels": [],
+    "fields": [
+      "computer-science"
+    ],
+    "tags": [
+      "programming",
+      "competitive-programming",
+      "codeforces"
+    ],
+    "funding": "free",
+    "deadline": "2026-10-17",
+    "deadlineText": "Starts 2026-10-17 14:35 UTC",
+    "postedAt": "2026-10-15T04:38:08.851Z",
+    "startsAt": "2026-10-17",
+    "firstSeen": "2026-10-11T08:53:05.345Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "openToPakistan": true,
+    "status": "closing-soon",
+    "daysLeft": 2,
+    "isNew": false
+  },
+  {
+    "id": "gopunjab-00ce1ae601",
+    "rev": "42498c0ee5f7",
+    "kind": "job",
+    "scope": "pakistan",
+    "title": "Directorate General of Archaeology, Punjab — Archaeology Procurement Specialist Jobs 2026: 10 Posts for Rohtas Fort, Harappa, Hiran Minar and Tourism PMU",
+    "organization": "Directorate General of Archaeology, Punjab",
+    "summary": "Punjab government advertisement explained in plain words (10 seats). Open it for eligibility and how to apply — and apply only on the department's official portal.",
+    "url": "https://gopunjab.pk/jobs/archaeology-procurement-specialist-jobs-2026",
+    "source": {
+      "id": "gopunjab",
+      "name": "GoPunjab jobs",
+      "url": "https://gopunjab.pk/"
+    },
+    "country": "Pakistan",
+    "location": "Punjab",
+    "levels": [],
+    "fields": [
+      "computer-science"
+    ],
+    "tags": [
+      "government job",
+      "punjab"
+    ],
+    "funding": "paid",
+    "deadline": "2026-10-18",
+    "deadlineText": "Last date: 18 October 2026",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "openToPakistan": true,
+    "status": "closing-soon",
+    "daysLeft": 3,
+    "isNew": true
+  },
+  {
+    "id": "devpost-08ad514888",
+    "rev": "614e90642054",
+    "kind": "competition",
+    "scope": "international",
+    "title": "HackGB",
+    "organization": "Google Developers Group on Campus- UWGB",
+    "summary": "Hackathon in Brown County STEM Innovation Center hosted by Google Developers Group on Campus- UWGB with $0 in prizes (9 registered). Check the official rules for country restrictions.",
+    "url": "https://hackgb-2026.devpost.com/",
+    "source": {
+      "id": "devpost",
+      "name": "Devpost hackathons",
+      "url": "https://devpost.com/hackathons"
+    },
+    "location": "Brown County STEM Innovation Center",
+    "remote": false,
+    "levels": [],
+    "fields": [],
+    "tags": [
+      "hackathon",
+      "beginner friendly",
+      "education",
+      "health"
+    ],
+    "deadline": "2026-10-18",
+    "deadlineText": "Oct 13 - 18, 2026",
+    "startsAt": "2026-10-13",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "status": "closing-soon",
+    "daysLeft": 3,
+    "isNew": true
+  },
+  {
+    "id": "devpost-04b7053e8c",
+    "rev": "737ee7b63925",
+    "kind": "competition",
+    "scope": "international",
+    "title": "IEEE Hack For Humanity",
+    "organization": "IEEE Charlotte Section",
+    "summary": "Online hackathon hosted by IEEE Charlotte Section with $0 in prizes (34 registered). Check the official rules for country restrictions.",
+    "url": "https://ieee-ai-hack-for-humanity.devpost.com/",
+    "source": {
+      "id": "devpost",
+      "name": "Devpost hackathons",
+      "url": "https://devpost.com/hackathons"
+    },
+    "location": "Online",
+    "remote": true,
+    "levels": [],
+    "fields": [],
+    "tags": [
+      "hackathon",
+      "machine learning/ai",
+      "social good"
+    ],
+    "deadline": "2026-10-18",
+    "deadlineText": "Oct 11 - 18, 2026",
+    "startsAt": "2026-10-11",
+    "firstSeen": "2026-10-15T04:38:08.851Z",
+    "lastSeen": "2026-10-15T04:38:08.851Z",
+    "status": "closing-soon",
+    "daysLeft": 3,
+    "isNew": true
+  }
+]

@@ -1,0 +1,5437 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RAAHI Opportunities API",
+    "version": "1.0.0",
+    "description": "Public, read-mostly API for RAAHI: opportunities (scholarships, jobs, internships, competitions, courses), the yearly planner, guides, the resource directory and a few tools.\n\n**Authentication tiers.** Anonymous (read-only, tightest limits) - device token (short-lived; obtained by solving a proof-of-work challenge; used by the Android app) - partner API key - administrator secret. A credential that is present but invalid is rejected with 401, never silently ignored.\n\n**Errors** are RFC 9457 `application/problem+json` documents with a stable `code`. **Rate limits** are advertised in `RateLimit-*` headers; a rejected request carries `Retry-After`.\n\n**Caching.** Anonymous GETs are CDN-cacheable and carry an `ETag`; send `If-None-Match` to get `304`. Credentialed responses are `private`.",
+    "license": {
+      "name": "See LICENSE",
+      "url": "https://github.com/ahmed-raza-ur-rehman/raahi/blob/master/LICENSE"
+    },
+    "x-api-version": "1"
+  },
+  "servers": [
+    {
+      "url": "https://raahi-phi.vercel.app"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication"
+    },
+    {
+      "name": "Guides"
+    },
+    {
+      "name": "Operations"
+    },
+    {
+      "name": "Opportunities"
+    },
+    {
+      "name": "Programmes"
+    },
+    {
+      "name": "Resources"
+    },
+    {
+      "name": "Service"
+    },
+    {
+      "name": "Sync"
+    },
+    {
+      "name": "Tools"
+    }
+  ],
+  "paths": {
+    "/api/v1/admin/refresh": {
+      "post": {
+        "operationId": "refreshOpportunities",
+        "summary": "Re-run the scrapers now",
+        "description": "Normally the scheduled GitHub Action refreshes the data. This is for self-hosted deployments. Administrator credential required.",
+        "tags": [
+          "Operations"
+        ],
+        "security": [
+          {
+            "adminSecret": []
+          }
+        ],
+        "x-ratelimit-policy": {
+          "name": "admin",
+          "anonymousRequestsPerMinute": 20,
+          "burst": 5
+        },
+        "parameters": [
+          {
+            "name": "force",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1",
+                "true",
+                "false"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "What was refreshed.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "generatedAt": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+                    },
+                    "items": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "persisted": {
+                      "type": "boolean"
+                    },
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "items": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "error": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "status",
+                          "items"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "generatedAt",
+                    "items",
+                    "persisted",
+                    "sources"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "`forbidden` - The credential does not allow this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/submissions": {
+      "get": {
+        "operationId": "listSubmissions",
+        "summary": "Partner service submissions waiting for review",
+        "description": "Services submitted through the partner portal are stored inactive and invisible to citizens until an administrator approves them. Administrator credential required.",
+        "tags": [
+          "Operations"
+        ],
+        "security": [
+          {
+            "adminSecret": []
+          }
+        ],
+        "x-ratelimit-policy": {
+          "name": "admin",
+          "anonymousRequestsPerMinute": 20,
+          "burst": 5
+        },
+        "responses": {
+          "200": {
+            "description": "Pending submissions, oldest first.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "nameUr": {
+                            "type": "string"
+                          },
+                          "organizationId": {
+                            "type": "string"
+                          },
+                          "domain": {
+                            "type": "string"
+                          },
+                          "sourceUrl": {
+                            "type": "string",
+                            "maxLength": 2048,
+                            "pattern": "^https?:\\/\\/"
+                          },
+                          "sourceTitle": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "submittedAt": {
+                            "type": "string",
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "nameUr",
+                          "organizationId",
+                          "domain",
+                          "sourceUrl",
+                          "sourceTitle",
+                          "description",
+                          "submittedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "total"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "`forbidden` - The credential does not allow this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/submissions/{id}": {
+      "post": {
+        "operationId": "reviewSubmission",
+        "summary": "Approve or reject a partner submission",
+        "description": "`approve` publishes it at the authority tier you choose (1 = government ... 4, default 4); `reject` deletes it. Administrator credential required.",
+        "tags": [
+          "Operations"
+        ],
+        "security": [
+          {
+            "adminSecret": []
+          }
+        ],
+        "x-ratelimit-policy": {
+          "name": "admin",
+          "anonymousRequestsPerMinute": 20,
+          "burst": 5
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^submission-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ]
+                  },
+                  "authorityTier": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4
+                  }
+                },
+                "required": [
+                  "decision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The decision was applied.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "decision": {
+                      "type": "string",
+                      "enum": [
+                        "approve",
+                        "reject"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "published",
+                        "discarded"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "decision",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`invalid_parameter` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "`forbidden` - The credential does not allow this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`not_found` - Not found.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`validation_failed` - The request body failed validation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/challenge": {
+      "get": {
+        "operationId": "getAuthChallenge",
+        "summary": "Get a proof-of-work challenge",
+        "description": "Step one of anonymous device registration. Find a nonce so that SHA-256(`<salt>:<nonce>`) has `difficulty` leading zero bits; see docs/api/authentication.md.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [],
+        "x-ratelimit-policy": {
+          "name": "auth",
+          "anonymousRequestsPerMinute": 30,
+          "burst": 15
+        },
+        "responses": {
+          "200": {
+            "description": "A signed, expiring challenge.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "challenge": {
+                      "type": "string"
+                    },
+                    "algorithm": {
+                      "type": "string",
+                      "const": "sha256-leading-zero-bits"
+                    },
+                    "difficulty": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+                    }
+                  },
+                  "required": [
+                    "challenge",
+                    "algorithm",
+                    "difficulty",
+                    "expiresAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "`not_configured` - This feature is not enabled on this deployment.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/device": {
+      "post": {
+        "operationId": "registerDevice",
+        "summary": "Exchange a solved challenge for a short-lived access token",
+        "description": "The token identifies an app install (a random id the app generated), never a person. It expires; register again when it does.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [],
+        "x-ratelimit-policy": {
+          "name": "auth",
+          "anonymousRequestsPerMinute": 30,
+          "burst": 15
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "challenge": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 400
+                  },
+                  "nonce": {
+                    "type": "string",
+                    "pattern": "^\\d{1,16}$"
+                  },
+                  "installId": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                  },
+                  "platform": {
+                    "type": "string",
+                    "enum": [
+                      "android",
+                      "ios",
+                      "web"
+                    ]
+                  }
+                },
+                "required": [
+                  "challenge",
+                  "nonce",
+                  "installId",
+                  "platform"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "An access token.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "tokenType": {
+                      "type": "string",
+                      "const": "Bearer"
+                    },
+                    "expiresIn": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "scope": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "accessToken",
+                    "tokenType",
+                    "expiresIn",
+                    "scope"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`challenge_invalid` - The proof-of-work challenge is invalid, expired or unsolved.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`validation_failed` - The request body failed validation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "`not_configured` - This feature is not enabled on this deployment.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guides": {
+      "get": {
+        "operationId": "listGuides",
+        "summary": "Step-by-step guides",
+        "tags": [
+          "Guides"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "read",
+          "anonymousRequestsPerMinute": 90,
+          "burst": 45
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 30
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ur",
+                "ps"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,6}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Guide summaries.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/GuideSummary"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "400": {
+            "description": "`invalid_parameter`, `unknown_parameter` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guides/{id}": {
+      "get": {
+        "operationId": "getGuide",
+        "summary": "One guide in full",
+        "tags": [
+          "Guides"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "read",
+          "anonymousRequestsPerMinute": 90,
+          "burst": 45
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,60}$"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ur",
+                "ps"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The guide.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GuideDetail"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "400": {
+            "description": "`invalid_parameter` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`not_found` - Not found.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Liveness probe",
+        "description": "Answers as long as the process is up. Does not touch the database; use `/ready` for dependency health.",
+        "tags": [
+          "Service"
+        ],
+        "security": [],
+        "x-ratelimit-policy": {
+          "name": "health",
+          "anonymousRequestsPerMinute": 120,
+          "burst": 60
+        },
+        "responses": {
+          "200": {
+            "description": "The service is running.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "const": "ok"
+                    },
+                    "time": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "time"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "operationId": "getMeta",
+        "summary": "API and data metadata",
+        "description": "Version, the minimum supported Android build (for the in-app update gate), feature flags and data freshness.",
+        "tags": [
+          "Service"
+        ],
+        "security": [],
+        "x-ratelimit-policy": {
+          "name": "health",
+          "anonymousRequestsPerMinute": 120,
+          "burst": 60
+        },
+        "responses": {
+          "200": {
+            "description": "Service metadata.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "api": {
+                      "type": "object",
+                      "properties": {
+                        "version": {
+                          "type": "string",
+                          "const": "1"
+                        },
+                        "build": {
+                          "type": "string"
+                        },
+                        "minimumClient": {
+                          "type": "object",
+                          "properties": {
+                            "android": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "android"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "deprecated": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "version",
+                        "build",
+                        "minimumClient",
+                        "deprecated"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "server": {
+                      "type": "object",
+                      "properties": {
+                        "time": {
+                          "type": "string",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+                        }
+                      },
+                      "required": [
+                        "time"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "generatedAt": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "ageHours": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "stale": {
+                          "type": "boolean"
+                        },
+                        "dataVersion": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "generatedAt",
+                        "total",
+                        "ageHours",
+                        "stale",
+                        "dataVersion"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "features": {
+                      "type": "object",
+                      "properties": {
+                        "deviceAuth": {
+                          "type": "boolean"
+                        },
+                        "assistant": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "deviceAuth",
+                        "assistant"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "api",
+                    "server",
+                    "data",
+                    "features"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics": {
+      "get": {
+        "operationId": "getMetrics",
+        "summary": "Prometheus metrics",
+        "description": "Per-process counters and latency histograms in the Prometheus text format. Administrator credential required.",
+        "tags": [
+          "Operations"
+        ],
+        "security": [
+          {
+            "adminSecret": []
+          }
+        ],
+        "x-ratelimit-policy": {
+          "name": "admin",
+          "anonymousRequestsPerMinute": 20,
+          "burst": 5
+        },
+        "responses": {
+          "200": {
+            "description": "Prometheus text exposition.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "`forbidden` - The credential does not allow this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/openapi.json": {
+      "get": {
+        "operationId": "getOpenApi",
+        "summary": "This API's OpenAPI 3.1 description",
+        "tags": [
+          "Service"
+        ],
+        "security": [],
+        "x-ratelimit-policy": {
+          "name": "health",
+          "anonymousRequestsPerMinute": 120,
+          "burst": 60
+        },
+        "responses": {
+          "200": {
+            "description": "The OpenAPI document.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "openapi": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "openapi"
+                  ],
+                  "additionalProperties": {}
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/opportunities": {
+      "get": {
+        "operationId": "listOpportunities",
+        "summary": "Search and browse opportunities",
+        "description": "Scholarships, jobs, internships, competitions, courses and more. `q` accepts natural language in English, Roman Urdu or Urdu (\"fully funded masters in germany\"); explicit filters win over anything inferred. Results are paginated with an opaque `cursor`.",
+        "tags": [
+          "Opportunities"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "search",
+          "anonymousRequestsPerMinute": 45,
+          "burst": 20
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Search words in English, Roman Urdu or Urdu. Understood as natural language: \"fully funded masters in germany\" sets the filters for you; explicit filters below win.",
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$",
+              "description": "Search words in English, Roman Urdu or Urdu. Understood as natural language: \"fully funded masters in germany\" sets the filters for you; explicit filters below win."
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated kinds: scholarship, fellowship, internship, job, competition, course, coupon, training, grant, admission, notice. Notices are regulator alerts and are hidden unless asked for.",
+            "schema": {
+              "type": "string",
+              "maxLength": 400,
+              "description": "Comma-separated kinds: scholarship, fellowship, internship, job, competition, course, coupon, training, grant, admission, notice. Notices are regulator alerts and are hidden unless asked for."
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "description": "`pakistan` = located in or aimed at people in Pakistan; `international` = abroad, remote or global.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pakistan",
+                "international"
+              ],
+              "description": "`pakistan` = located in or aimed at people in Pakistan; `international` = abroad, remote or global."
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "description": "Country name in English, matched case-insensitively.",
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$",
+              "description": "Country name in English, matched case-insensitively."
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": false,
+            "description": "Study or career level.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "school",
+                "undergraduate",
+                "masters",
+                "phd",
+                "postdoc",
+                "professional",
+                "any"
+              ],
+              "description": "Study or career level."
+            }
+          },
+          {
+            "name": "funding",
+            "in": "query",
+            "required": false,
+            "description": "Funding type.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "full",
+                "partial",
+                "stipend",
+                "paid",
+                "free",
+                "unknown"
+              ],
+              "description": "Funding type."
+            }
+          },
+          {
+            "name": "pk",
+            "in": "query",
+            "required": false,
+            "description": "`1` = only items open to applicants from Pakistan (or not stating otherwise).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1",
+                "true",
+                "false"
+              ],
+              "description": "`1` = only items open to applicants from Pakistan (or not stating otherwise)."
+            }
+          },
+          {
+            "name": "remote",
+            "in": "query",
+            "required": false,
+            "description": "`1` = only remote or online items.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1",
+                "true",
+                "false"
+              ],
+              "description": "`1` = only remote or online items."
+            }
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "description": "Only items whose deadline falls within this many days (items without a deadline are excluded).",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,6}$",
+              "description": "Only items whose deadline falls within this many days (items without a deadline are excluded)."
+            }
+          },
+          {
+            "name": "new",
+            "in": "query",
+            "required": false,
+            "description": "Only items first seen within this many days.",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,6}$",
+              "description": "Only items first seen within this many days."
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Order of results. Default `relevance`.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "relevance",
+                "newest",
+                "deadline"
+              ],
+              "description": "Order of results. Default `relevance`."
+            }
+          },
+          {
+            "name": "closed",
+            "in": "query",
+            "required": false,
+            "description": "`1` = include items whose deadline has passed.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1",
+                "true",
+                "false"
+              ],
+              "description": "`1` = include items whose deadline has passed."
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size, 1-100 (default 24).",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,6}$",
+              "description": "Page size, 1-100 (default 24)."
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from `page.nextCursor`. Valid only with the same filters it was issued for.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{8,200}$",
+              "description": "Opaque cursor from `page.nextCursor`. Valid only with the same filters it was issued for."
+            }
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "description": "Optional extras: `facets` adds counts per kind, scope, country, level, funding and source.",
+            "schema": {
+              "type": "string",
+              "maxLength": 400,
+              "description": "Optional extras: `facets` adds counts per kind, scope, country, level, funding and source."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of matching opportunities.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Opportunity"
+                      }
+                    },
+                    "page": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "nextCursor": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "limit",
+                        "nextCursor"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "interpreted": {
+                      "type": "object",
+                      "properties": {
+                        "terms": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "kinds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "scholarship",
+                              "fellowship",
+                              "internship",
+                              "job",
+                              "competition",
+                              "course",
+                              "coupon",
+                              "training",
+                              "grant",
+                              "admission",
+                              "notice"
+                            ]
+                          }
+                        },
+                        "country": {
+                          "type": "string"
+                        },
+                        "level": {
+                          "type": "string",
+                          "enum": [
+                            "school",
+                            "undergraduate",
+                            "masters",
+                            "phd",
+                            "postdoc",
+                            "professional",
+                            "any"
+                          ]
+                        },
+                        "funding": {
+                          "type": "string",
+                          "enum": [
+                            "full",
+                            "partial",
+                            "stipend",
+                            "paid",
+                            "free",
+                            "unknown"
+                          ]
+                        },
+                        "scope": {
+                          "type": "string",
+                          "enum": [
+                            "pakistan",
+                            "international"
+                          ]
+                        },
+                        "deadlineWithinDays": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "remote": {
+                          "type": "boolean"
+                        },
+                        "corrected": {
+                          "type": "object",
+                          "properties": {
+                            "from": {
+                              "type": "string"
+                            },
+                            "to": {
+                              "type": "string"
+                            },
+                            "changes": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "from": {
+                                    "type": "string"
+                                  },
+                                  "to": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "from",
+                                  "to"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "from",
+                            "to",
+                            "changes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "terms"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "facets": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "value",
+                              "count"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "scope": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "value",
+                              "count"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "country": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "value",
+                              "count"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "level": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "value",
+                              "count"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "funding": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "value",
+                              "count"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "source": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "value",
+                              "count"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "scope",
+                        "country",
+                        "level",
+                        "funding",
+                        "source"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/DataMeta"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "page",
+                    "interpreted",
+                    "meta"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "400": {
+            "description": "`invalid_parameter`, `unknown_parameter`, `invalid_cursor` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/opportunities/{id}": {
+      "get": {
+        "operationId": "getOpportunity",
+        "summary": "One opportunity, with related listings",
+        "tags": [
+          "Opportunities"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "read",
+          "anonymousRequestsPerMinute": 90,
+          "burst": 45
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The opportunity.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Opportunity"
+                    },
+                    "related": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Opportunity"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/DataMeta"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "related",
+                    "meta"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "400": {
+            "description": "`invalid_parameter` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`not_found` - Not found.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/opportunities/batch": {
+      "get": {
+        "operationId": "getOpportunityBatch",
+        "summary": "Fetch several opportunities by id (step two of delta sync)",
+        "description": "At most 50 ids per request. Ids that no longer exist are listed in `missing`.",
+        "tags": [
+          "Sync"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "read",
+          "anonymousRequestsPerMinute": 90,
+          "burst": 45
+        },
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "description": "Comma-separated opportunity ids, at most 50.",
+            "schema": {
+              "type": "string",
+              "maxLength": 3500,
+              "pattern": "^[A-Za-z0-9_,-]+$",
+              "description": "Comma-separated opportunity ids, at most 50."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested opportunities.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Opportunity"
+                      }
+                    },
+                    "missing": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/DataMeta"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "missing",
+                    "meta"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "400": {
+            "description": "`invalid_parameter`, `unknown_parameter` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/opportunities/manifest": {
+      "get": {
+        "operationId": "getOpportunityManifest",
+        "summary": "Sync manifest: every live id with its content revision",
+        "description": "Step one of delta sync. The client compares `rev` values with what it has stored, fetches only the missing or changed ids with `/opportunities/batch`, and deletes local ids that are no longer listed. Revisions change only when a listing's content changes, so an unchanged data set costs one conditional request (`If-None-Match` -> 304).",
+        "tags": [
+          "Sync"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "read",
+          "anonymousRequestsPerMinute": 90,
+          "burst": 45
+        },
+        "responses": {
+          "200": {
+            "description": "The manifest.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "rev": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{12}$"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "rev"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "generatedAt": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "dataVersion": {
+                          "type": "string"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "generatedAt",
+                        "dataVersion",
+                        "count"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/programmes": {
+      "get": {
+        "operationId": "listProgrammes",
+        "summary": "Flagship programmes with their current phase (the yearly planner)",
+        "description": "Each programme says whether it is open, closing soon, usually open or off-season today, and when to start preparing. Dates carry a `confidence` (`official` or `reported`) and the day they were checked. RAAHI never states fees, stipends or quotas here.",
+        "tags": [
+          "Programmes"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "read",
+          "anonymousRequestsPerMinute": 90,
+          "burst": 45
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "scholarship",
+                "fellowship",
+                "internship",
+                "job",
+                "competition",
+                "course",
+                "coupon",
+                "training",
+                "grant",
+                "admission",
+                "notice"
+              ]
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "school",
+                "undergraduate",
+                "masters",
+                "phd",
+                "postdoc",
+                "professional",
+                "any"
+              ]
+            }
+          },
+          {
+            "name": "funding",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "full",
+                "partial",
+                "stipend",
+                "paid",
+                "free",
+                "unknown"
+              ]
+            }
+          },
+          {
+            "name": "route",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "direct",
+                "hec",
+                "embassy",
+                "agency",
+                "university"
+              ]
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ur",
+                "ps"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,6}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Programmes, most urgent first when no question is asked.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Programme"
+                      }
+                    },
+                    "today": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "today"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "400": {
+            "description": "`invalid_parameter`, `unknown_parameter` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/programmes/{id}": {
+      "get": {
+        "operationId": "getProgramme",
+        "summary": "One flagship programme",
+        "tags": [
+          "Programmes"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "read",
+          "anonymousRequestsPerMinute": 90,
+          "burst": 45
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,60}$"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ur",
+                "ps"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The programme.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Programme"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "400": {
+            "description": "`invalid_parameter` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`not_found` - Not found.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "operationId": "getReady",
+        "summary": "Readiness probe",
+        "description": "Checks the database and that listings are loaded. 503 means: do not send traffic here yet.",
+        "tags": [
+          "Service"
+        ],
+        "security": [],
+        "x-ratelimit-policy": {
+          "name": "health",
+          "anonymousRequestsPerMinute": 120,
+          "burst": 60
+        },
+        "responses": {
+          "200": {
+            "description": "Ready to serve.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "const": "ready"
+                    },
+                    "checks": {
+                      "type": "object",
+                      "properties": {
+                        "database": {
+                          "type": "string",
+                          "const": "ok"
+                        },
+                        "data": {
+                          "type": "string",
+                          "enum": [
+                            "fresh",
+                            "stale"
+                          ]
+                        },
+                        "items": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "database",
+                        "data",
+                        "items"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "checks"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "`unavailable` - The service is temporarily unavailable.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/resources": {
+      "get": {
+        "operationId": "listResources",
+        "summary": "The curated directory of official and trusted links",
+        "tags": [
+          "Resources"
+        ],
+        "security": [
+          {},
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "read",
+        "x-ratelimit-policy": {
+          "name": "read",
+          "anonymousRequestsPerMinute": 90,
+          "burst": 45
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "scholarships",
+                "scholarships-pk",
+                "jobs-pk",
+                "govt-recruitment",
+                "jobs-global",
+                "overseas-employment",
+                "internships",
+                "competitions",
+                "learning",
+                "skills-pk",
+                "coupons",
+                "exam-prep",
+                "grants",
+                "research",
+                "documents",
+                "safety"
+              ]
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pakistan",
+                "international"
+              ]
+            }
+          },
+          {
+            "name": "free",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1",
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "official",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1",
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ur",
+                "ps"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,6}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Directory entries.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Resource"
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "total"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the `If-None-Match` validator is still current."
+          },
+          "400": {
+            "description": "`invalid_parameter`, `unknown_parameter` - A request parameter is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/age-check": {
+      "post": {
+        "operationId": "checkAge",
+        "summary": "Age-limit arithmetic for a job advertisement",
+        "description": "Both readings of \"not exceeding N years\" (completed years, and to the day) with the last day each still holds. Pure date arithmetic; nothing is stored.",
+        "tags": [
+          "Tools"
+        ],
+        "security": [
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "tools",
+        "x-ratelimit-policy": {
+          "name": "tools",
+          "anonymousRequestsPerMinute": 20,
+          "burst": 10
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dob": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "asOn": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "maxYears": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 120
+                  },
+                  "relaxationYears": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 30
+                  },
+                  "minYears": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 120
+                  }
+                },
+                "required": [
+                  "dob",
+                  "asOn"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The age and, if a limit was given, whether it is met.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "age": {
+                          "type": "object",
+                          "properties": {
+                            "years": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "months": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "days": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "years",
+                            "months",
+                            "days"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "withinByCompletedYears": {
+                          "type": "boolean"
+                        },
+                        "withinToTheDay": {
+                          "type": "boolean"
+                        },
+                        "meetsMinimum": {
+                          "type": "boolean"
+                        },
+                        "lastDayByCompletedYears": {
+                          "type": "string",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        },
+                        "lastDayToTheDay": {
+                          "type": "string",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        }
+                      },
+                      "required": [
+                        "age"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "`forbidden` - The credential does not allow this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`validation_failed` - The request body failed validation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/match": {
+      "post": {
+        "operationId": "matchOpportunities",
+        "summary": "Rank opportunities for a short profile, with the reasons",
+        "description": "Transparent rules, no black box; each result says why it was picked and what to double-check. Nothing is stored.",
+        "tags": [
+          "Tools"
+        ],
+        "security": [
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "tools",
+        "x-ratelimit-policy": {
+          "name": "tools",
+          "anonymousRequestsPerMinute": 20,
+          "burst": 10
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "level": {
+                    "type": "string",
+                    "enum": [
+                      "school",
+                      "undergraduate",
+                      "masters",
+                      "phd",
+                      "postdoc",
+                      "professional",
+                      "any"
+                    ]
+                  },
+                  "fields": {
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 60,
+                      "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$"
+                    }
+                  },
+                  "interests": {
+                    "maxItems": 11,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "scholarship",
+                        "fellowship",
+                        "internship",
+                        "job",
+                        "competition",
+                        "course",
+                        "coupon",
+                        "training",
+                        "grant",
+                        "admission",
+                        "notice"
+                      ]
+                    }
+                  },
+                  "gender": {
+                    "type": "string",
+                    "enum": [
+                      "female",
+                      "male"
+                    ]
+                  },
+                  "country": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "enum": [
+                      "pakistan",
+                      "international"
+                    ]
+                  },
+                  "needsFunding": {
+                    "type": "boolean"
+                  },
+                  "remoteOk": {
+                    "type": "boolean"
+                  },
+                  "keywords": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 30
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ranked matches.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "item": {
+                            "$ref": "#/components/schemas/Opportunity"
+                          },
+                          "score": {
+                            "type": "number"
+                          },
+                          "reasons": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "en": {
+                                  "type": "string"
+                                },
+                                "ur": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "en",
+                                "ur"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "warnings": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "en": {
+                                  "type": "string"
+                                },
+                                "ur": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "en",
+                                "ur"
+                              ],
+                              "additionalProperties": false
+                            }
+                          }
+                        },
+                        "required": [
+                          "item",
+                          "score",
+                          "reasons",
+                          "warnings"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/DataMeta"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "`forbidden` - The credential does not allow this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`validation_failed` - The request body failed validation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/scam-check": {
+      "post": {
+        "operationId": "checkOffer",
+        "summary": "Check an offer for scam red flags",
+        "description": "Analyses pasted offer text and/or checklist answers entirely in memory. The text is never stored or logged - messages from agents often contain phone numbers and CNIC details.",
+        "tags": [
+          "Tools"
+        ],
+        "security": [
+          {
+            "deviceToken": []
+          },
+          {
+            "apiKey": []
+          }
+        ],
+        "x-required-scope": "tools",
+        "x-ratelimit-policy": {
+          "name": "tools",
+          "anonymousRequestsPerMinute": 20,
+          "burst": 10
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "maxLength": 6000,
+                    "pattern": "^[^\\p{Cc}\\u2028\\u2029\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*$"
+                  },
+                  "answers": {
+                    "type": "object",
+                    "properties": {
+                      "askedToPay": {
+                        "type": "boolean"
+                      },
+                      "paymentToPersonalAccount": {
+                        "type": "boolean"
+                      },
+                      "contactOnlyMessaging": {
+                        "type": "boolean"
+                      },
+                      "noInterview": {
+                        "type": "boolean"
+                      },
+                      "noLicenceNumber": {
+                        "type": "boolean"
+                      },
+                      "pressureToDecide": {
+                        "type": "boolean"
+                      },
+                      "guaranteedResult": {
+                        "type": "boolean"
+                      },
+                      "visitVisaForWork": {
+                        "type": "boolean"
+                      },
+                      "askedForOtpOrPassword": {
+                        "type": "boolean"
+                      },
+                      "verifiedOnOfficialSite": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Risk score, signals and advice.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "score": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 100
+                        },
+                        "level": {
+                          "type": "string",
+                          "enum": [
+                            "high",
+                            "medium",
+                            "low",
+                            "none"
+                          ]
+                        },
+                        "signals": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "weight": {
+                                "type": "number"
+                              },
+                              "en": {
+                                "type": "string"
+                              },
+                              "ur": {
+                                "type": "string"
+                              },
+                              "source": {
+                                "type": "string",
+                                "enum": [
+                                  "text",
+                                  "answer"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "weight",
+                              "en",
+                              "ur",
+                              "source"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "oepLicences": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "raw": {
+                                "type": "string"
+                              },
+                              "number": {
+                                "type": "string"
+                              },
+                              "city": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "raw",
+                              "number",
+                              "city"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "advice": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "en": {
+                                "type": "string"
+                              },
+                              "ur": {
+                                "type": "string"
+                              },
+                              "url": {
+                                "type": "string",
+                                "maxLength": 2048,
+                                "pattern": "^https?:\\/\\/"
+                              },
+                              "label": {
+                                "type": "object",
+                                "properties": {
+                                  "en": {
+                                    "type": "string"
+                                  },
+                                  "ur": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "en",
+                                  "ur"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "en",
+                              "ur"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "headline": {
+                          "type": "object",
+                          "properties": {
+                            "en": {
+                              "type": "string"
+                            },
+                            "ur": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "en",
+                            "ur"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "disclaimer": {
+                          "type": "object",
+                          "properties": {
+                            "en": {
+                              "type": "string"
+                            },
+                            "ur": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "en",
+                            "ur"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "score",
+                        "level",
+                        "signals",
+                        "oepLicences",
+                        "advice",
+                        "headline",
+                        "disclaimer"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`invalid_json` - The request body is not valid JSON.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`unauthorized` - Authentication is required or the credential is invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "WWW-Authenticate": {
+                "$ref": "#/components/headers/WwwAuthenticate"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "`forbidden` - The credential does not allow this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "`payload_too_large` - The request body is too large.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "`unsupported_media_type` - Send the body as application/json.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`validation_failed` - The request body failed validation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "`rate_limited` - Too many requests.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal` - Internal server error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Problem": {
+        "$id": "#/components/schemas/Problem",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "bad_request",
+              "invalid_json",
+              "invalid_parameter",
+              "unknown_parameter",
+              "invalid_cursor",
+              "challenge_invalid",
+              "validation_failed",
+              "unauthorized",
+              "token_expired",
+              "forbidden",
+              "origin_not_allowed",
+              "not_found",
+              "method_not_allowed",
+              "payload_too_large",
+              "unsupported_media_type",
+              "rate_limited",
+              "internal",
+              "contract_violation",
+              "not_configured",
+              "unavailable"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "code",
+                "message"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ],
+        "additionalProperties": false
+      },
+      "Opportunity": {
+        "$id": "#/components/schemas/Opportunity",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "rev": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{12}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "scholarship",
+              "fellowship",
+              "internship",
+              "job",
+              "competition",
+              "course",
+              "coupon",
+              "training",
+              "grant",
+              "admission",
+              "notice"
+            ]
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "pakistan",
+              "international"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "pattern": "^https?:\\/\\/"
+          },
+          "applyUrl": {
+            "type": "string",
+            "maxLength": 2048,
+            "pattern": "^https?:\\/\\/"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "maxLength": 2048,
+                "pattern": "^https?:\\/\\/"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "url"
+            ],
+            "additionalProperties": false
+          },
+          "country": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "remote": {
+            "type": "boolean"
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "school",
+                "undergraduate",
+                "masters",
+                "phd",
+                "postdoc",
+                "professional",
+                "any"
+              ]
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "funding": {
+            "type": "string",
+            "enum": [
+              "full",
+              "partial",
+              "stipend",
+              "paid",
+              "free",
+              "unknown"
+            ]
+          },
+          "deadline": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "deadlineText": {
+            "type": "string"
+          },
+          "rolling": {
+            "type": "boolean"
+          },
+          "postedAt": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+          },
+          "startsAt": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "firstSeen": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+          },
+          "lastSeen": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+          },
+          "openToPakistan": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "eligibilityNote": {
+            "type": "string"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "alsoOn": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sourceName": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "sourceName",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closing-soon",
+              "closed",
+              "rolling",
+              "unknown"
+            ]
+          },
+          "daysLeft": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "isNew": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "rev",
+          "kind",
+          "scope",
+          "title",
+          "url",
+          "source",
+          "levels",
+          "fields",
+          "tags",
+          "firstSeen",
+          "lastSeen",
+          "status",
+          "daysLeft",
+          "isNew"
+        ],
+        "additionalProperties": false
+      },
+      "Programme": {
+        "$id": "#/components/schemas/Programme",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "scholarship",
+              "fellowship",
+              "internship",
+              "job",
+              "competition",
+              "course",
+              "coupon",
+              "training",
+              "grant",
+              "admission",
+              "notice"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "where": {
+            "type": "string"
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "school",
+                "undergraduate",
+                "masters",
+                "phd",
+                "postdoc",
+                "professional",
+                "any"
+              ]
+            }
+          },
+          "funding": {
+            "type": "string",
+            "enum": [
+              "full",
+              "partial",
+              "stipend",
+              "paid",
+              "free",
+              "unknown"
+            ]
+          },
+          "summary": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "direct",
+              "hec",
+              "embassy",
+              "agency",
+              "university"
+            ]
+          },
+          "routeNote": {
+            "type": "string"
+          },
+          "usualWindow": {
+            "type": "string"
+          },
+          "variable": {
+            "type": "boolean"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "closing-soon",
+              "open",
+              "typically-open",
+              "upcoming",
+              "closed",
+              "off-season"
+            ]
+          },
+          "daysLeft": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "daysToOpen": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "monthsToOpen": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "prepareNow": {
+            "type": "boolean"
+          },
+          "prepare": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cycle": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "opens": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "closes": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "closesNote": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "official",
+                  "reported"
+                ]
+              },
+              "checked": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "source": {
+                "type": "string",
+                "maxLength": 2048,
+                "pattern": "^https?:\\/\\/"
+              }
+            },
+            "required": [
+              "label",
+              "confidence",
+              "checked",
+              "source"
+            ],
+            "additionalProperties": false
+          },
+          "official": {
+            "type": "string",
+            "maxLength": 2048,
+            "pattern": "^https?:\\/\\/"
+          },
+          "reviewed": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "provider",
+          "where",
+          "levels",
+          "funding",
+          "summary",
+          "route",
+          "routeNote",
+          "usualWindow",
+          "variable",
+          "phase",
+          "monthsToOpen",
+          "prepareNow",
+          "prepare",
+          "official",
+          "reviewed"
+        ],
+        "additionalProperties": false
+      },
+      "GuideSummary": {
+        "$id": "#/components/schemas/GuideSummary",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "duration": {
+            "type": "string"
+          },
+          "reviewed": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "emoji",
+          "title",
+          "summary",
+          "steps",
+          "reviewed",
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "GuideDetail": {
+        "$id": "#/components/schemas/GuideDetail",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                },
+                "when": {
+                  "type": "string"
+                },
+                "resourceIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "title",
+                "body",
+                "resourceIds"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "duration": {
+            "type": "string"
+          },
+          "reviewed": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "url": {
+            "type": "string"
+          },
+          "audience": {
+            "type": "string"
+          },
+          "checklist": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pitfalls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 2048,
+                  "pattern": "^https?:\\/\\/"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "related": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "emoji",
+          "title",
+          "summary",
+          "steps",
+          "reviewed",
+          "url",
+          "audience",
+          "checklist",
+          "pitfalls",
+          "resources",
+          "related",
+          "tools",
+          "sources"
+        ],
+        "additionalProperties": false
+      },
+      "Resource": {
+        "$id": "#/components/schemas/Resource",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "pattern": "^https?:\\/\\/"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "scholarships",
+              "scholarships-pk",
+              "jobs-pk",
+              "govt-recruitment",
+              "jobs-global",
+              "overseas-employment",
+              "internships",
+              "competitions",
+              "learning",
+              "skills-pk",
+              "coupons",
+              "exam-prep",
+              "grants",
+              "research",
+              "documents",
+              "safety"
+            ]
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "pakistan",
+              "international",
+              "both"
+            ]
+          },
+          "authority": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "free": {
+            "type": "boolean"
+          },
+          "checked": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "note": {
+            "type": "string"
+          },
+          "linkStatus": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "blocked",
+              "unreachable",
+              "broken"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "url",
+          "category",
+          "scope",
+          "authority",
+          "tags"
+        ],
+        "additionalProperties": false
+      },
+      "DataMeta": {
+        "$id": "#/components/schemas/DataMeta",
+        "type": "object",
+        "properties": {
+          "generatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dataVersion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "generatedAt",
+          "dataVersion"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "headers": {
+      "RequestId": {
+        "description": "Correlation id for this request; quote it when reporting a problem.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "RateLimitLimit": {
+        "description": "Requests allowed per window for this caller and policy.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "RateLimitRemaining": {
+        "description": "Requests still available right now.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "RateLimitReset": {
+        "description": "Seconds until the full budget is available again.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "RetryAfter": {
+        "description": "Seconds to wait before retrying.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "ETag": {
+        "description": "Weak validator; send it back in `If-None-Match` to get `304 Not Modified`.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "WwwAuthenticate": {
+        "description": "How to authenticate (`Bearer`).",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "securitySchemes": {
+      "deviceToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Short-lived access token from `POST /api/v1/auth/device` (proof-of-work registration). Identifies an app install, not a person."
+      },
+      "apiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "rk.<id>.<secret>",
+        "description": "Partner API key issued by the operator. Keep it on a server; never ship it in a browser or app."
+      },
+      "adminSecret": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Operator secret for `/admin/*` and `/metrics`."
+      }
+    }
+  }
+}
