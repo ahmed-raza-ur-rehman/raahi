@@ -1,1176 +1,1176 @@
 {
- "checkedAt": "2026-10-26T09:21:49.033Z",
+ "checkedAt": "2026-11-02T11:41:29.125Z",
  "results": {
-  "scholars4dev": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:37.106Z"
-  },
   "scholarshiptab": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:20:37.077Z"
-  },
-  "commonwealth-uk": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:37.328Z"
+   "checkedAt": "2026-11-02T11:40:16.181Z"
   },
   "opportunitydesk": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:37.107Z"
+   "checkedAt": "2026-11-02T11:40:16.211Z"
   },
   "usefp-fulbright": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:37.374Z"
+   "checkedAt": "2026-11-02T11:40:16.820Z"
+  },
+  "daad": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:17.033Z"
+  },
+  "study-in-germany": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:17.426Z"
   },
   "erasmus-plus": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:38.165Z"
-  },
-  "daad": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:20:37.529Z"
-  },
-  "campus-china": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:38.471Z"
-  },
-  "study-in-germany": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:20:38.040Z"
-  },
-  "gks-korea": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "finalUrl": "https://www.studyinkorea.go.kr/ko/main.do;jsessionid=Q-7sabVs84ZWB-syPHzBSix0EyARnPT-wd-rv2K7.studyinkorea10",
-   "checkedAt": "2026-10-26T09:20:38.284Z"
-  },
-  "turkiye-burslari": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:39.058Z"
-  },
-  "stipendium-hungaricum": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:39.221Z"
-  },
-  "nz-scholarships": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:40.120Z"
-  },
-  "mext-japan": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:39.954Z"
-  },
-  "swedish-institute": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:40.517Z"
-  },
-  "eiffel-france": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:40.777Z"
-  },
-  "rhodes": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:41.536Z"
-  },
-  "holland-scholarship": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:41.142Z"
-  },
-  "schwarzman": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:41.951Z"
-  },
-  "knight-hennessy": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:42.309Z"
-  },
-  "world-bank-scholarships": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:42.427Z"
-  },
-  "gates-cambridge": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:41.938Z"
+   "checkedAt": "2026-11-02T11:40:17.782Z"
   },
   "chevening": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:37.109Z"
+   "checkedAt": "2026-11-02T11:40:16.212Z"
+  },
+  "gks-korea": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "finalUrl": "https://www.studyinkorea.go.kr/ko/main.do;jsessionid=1ZqPOnDuYiul6SgOZj3KFHD_R9F8kzBxsfVfSQiF.studyinkorea10",
+   "checkedAt": "2026-11-02T11:40:18.047Z"
+  },
+  "turkiye-burslari": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:20.251Z"
+  },
+  "scholars4dev": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:16.210Z"
+  },
+  "campus-china": {
+   "ok": false,
+   "status": 412,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:40:20.219Z"
+  },
+  "stipendium-hungaricum": {
+   "ok": false,
+   "status": 500,
+   "verdict": "broken",
+   "checkedAt": "2026-11-02T11:40:21.237Z"
+  },
+  "mext-japan": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:21.579Z"
+  },
+  "swedish-institute": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:22.543Z"
+  },
+  "nz-scholarships": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:22.270Z"
+  },
+  "eiffel-france": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:22.960Z"
+  },
+  "holland-scholarship": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:23.404Z"
+  },
+  "gates-cambridge": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:23.923Z"
+  },
+  "schwarzman": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:24.622Z"
+  },
+  "rhodes": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:23.835Z"
+  },
+  "world-bank-scholarships": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:24.818Z"
+  },
+  "knight-hennessy": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:24.727Z"
   },
   "aga-khan-foundation": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://the.akdn/en/home",
-   "checkedAt": "2026-10-26T09:20:42.779Z"
+   "checkedAt": "2026-11-02T11:40:25.067Z"
   },
   "educationusa": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:43.325Z"
+   "ok": false,
+   "status": 503,
+   "verdict": "broken",
+   "checkedAt": "2026-11-02T11:40:25.813Z"
   },
   "british-council-pk": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:20:43.543Z"
+   "checkedAt": "2026-11-02T11:40:25.916Z"
   },
   "isdb-scholarships": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:42.473Z"
+   "checkedAt": "2026-11-02T11:40:24.959Z"
   },
   "scholarshipportal": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
    "finalUrl": "https://www.mastersportal.com/scholarships/",
-   "checkedAt": "2026-10-26T09:20:43.587Z"
+   "checkedAt": "2026-11-02T11:40:26.103Z"
+  },
+  "commonwealth-uk": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:16.621Z"
   },
   "hec": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://www.hec.gov.pk/english/Pages/default.aspx",
-   "checkedAt": "2026-10-26T09:20:43.807Z"
-  },
-  "peef": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:43.821Z"
-  },
-  "hec-scholarship-portal": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:43.631Z"
-  },
-  "australia-awards": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:40.072Z"
-  },
-  "akhuwat": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:55.073Z"
-  },
-  "opf": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:54.092Z"
-  },
-  "pbm": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:55.589Z"
-  },
-  "pm-youth-programme": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:55.527Z"
+   "checkedAt": "2026-11-02T11:40:26.335Z"
   },
   "sef-sindh": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:46.367Z"
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:29.549Z"
   },
   "lums-nop": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:54.091Z"
+   "checkedAt": "2026-11-02T11:40:31.446Z"
   },
-  "rozee": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:20:56.390Z"
-  },
-  "mustakbil": {
+  "opf": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:56.549Z"
+   "checkedAt": "2026-11-02T11:40:34.303Z"
   },
-  "indeed-pk": {
+  "hec-scholarship-portal": {
    "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:20:56.746Z"
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:26.175Z"
+  },
+  "akhuwat": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:35.995Z"
+  },
+  "pm-youth-programme": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:36.198Z"
+  },
+  "australia-awards": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:22.172Z"
+  },
+  "peef": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:26.704Z"
+  },
+  "pbm": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:36.473Z"
   },
   "njp": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:56.370Z"
+   "checkedAt": "2026-11-02T11:40:37.130Z"
+  },
+  "mustakbil": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:37.440Z"
+  },
+  "indeed-pk": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:40:37.920Z"
   },
   "nastp": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:56.374Z"
+   "checkedAt": "2026-11-02T11:40:37.173Z"
   },
   "linkedin-jobs": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:56.795Z"
-  },
-  "join-navy": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:20:56.997Z"
-  },
-  "join-paf": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:56.937Z"
-  },
-  "fpsc": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:57.296Z"
+   "checkedAt": "2026-11-02T11:40:37.975Z"
   },
   "brightspyre": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://resume.brightspyre.com/",
-   "checkedAt": "2026-10-26T09:20:56.726Z"
+   "checkedAt": "2026-11-02T11:40:37.870Z"
   },
-  "spsc": {
+  "join-navy": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:40:39.100Z"
+  },
+  "rozee": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:58.198Z"
+   "checkedAt": "2026-11-02T11:40:37.198Z"
+  },
+  "join-paf": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:38.150Z"
+  },
+  "fpsc": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:39.204Z"
   },
   "kppsc": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:20:58.105Z"
+   "checkedAt": "2026-11-02T11:40:39.529Z"
+  },
+  "spsc": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:40.137Z"
   },
   "bpsc": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://bpsc.gob.pk/BPSC/home",
-   "checkedAt": "2026-10-26T09:20:58.971Z"
+   "checkedAt": "2026-11-02T11:40:40.542Z"
   },
   "nts": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:01.406Z"
+   "checkedAt": "2026-11-02T11:40:41.955Z"
   },
   "pts": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:02.586Z"
+   "checkedAt": "2026-11-02T11:40:43.554Z"
   },
   "etea": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:03.931Z"
+   "checkedAt": "2026-11-02T11:40:44.613Z"
   },
   "ots": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:04.738Z"
+   "checkedAt": "2026-11-02T11:40:45.626Z"
   },
   "remotive": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:05.171Z"
+   "checkedAt": "2026-11-02T11:40:45.878Z"
   },
   "jobicy": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:05.419Z"
+   "checkedAt": "2026-11-02T11:40:46.635Z"
   },
   "arbeitnow": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:05.487Z"
-  },
-  "join-pak-army": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:56.917Z"
+   "checkedAt": "2026-11-02T11:40:46.755Z"
   },
   "weworkremotely": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:06.407Z"
+   "checkedAt": "2026-11-02T11:40:47.103Z"
   },
   "remoteok": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:07.081Z"
-  },
-  "upwork": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:07.196Z"
+   "checkedAt": "2026-11-02T11:40:47.692Z"
   },
   "himalayas": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:07.140Z"
+   "checkedAt": "2026-11-02T11:40:47.757Z"
+  },
+  "upwork": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:40:47.891Z"
   },
   "fiverr": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:07.253Z"
+   "checkedAt": "2026-11-02T11:40:47.970Z"
   },
-  "ppsc": {
+  "join-pak-army": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:57.486Z"
+   "checkedAt": "2026-11-02T11:40:38.065Z"
   },
   "un-careers": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:07.439Z"
-  },
-  "freelancer": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:07.397Z"
+   "checkedAt": "2026-11-02T11:40:48.186Z"
   },
   "reliefweb-jobs": {
    "ok": true,
    "status": 202,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:07.580Z"
+   "checkedAt": "2026-11-02T11:40:48.246Z"
+  },
+  "freelancer": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:48.178Z"
   },
   "idealist": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://www.idealist.org/en",
-   "checkedAt": "2026-10-26T09:21:07.947Z"
+   "checkedAt": "2026-11-02T11:40:48.863Z"
   },
   "eures": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://eures.europa.eu/select-language?destination=/node/1137",
-   "checkedAt": "2026-10-26T09:21:08.040Z"
+   "checkedAt": "2026-11-02T11:40:49.033Z"
   },
   "unjobs": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:07.763Z"
+   "checkedAt": "2026-11-02T11:40:48.377Z"
   },
-  "make-it-in-germany": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:08.196Z"
-  },
-  "bayt": {
+  "ppsc": {
    "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:08.883Z"
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:39.238Z"
   },
   "uk-skilled-worker": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:08.829Z"
+   "checkedAt": "2026-11-02T11:40:49.683Z"
+  },
+  "make-it-in-germany": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:49.350Z"
+  },
+  "bayt": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:40:49.716Z"
   },
   "gulftalent": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:08.956Z"
-  },
-  "beoe": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:09.116Z"
-  },
-  "ajkpsc": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:20:59.191Z"
+   "checkedAt": "2026-11-02T11:40:49.802Z"
   },
   "jobbank-canada": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://www.jobbank.gc.ca/home",
-   "checkedAt": "2026-10-26T09:21:08.194Z"
+   "checkedAt": "2026-11-02T11:40:49.337Z"
+  },
+  "beoe": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:40:49.869Z"
   },
   "beoe-oep-list": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:10.117Z"
+   "checkedAt": "2026-11-02T11:40:50.870Z"
+  },
+  "ajkpsc": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:40.946Z"
   },
   "beoe-complaints": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:11.115Z"
+   "checkedAt": "2026-11-02T11:40:51.869Z"
   },
   "beoe-blacklist": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:12.115Z"
+   "checkedAt": "2026-11-02T11:40:52.869Z"
   },
   "beoe-eprotector": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:13.115Z"
+   "checkedAt": "2026-11-02T11:40:53.869Z"
   },
   "beoe-guidelines": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:14.116Z"
+   "checkedAt": "2026-11-02T11:40:54.868Z"
   },
   "beoe-fees": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:15.116Z"
+   "checkedAt": "2026-11-02T11:40:55.870Z"
   },
   "beoe-pe-offices": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:16.115Z"
+   "checkedAt": "2026-11-02T11:40:56.869Z"
   },
   "oec": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:15.165Z"
+   "checkedAt": "2026-11-02T11:40:55.964Z"
   },
   "beoe-foreign-jobs": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:17.115Z"
+   "checkedAt": "2026-11-02T11:40:57.870Z"
   },
   "oec-eps": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:16.496Z"
-  },
-  "oec-softskills": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:17.164Z"
+   "checkedAt": "2026-11-02T11:40:57.576Z"
   },
   "oec-jobs": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://jobs.oec.gov.pk/login",
-   "checkedAt": "2026-10-26T09:21:16.182Z"
+   "checkedAt": "2026-11-02T11:40:56.936Z"
+  },
+  "oec-softskills": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:40:57.925Z"
   },
   "qiwa-saudi": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:17.854Z"
+   "checkedAt": "2026-11-02T11:40:58.831Z"
   },
   "saudi-visa": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:19.745Z"
-  },
-  "naukrigulf": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:09.027Z"
+   "checkedAt": "2026-11-02T11:41:00.346Z"
   },
   "icp-uae": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:21.338Z"
-  },
-  "gsoc": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:24.228Z"
-  },
-  "outreachy": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:24.336Z"
-  },
-  "mlh-fellowship": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:24.598Z"
+   "checkedAt": "2026-11-02T11:41:02.284Z"
   },
   "fia": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:24.028Z"
+   "checkedAt": "2026-11-02T11:41:03.281Z"
+  },
+  "gsoc": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:03.936Z"
+  },
+  "outreachy": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:04.010Z"
+  },
+  "mlh-fellowship": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:04.348Z"
+  },
+  "naukrigulf": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:49.834Z"
   },
   "simplify-internships": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:24.850Z"
+   "checkedAt": "2026-11-02T11:41:04.834Z"
   },
   "devpost": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:25.345Z"
+   "checkedAt": "2026-11-02T11:41:05.226Z"
   },
-  "codeforces": {
+  "pitb": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:25.501Z"
+   "checkedAt": "2026-11-02T11:41:04.498Z"
   },
   "kaggle-competitions": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:26.138Z"
+   "checkedAt": "2026-11-02T11:41:05.667Z"
   },
-  "mlh": {
+  "codeforces": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:26.574Z"
+   "checkedAt": "2026-11-02T11:41:05.339Z"
   },
   "leetcode-contests": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:26.917Z"
+   "checkedAt": "2026-11-02T11:41:05.904Z"
   },
   "codechef": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:26.970Z"
+   "checkedAt": "2026-11-02T11:41:05.990Z"
   },
-  "mohre-uae": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:18.501Z"
+  "mlh": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:05.873Z"
+  },
+  "hult-prize": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:06.145Z"
   },
   "imagine-cup": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://imaginecup.microsoft.com/en-us/Home/0",
-   "checkedAt": "2026-10-26T09:21:27.125Z"
-  },
-  "hult-prize": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:28.566Z"
+   "checkedAt": "2026-11-02T11:41:06.073Z"
   },
   "edx": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:28.653Z"
+   "checkedAt": "2026-11-02T11:41:06.475Z"
   },
   "harvard-online-free": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:28.739Z"
-  },
-  "mol-qatar": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:18.890Z"
+   "checkedAt": "2026-11-02T11:41:06.853Z"
   },
   "harvard-cs50": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://www.edx.org/cs50",
-   "checkedAt": "2026-10-26T09:21:28.727Z"
+   "checkedAt": "2026-11-02T11:41:06.684Z"
   },
   "mit-ocw": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.066Z"
-  },
-  "khan-academy": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.178Z"
-  },
-  "stanford-online": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:29.098Z"
-  },
-  "freecodecamp": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.213Z"
-  },
-  "microsoft-learn": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.473Z"
-  },
-  "google-career-certs": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.299Z"
-  },
-  "cisco-netacad": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.581Z"
+   "checkedAt": "2026-11-02T11:41:07.094Z"
   },
   "coursera": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:28.819Z"
+   "checkedAt": "2026-11-02T11:41:07.012Z"
+  },
+  "khan-academy": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:07.254Z"
+  },
+  "freecodecamp": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:07.276Z"
+  },
+  "google-career-certs": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:07.330Z"
+  },
+  "microsoft-learn": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:07.470Z"
   },
   "ibm-skillsbuild": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.502Z"
+   "checkedAt": "2026-11-02T11:41:07.504Z"
   },
-  "fast-ai": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.784Z"
+  "stanford-online": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:41:07.210Z"
   },
   "aws-skill-builder": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.635Z"
+   "checkedAt": "2026-11-02T11:41:07.814Z"
+  },
+  "cisco-netacad": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:07.679Z"
   },
   "kaggle-learn": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.725Z"
+   "checkedAt": "2026-11-02T11:41:07.910Z"
+  },
+  "fast-ai": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:07.999Z"
   },
   "odin-project": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.828Z"
+   "checkedAt": "2026-11-02T11:41:08.164Z"
   },
   "openlearn": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:30.024Z"
+   "checkedAt": "2026-11-02T11:41:08.293Z"
   },
   "alison": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:29.877Z"
-  },
-  "saylor": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:30.188Z"
+   "checkedAt": "2026-11-02T11:41:08.244Z"
   },
   "class-central": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:30.136Z"
+   "checkedAt": "2026-11-02T11:41:08.494Z"
+  },
+  "saylor": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:08.713Z"
   },
   "hubspot-academy": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:30.228Z"
+   "checkedAt": "2026-11-02T11:41:08.943Z"
   },
   "futurelearn": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:30.133Z"
+   "checkedAt": "2026-11-02T11:41:08.448Z"
   },
-  "vu-pk": {
+  "mohre-uae": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:30.348Z"
+   "checkedAt": "2026-11-02T11:40:59.588Z"
+  },
+  "mol-qatar": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:40:59.744Z"
   },
   "aiou": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:30.437Z"
+   "checkedAt": "2026-11-02T11:41:09.201Z"
   },
-  "digiskills": {
+  "vu-pk": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:31.803Z"
+   "checkedAt": "2026-11-02T11:41:09.028Z"
   },
   "hec-digital-library": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:31.378Z"
+   "checkedAt": "2026-11-02T11:41:09.652Z"
+  },
+  "digiskills": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:41:10.152Z"
+  },
+  "piaic": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:11.303Z"
   },
   "navttc": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:31.840Z"
+   "checkedAt": "2026-11-02T11:41:10.650Z"
+  },
+  "banoqabil": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:11.795Z"
   },
   "pseb": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://techdestination.com/",
-   "checkedAt": "2026-10-26T09:21:32.635Z"
-  },
-  "piaic": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:33.301Z"
-  },
-  "banoqabil": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:33.735Z"
-  },
-  "real-discount": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:33.887Z"
+   "checkedAt": "2026-11-02T11:41:10.750Z"
   },
   "udemy-free": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:34.401Z"
+   "checkedAt": "2026-11-02T11:41:12.130Z"
+  },
+  "real-discount": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:12.096Z"
   },
   "psdf": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://psdf.org.pk/",
-   "checkedAt": "2026-10-26T09:21:33.598Z"
+   "checkedAt": "2026-11-02T11:41:11.342Z"
   },
   "discudemy": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:34.442Z"
-  },
-  "pitb": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:24.758Z"
-  },
-  "udemyfreebies": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:34.759Z"
-  },
-  "neuroprep": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:35.058Z"
+   "checkedAt": "2026-11-02T11:41:12.173Z"
   },
   "techtanic-duce": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:34.976Z"
+   "checkedAt": "2026-11-02T11:41:12.380Z"
   },
-  "ielts": {
+  "udemyfreebies": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:35.482Z"
+   "checkedAt": "2026-11-02T11:41:12.366Z"
   },
-  "british-council-ielts": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:35.592Z"
+  "neuroprep": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:12.598Z"
   },
   "mdcat-prepmaster": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:35.443Z"
+   "checkedAt": "2026-11-02T11:41:12.720Z"
   },
-  "cognitive-fitness": {
+  "ielts": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:35.454Z"
+   "checkedAt": "2026-11-02T11:41:12.859Z"
   },
   "toefl": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:35.709Z"
+   "checkedAt": "2026-11-02T11:41:12.917Z"
+  },
+  "cognitive-fitness": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:12.805Z"
+  },
+  "british-council-ielts": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:41:12.893Z"
   },
   "khan-sat": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:35.954Z"
+   "checkedAt": "2026-11-02T11:41:13.116Z"
   },
   "duolingo-english-test": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:35.838Z"
+   "checkedAt": "2026-11-02T11:41:13.076Z"
   },
   "jobs-ac-uk": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:36.258Z"
+   "checkedAt": "2026-11-02T11:41:13.358Z"
   },
   "euraxess": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:36.423Z"
-  },
-  "pmdc": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:35.967Z"
-  },
-  "findaphd": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:36.462Z"
-  },
-  "mastersportal": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:36.542Z"
-  },
-  "academic-positions": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:36.520Z"
-  },
-  "bachelorsportal": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:36.581Z"
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:13.652Z"
   },
   "gre": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:36.709Z"
+   "checkedAt": "2026-11-02T11:41:13.918Z"
+  },
+  "findaphd": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:41:13.876Z"
+  },
+  "mastersportal": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:41:13.972Z"
+  },
+  "bachelorsportal": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:41:14.006Z"
+  },
+  "pmdc": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:41:13.133Z"
+  },
+  "academic-positions": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:41:13.970Z"
   },
   "phdportal": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:36.619Z"
-  },
-  "fundsforngos": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:36.673Z"
+   "checkedAt": "2026-11-02T11:41:14.094Z"
   },
   "google-for-startups": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:36.725Z"
+   "checkedAt": "2026-11-02T11:41:14.197Z"
+  },
+  "fundsforngos": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:41:14.105Z"
   },
   "y-combinator": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:36.723Z"
+   "checkedAt": "2026-11-02T11:41:14.112Z"
+  },
+  "undp-pakistan": {
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
+   "checkedAt": "2026-11-02T11:41:14.241Z"
+  },
+  "hec-attestation": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:14.369Z"
+  },
+  "ibcc": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "checkedAt": "2026-11-02T11:41:14.965Z"
   },
   "ignite": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://ignite.org.pk/",
-   "checkedAt": "2026-10-26T09:21:32.781Z"
-  },
-  "undp-pakistan": {
-   "ok": false,
-   "status": 403,
-   "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:36.790Z"
-  },
-  "ibcc": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:36.982Z"
-  },
-  "hec-attestation": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:36.849Z"
+   "checkedAt": "2026-11-02T11:41:11.288Z"
   },
   "nadra-docs": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:37.518Z"
+   "checkedAt": "2026-11-02T11:41:15.802Z"
   },
   "wes": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:38.078Z"
+   "checkedAt": "2026-11-02T11:41:16.170Z"
   },
   "mofa-attestation": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:37.062Z"
-  },
-  "dgip": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:37.924Z"
+   "checkedAt": "2026-11-02T11:41:15.601Z"
   },
   "nastp-hr": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
-   "checkedAt": "2026-10-26T09:21:38.437Z"
+   "checkedAt": "2026-11-02T11:41:17.000Z"
+  },
+  "apostille-mofa": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:41:17.163Z"
   },
   "nr3c": {
    "ok": false,
    "status": 403,
    "verdict": "blocked",
    "finalUrl": "https://www.nccia.gov.pk/",
-   "checkedAt": "2026-10-26T09:21:38.524Z"
+   "checkedAt": "2026-11-02T11:41:18.761Z"
   },
-  "apostille-mofa": {
+  "plan9": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:38.495Z"
+   "checkedAt": "2026-11-02T11:41:14.230Z"
   },
   "ntslogin": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:39.841Z"
+   "checkedAt": "2026-11-02T11:41:24.633Z"
   },
   "schoolsti": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:39.979Z"
+   "checkedAt": "2026-11-02T11:41:25.060Z"
   },
   "mauqapakistan": {
    "ok": true,
-   "status": 200,
+   "status": 204,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:40.248Z"
+   "checkedAt": "2026-11-02T11:41:25.347Z"
   },
   "pakistanjobsbank": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:40.460Z"
+   "checkedAt": "2026-11-02T11:41:25.708Z"
+  },
+  "dgip": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:41:15.819Z"
   },
   "gopunjab": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:40.614Z"
-  },
-  "jobshah": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:40.755Z"
+   "checkedAt": "2026-11-02T11:41:25.851Z"
   },
   "jobscompk": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:41.534Z"
+   "checkedAt": "2026-11-02T11:41:26.295Z"
   },
   "workingnomads": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:41.595Z"
+   "checkedAt": "2026-11-02T11:41:26.362Z"
   },
-  "opportunitiescorners": {
+  "jobs-punjab": {
+   "ok": false,
+   "status": 0,
+   "verdict": "unreachable",
+   "checkedAt": "2026-11-02T11:41:16.355Z"
+  },
+  "jobshah": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "finalUrl": "https://opportunitiescorners.com/",
-   "checkedAt": "2026-10-26T09:21:41.918Z"
+   "checkedAt": "2026-11-02T11:41:26.131Z"
   },
   "scholarshiproar": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
    "finalUrl": "https://scholarshiproar.com/",
-   "checkedAt": "2026-10-26T09:21:43.096Z"
+   "checkedAt": "2026-11-02T11:41:26.630Z"
   },
   "opportunitiesforyouth": {
-   "ok": true,
-   "status": 200,
-   "verdict": "ok",
+   "ok": false,
+   "status": 403,
+   "verdict": "blocked",
    "finalUrl": "https://opportunitiesforyouth.org/",
-   "checkedAt": "2026-10-26T09:21:43.371Z"
+   "checkedAt": "2026-11-02T11:41:26.713Z"
   },
   "ctftime": {
    "ok": true,
    "status": 200,
    "verdict": "ok",
-   "checkedAt": "2026-10-26T09:21:43.615Z"
+   "checkedAt": "2026-11-02T11:41:26.802Z"
   },
-  "plan9": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:36.773Z"
-  },
-  "jobs-punjab": {
-   "ok": false,
-   "status": 0,
-   "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:38.158Z"
+  "opportunitiescorners": {
+   "ok": true,
+   "status": 200,
+   "verdict": "ok",
+   "finalUrl": "https://opportunitiescorners.com/",
+   "checkedAt": "2026-11-02T11:41:26.464Z"
   },
   "ehsaas-hec": {
    "ok": false,
    "status": 0,
    "verdict": "unreachable",
-   "checkedAt": "2026-10-26T09:21:38.731Z"
+   "checkedAt": "2026-11-02T11:41:19.056Z"
   }
  }
 }
